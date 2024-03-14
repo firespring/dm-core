@@ -7,11 +7,11 @@ source 'https://rubygems.org'
 gemspec
 
 SOURCE         = ENV.fetch('SOURCE', :git).to_sym
-REPO_POSTFIX   = SOURCE == :path ? ''                                : '.git'
-DATAMAPPER     = SOURCE == :path ? Pathname(__FILE__).dirname.parent : 'https://github.com/datamapper'
-DM_VERSION     = "~> #{DataMapper::VERSION}"
-DO_VERSION     = '~> 0.10.6'
-DM_DO_ADAPTERS = %w[ sqlite postgres mysql oracle sqlserver ]
+REPO_POSTFIX   = (SOURCE == :path) ? ''                                : '.git'
+DATAMAPPER     = (SOURCE == :path) ? Pathname(__FILE__).dirname.parent : 'https://github.com/datamapper'
+DM_VERSION     = "~> #{DataMapper::VERSION}".freeze
+DO_VERSION     = '~> 0.10.6'.freeze
+DM_DO_ADAPTERS = %w(sqlite postgres mysql oracle sqlserver).freeze
 CURRENT_BRANCH = ENV.fetch('GIT_BRANCH', 'master')
 
 platforms :mri_18 do
@@ -21,10 +21,15 @@ platforms :mri_18 do
   end
 end
 
+group :development do
+  gem 'rake',  '~> 10.0.3'
+  gem 'rspec', '~> 1.3.2'
+end
+
 group :datamapper do
 
-  adapters = ENV['ADAPTERS'] || ENV['ADAPTER']
-  adapters = adapters.to_s.tr(',', ' ').split.uniq - %w[ in_memory ]
+  adapters = ENV['ADAPTERS'] || ENV.fetch('ADAPTER', nil)
+  adapters = adapters.to_s.tr(',', ' ').split.uniq - %w(in_memory)
 
   if (do_adapters = DM_DO_ADAPTERS & adapters).any?
     do_options = {}
@@ -38,23 +43,23 @@ group :datamapper do
     end
 
     gem 'dm-do-adapter', DM_VERSION,
-      SOURCE  => "#{DATAMAPPER}/dm-do-adapter#{REPO_POSTFIX}",
-      :branch => CURRENT_BRANCH
+        SOURCE => "#{DATAMAPPER}/dm-do-adapter#{REPO_POSTFIX}",
+        :branch => CURRENT_BRANCH
   end
 
   adapters.each do |adapter|
     gem "dm-#{adapter}-adapter", ENV.fetch('ADAPTER_VERSION', DM_VERSION),
-      SOURCE  => "#{DATAMAPPER}/dm-#{adapter}-adapter#{REPO_POSTFIX}",
-      :branch => CURRENT_BRANCH
+        SOURCE => "#{DATAMAPPER}/dm-#{adapter}-adapter#{REPO_POSTFIX}",
+        :branch => CURRENT_BRANCH
   end
 
-  plugins = ENV['PLUGINS'] || ENV['PLUGIN']
+  plugins = ENV['PLUGINS'] || ENV.fetch('PLUGIN', nil)
   plugins = plugins.to_s.tr(',', ' ').split.push('dm-migrations').uniq
 
   plugins.each do |plugin|
     gem plugin, DM_VERSION,
-      SOURCE  => "#{DATAMAPPER}/#{plugin}#{REPO_POSTFIX}",
-      :branch => CURRENT_BRANCH
+        SOURCE => "#{DATAMAPPER}/#{plugin}#{REPO_POSTFIX}",
+        :branch => CURRENT_BRANCH
   end
 
 end
