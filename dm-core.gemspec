@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.email       = %w(dan.kubb@gmail.com)
   gem.description = 'DataMapper core library'
   gem.summary     = gem.description
-  gem.homepage    = 'https://github.com/datamapper/dm-core'
+  gem.homepage    = 'https://github.com/firespring/dm-core'
 
   gem.require_paths    = %w(lib)
   gem.files            = `git ls-files`.split($INPUT_RECORD_SEPARATOR)

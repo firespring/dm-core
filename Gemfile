@@ -8,7 +8,7 @@ gemspec
 
 SOURCE         = ENV.fetch('SOURCE', :git).to_sym
 REPO_POSTFIX   = (SOURCE == :path) ? ''                                : '.git'
-DATAMAPPER     = (SOURCE == :path) ? Pathname(__FILE__).dirname.parent : 'https://github.com/datamapper'
+DATAMAPPER     = (SOURCE == :path) ? Pathname(__FILE__).dirname.parent : 'https://github.com/firespring'
 DM_VERSION     = "~> #{DataMapper::VERSION}".freeze
 DO_VERSION     = '~> 0.10.6'.freeze
 DM_DO_ADAPTERS = %w(sqlite postgres mysql oracle sqlserver).freeze
@@ -33,7 +33,7 @@ group :datamapper do
 
   if (do_adapters = DM_DO_ADAPTERS & adapters).any?
     do_options = {}
-    do_options[:git] = "#{DATAMAPPER}/do#{REPO_POSTFIX}" if ENV['DO_GIT'] == 'true'
+    do_options[:git] = "#{DATAMAPPER}/datamapper-do#{REPO_POSTFIX}" if ENV['DO_GIT'] == 'true'
 
     gem 'data_objects', DO_VERSION, do_options.dup
 
