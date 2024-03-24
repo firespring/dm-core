@@ -1,5 +1,5 @@
 require 'English'
-require File.expand_path('../lib/dm-core/version', __FILE__)
+require File.expand_path('lib/dm-core/version', __dir__)
 
 Gem::Specification.new do |gem|
   gem.name        = 'dm-core'
@@ -15,5 +15,4 @@ Gem::Specification.new do |gem|
   gem.extra_rdoc_files = %w(LICENSE README.md)
 
   gem.add_runtime_dependency('addressable', '~> 2.3', '>= 2.3.5')
-
 end
