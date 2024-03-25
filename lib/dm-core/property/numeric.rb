@@ -7,33 +7,29 @@ module DataMapper
       attr_reader :precision, :scale, :min, :max
 
       DEFAULT_NUMERIC_MIN = 0
-      DEFAULT_NUMERIC_MAX = 2**31-1
+      DEFAULT_NUMERIC_MAX = (2**31) - 1
 
-      protected
-
-      def initialize(model, name, options = {})
+      protected def initialize(model, name, options = {})
         super
 
-        if kind_of?(Decimal) || kind_of?(Float)
+        if is_a?(Decimal) || is_a?(Float)
           @precision = @options.fetch(:precision)
           @scale     = @options.fetch(:scale)
 
-          unless @precision > 0
-            raise ArgumentError, "precision must be greater than 0, but was #{@precision.inspect}"
-          end
+          raise ArgumentError, "precision must be greater than 0, but was #{@precision.inspect}" unless @precision > 0
         end
 
-        if @options.key?(:min) || @options.key?(:max)
-          @min = @options.fetch(:min, self.class::DEFAULT_NUMERIC_MIN)
-          @max = @options.fetch(:max, self.class::DEFAULT_NUMERIC_MAX)
+        return unless @options.key?(:min) || @options.key?(:max)
 
-          if @max < DEFAULT_NUMERIC_MIN && !@options.key?(:min)
-            raise ArgumentError, "min should be specified when the max is less than #{DEFAULT_NUMERIC_MIN}"
-          elsif @max < @min
-            raise ArgumentError, "max must be less than the min, but was #{@max} while the min was #{@min}"
-          end
+        @min = @options.fetch(:min, self.class::DEFAULT_NUMERIC_MIN)
+        @max = @options.fetch(:max, self.class::DEFAULT_NUMERIC_MAX)
+
+        if @max < DEFAULT_NUMERIC_MIN && !@options.key?(:min)
+          raise ArgumentError, "min should be specified when the max is less than #{DEFAULT_NUMERIC_MIN}"
+        elsif @max < @min
+          raise ArgumentError, "max must be less than the min, but was #{@max} while the min was #{@min}"
         end
       end
-    end # class Numeric
-  end # class Property
-end # module DataMapper
+    end
+  end
+end

@@ -23,11 +23,11 @@ module DataMapper
 
           now  = ::Time.now
 
-          [ :year, :month, :day, :hour, :min, :sec ].map do |segment|
+          %i(year month day hour min sec).map do |segment|
             typecast_to_numeric(mash.fetch(segment, now.send(segment)), :to_i)
           end
         end
-      end # Time
-    end # Typecast
-  end # Property
-end # DataMapper
+      end
+    end
+  end
+end

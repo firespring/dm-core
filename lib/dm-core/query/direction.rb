@@ -13,10 +13,9 @@
 module DataMapper
   class Query
     class Direction < Operator
-
       # @api private
       def reverse!
-        @operator = @operator == :asc ? :desc : :asc
+        @operator = (@operator == :asc) ? :desc : :asc
         self
       end
 
@@ -25,12 +24,10 @@ module DataMapper
         Sort.new(target.get(resource), @operator == :asc)
       end
 
-      private
-
       # @api private
-      def initialize(target, operator = :asc)
+      private def initialize(target, operator = :asc)
         super
       end
-    end # class Direction
-  end # class Query
-end # module DataMapper
+    end
+  end
+end

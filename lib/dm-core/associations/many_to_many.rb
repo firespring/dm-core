@@ -1,6 +1,6 @@
 module DataMapper
   module Associations
-    module ManyToMany #:nodoc:
+    module ManyToMany # :nodoc:
       class Relationship < Associations::OneToMany::Relationship
         extend Chainable
 
@@ -16,14 +16,14 @@ module DataMapper
           return @child_key if defined?(@child_key)
 
           repository_name = child_repository_name || parent_repository_name
-          properties      = child_model.properties(repository_name)
+          properties      = child_model&.properties(repository_name)
 
           @child_key = if @child_properties
-            child_key = properties.values_at(*@child_properties)
-            properties.class.new(child_key).freeze
-          else
-            properties.key
-          end
+                         child_key = properties&.values_at(*@child_properties)
+                         properties.class.new(child_key).freeze
+                       else
+                         properties&.key
+                       end
         end
 
         # @api semipublic
@@ -44,8 +44,8 @@ module DataMapper
         # through is :missing_tests
         #
         # TODO: document a case when
-        # through option is a model and
-        # not an association name
+        #   through option is a model and
+        #   not an association name
         #
         # @api semipublic
         def through
@@ -53,19 +53,17 @@ module DataMapper
 
           @through = options[:through]
 
-          if @through.kind_of?(Associations::Relationship)
-            return @through
-          end
+          return @through if @through.is_a?(Associations::Relationship)
 
           model           = source_model
           repository_name = source_repository_name
-          relationships   = model.relationships(repository_name)
+          relationships   = model&.relationships(repository_name)
           name            = through_relationship_name
 
           @through = relationships[name] ||
-            DataMapper.repository(repository_name) do
-              model.has(min..max, name, through_model, one_to_many_options)
-            end
+                     DataMapper.repository(repository_name) do
+                       model&.has(min..max, name, through_model, one_to_many_options)
+                     end
 
           @through.child_key
 
@@ -78,9 +76,7 @@ module DataMapper
 
           @via = options[:via]
 
-          if @via.kind_of?(Associations::Relationship)
-            return @via
-          end
+          return @via if @via.is_a?(Associations::Relationship)
 
           name            = self.name
           through         = self.through
@@ -90,16 +86,16 @@ module DataMapper
           singular_name   = DataMapper::Inflector.singularize(name.to_s).to_sym
 
           @via = relationships[@via] ||
-            relationships[name]      ||
-            relationships[singular_name]
+                 relationships[name] ||
+                 relationships[singular_name]
 
           @via ||= if anonymous_through_model?
-            DataMapper.repository(repository_name) do
-              through_model.belongs_to(singular_name, target_model, many_to_one_options)
-            end
-          else
-            raise UnknownRelationshipError, "No relationships named #{name} or #{singular_name} in #{through_model}"
-          end
+                     DataMapper.repository(repository_name) do
+                       through_model.belongs_to(singular_name, target_model, many_to_one_options)
+                     end
+                   else
+                     raise UnknownRelationshipError, "No relationships named #{name} or #{singular_name} in #{through_model}"
+                   end
 
           @via.child_key
 
@@ -111,9 +107,9 @@ module DataMapper
           return @links if defined?(@links)
 
           @links = []
-          links  = [ through, via ]
+          links  = [through, via]
 
-          while relationship = links.shift
+          while (relationship = links.shift)
             if relationship.respond_to?(:links)
               links.unshift(*relationship.links)
             else
@@ -137,14 +133,14 @@ module DataMapper
 
         # @api private
         def source_scope(source)
-          { through.inverse => source }
+          {through.inverse => source}
         end
 
         # @api private
         def query
           # TODO: consider making this a query_for method, so that ManyToMany::Relationship#query only
-          # returns the query supplied in the definition
-          @many_to_many_query ||= super.merge(:links => links).freeze
+          #   returns the query supplied in the definition
+          @many_to_many_query ||= super.merge(links:).freeze
         end
 
         # Eager load the collection using the source as a base
@@ -163,10 +159,8 @@ module DataMapper
           source.model.all(query_for(source, other_query))
         end
 
-        private
-
         # @api private
-        def through_model
+        private def through_model
           namespace, name = through_model_namespace_name
 
           if namespace.const_defined?(name)
@@ -184,28 +178,29 @@ module DataMapper
         end
 
         # @api private
-        def through_model_namespace_name
-          target_parts = target_model.base_model.name.split('::')
-          source_parts = source_model.base_model.name.split('::')
+        private def through_model_namespace_name
+          target_parts = target_model&.base_model&.name&.split('::')
+          source_parts = source_model&.base_model&.name&.split('::')
 
-          name = [ target_parts.pop, source_parts.pop ].sort.join
+          name = [target_parts&.pop, source_parts&.pop].sort.join
 
           namespace = Object
 
           # find the common namespace between the target_model and source_model
-          target_parts.zip(source_parts) do |target_part, source_part|
+          target_parts&.zip(source_parts) do |target_part, source_part|
             break if target_part != source_part
+
             namespace = namespace.const_get(target_part)
           end
 
-          return namespace, name
+          [namespace, name]
         end
 
         # @api private
-        def through_relationship_name
+        private def through_relationship_name
           if anonymous_through_model?
             namespace = through_model_namespace_name.first
-            relationship_name = DataMapper::Inflector.underscore(through_model.name.sub(/\A#{namespace.name}::/, '')).tr('/', '_')
+            relationship_name = DataMapper::Inflector.underscore(through_model.name.sub(/\A#{namespace&.name}::/, '')).tr('/', '_')
             DataMapper::Inflector.pluralize(relationship_name).to_sym
           else
             options[:through]
@@ -222,71 +217,69 @@ module DataMapper
         #   true if the through model is anonymous
         #
         # @api private
-        def anonymous_through_model?
+        private def anonymous_through_model?
           options[:through] == Resource
         end
 
         # @api private
-        def nearest_relationship
+        private def nearest_relationship
           return @nearest_relationship if defined?(@nearest_relationship)
 
           nearest_relationship = self
 
-          while nearest_relationship.respond_to?(:through)
-            nearest_relationship = nearest_relationship.through
-          end
+          nearest_relationship = nearest_relationship.through while nearest_relationship.respond_to?(:through)
 
           @nearest_relationship = nearest_relationship
         end
 
         # @api private
-        def valid_target?(target)
+        private def valid_target?(target)
           relationship = via
           source_key   = relationship.source_key
           target_key   = relationship.target_key
 
-          target.kind_of?(target_model) &&
+          target.is_a?(target_model) &&
           source_key.valid?(target_key.get(target))
         end
 
         # @api private
-        def valid_source?(source)
+        private def valid_source?(source)
           relationship = nearest_relationship
           source_key   = relationship.source_key
           target_key   = relationship.target_key
 
-          source.kind_of?(source_model) &&
+          source.is_a?(source_model) &&
           target_key.valid?(source_key.get(source))
         end
 
         chainable do
           # @api semipublic
           def many_to_one_options
-            { :parent_key => target_key.map { |property| property.name } }
+            {parent_key: target_key.map(&:name)}
           end
 
           # @api semipublic
           def one_to_many_options
-            { :parent_key => source_key.map { |property| property.name } }
+            {parent_key: source_key.map(&:name)}
           end
         end
 
         # Returns the inverse relationship class
         #
         # @api private
-        def inverse_class
+        private def inverse_class
           self.class
         end
 
         # @api private
-        def invert
+        private def invert
           inverse_class.new(inverse_name, parent_model, child_model, inverted_options)
         end
 
         # @api private
-        def inverted_options
+        private def inverted_options
           links   = self.links.dup
-          through = links.pop.inverse
+          through = links.pop&.inverse
 
           links.reverse_each do |relationship|
             inverse = relationship.inverse
@@ -295,17 +288,17 @@ module DataMapper
               inverse.name,
               inverse.child_model,
               inverse.parent_model,
-              inverse.options.merge(:through => through)
+              inverse.options.merge(through:)
             )
           end
 
           options = self.options
 
-          DataMapper::Ext::Hash.only(options, *OPTIONS - [ :min, :max ]).update(
-            :through    => through,
-            :child_key  => options[:parent_key],
-            :parent_key => options[:child_key],
-            :inverse    => self
+          DataMapper::Ext::Hash.only(options, *OPTIONS - %i(min max)).update(
+            through: through,
+            child_key: options[:parent_key],
+            parent_key: options[:child_key],
+            inverse: self
           )
         end
 
@@ -313,10 +306,10 @@ module DataMapper
         # relationship
         #
         # @api private
-        def collection_class
+        private def collection_class
           ManyToMany::Collection
         end
-      end # class Relationship
+      end
 
       class Collection < Associations::OneToMany::Collection
         # Remove every Resource in the m:m Collection from the repository
@@ -335,9 +328,7 @@ module DataMapper
           # the intermediaries are removed
           lazy_load
 
-          unless intermediaries.all(via => self).destroy
-            return false
-          end
+          return false unless intermediaries.all(via => self).destroy
 
           super
         end
@@ -359,13 +350,9 @@ module DataMapper
           key        = model.key(repository_name)
           conditions = Query.target_conditions(self, key, key)
 
-          unless intermediaries.all(via => self).destroy!
-            return false
-          end
+          return false unless intermediaries.all(via => self).destroy!
 
-          unless model.all(:repository => repository, :conditions => conditions).destroy!
-            return false
-          end
+          return false unless model.all(repository:, conditions:).destroy!
 
           each do |resource|
             resource.persistence_state = Resource::PersistenceState::Immutable.new(resource)
@@ -387,13 +374,11 @@ module DataMapper
           source  = self.source
 
           @intermediaries ||= if through.loaded?(source)
-            through.get_collection(source)
-          else
-            reset_intermediaries
-          end
+                                through.get_collection(source)
+                              else
+                                reset_intermediaries
+                              end
         end
-
-        protected
 
         # Map the resources in the collection to the intermediaries
         #
@@ -401,39 +386,32 @@ module DataMapper
         #   the map of resources to their intermediaries
         #
         # @api private
-        def intermediary_for
+        protected def intermediary_for
           @intermediary_for ||= {}
         end
 
         # @api private
-        def through
+        protected def through
           relationship.through
         end
 
         # @api private
-        def via
+        protected def via
           relationship.via
         end
 
-        private
-
-        # @api private
-        def _create(attributes, execute_hooks = true)
+        private def _create(attributes, execute_hooks = true)
           via = self.via
           if via.respond_to?(:resource_for)
             resource = super
-            if create_intermediary(execute_hooks, resource)
-              resource
-            end
-          else
-            if intermediary = create_intermediary(execute_hooks)
-              super(attributes.merge(via.inverse => intermediary), execute_hooks)
-            end
+            resource if create_intermediary(execute_hooks, resource)
+          elsif (intermediary = create_intermediary(execute_hooks))
+            super(attributes.merge(via.inverse => intermediary), execute_hooks)
           end
         end
 
         # @api private
-        def _save(execute_hooks = true)
+        private def _save(execute_hooks = true)
           via = self.via
 
           if @removed.any?
@@ -460,7 +438,7 @@ module DataMapper
         end
 
         # @api private
-        def create_intermediary(execute_hooks, resource = nil)
+        private def create_intermediary(execute_hooks, resource = nil)
           intermediary_for = self.intermediary_for
 
           intermediary_resource = intermediary_for[resource]
@@ -482,7 +460,7 @@ module DataMapper
         end
 
         # @api private
-        def reset_intermediaries
+        private def reset_intermediaries
           through = self.through
           source  = self.source
 
@@ -490,10 +468,10 @@ module DataMapper
         end
 
         # @api private
-        def inverse_set(*)
+        private def inverse_set(*)
           # do nothing
         end
-      end # class Collection
-    end # module ManyToMany
-  end # module Associations
-end # module DataMapper
+      end
+    end
+  end
+end

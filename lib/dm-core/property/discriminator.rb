@@ -1,7 +1,7 @@
 module DataMapper
   class Property
     class Discriminator < Class
-      default   lambda { |resource, property| resource.model }
+      default   ->(resource, _property) { resource.model }
       required  true
 
       # @api private
@@ -11,34 +11,30 @@ module DataMapper
 
       module Model
         def inherited(model)
-          super  # setup self.descendants
+          super # setup self.descendants
           set_discriminator_scope_for(model)
         end
 
         def new(*args, &block)
-          if args.size == 1 && args.first.kind_of?(Hash)
+          if args.size == 1 && args.first.is_a?(Hash)
             discriminator = properties(repository_name).discriminator
 
-            if discriminator_value = args.first[discriminator.name]
+            if (discriminator_value = args.first[discriminator.name])
               model = discriminator.typecast_to_primitive(discriminator_value)
 
-              if model.kind_of?(Model) && !model.equal?(self)
-                return model.new(*args, &block)
-              end
+              return model.new(*args, &block) if model.is_a?(Model) && !model.equal?(self)
             end
           end
 
           super
         end
 
-      private
-
-        def set_discriminator_scope_for(model)
-          discriminator = self.properties.discriminator
+        private def set_discriminator_scope_for(model)
+          discriminator = properties.discriminator
           default_scope = model.default_scope(discriminator.repository_name)
           default_scope.update(discriminator.name => model.descendants.dup << model)
         end
       end
-    end # class Discriminator
-  end # module Property
-end # module DataMapper
+    end
+  end
+end

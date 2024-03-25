@@ -17,10 +17,10 @@ module DataMapper
         default_repository_name = self.default_repository_name
 
         @default_scope[repository_name] ||= if repository_name == default_repository_name
-          {}
-        else
-          default_scope(default_repository_name).dup
-        end
+                                              {}
+                                            else
+                                              default_scope(default_repository_name).dup
+                                            end
       end
 
       # Returns query on top of scope stack
@@ -35,19 +35,17 @@ module DataMapper
         scope_stack.last || default_scope(repository.name)
       end
 
-      protected
-
       # Pushes given query on top of the stack
       #
-      # @param [Hash, Query]  Query to add to current scope nesting
+      # @param [Hash, Query] query to add to current scope nesting
       #
       # @api private
-      def with_scope(query)
-        options = if query.kind_of?(Hash)
-          query
-        else
-          query.options
-        end
+      protected def with_scope(query)
+        options = if query.is_a?(Hash)
+                    query
+                  else
+                    query.options
+                  end
 
         # merge the current scope with the passed in query
         with_exclusive_scope(self.query.merge(options)) { |*block_args| yield(*block_args) }
@@ -59,12 +57,12 @@ module DataMapper
       # have no effect.
       #
       # @api private
-      def with_exclusive_scope(query)
-        query = if query.kind_of?(Hash)
-          repository.new_query(self, query)
-        else
-          query.dup
-        end
+      protected def with_exclusive_scope(query)
+        query = if query.is_a?(Hash)
+                  repository.new_query(self, query)
+                else
+                  query.dup
+                end
 
         scope_stack = self.scope_stack
         scope_stack << query.options
@@ -78,12 +76,12 @@ module DataMapper
 
       # Initializes (if necessary) and returns current scope stack
       # @api private
-      def scope_stack
+      protected def scope_stack
         scope_stack_for = Thread.current[:dm_scope_stack] ||= {}
         scope_stack_for[object_id] ||= []
       end
-    end # module Scope
+    end
 
     include Scope
-  end # module Model
-end # module DataMapper
+  end
+end

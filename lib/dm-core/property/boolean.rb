@@ -4,10 +4,9 @@ module DataMapper
       load_as ::TrueClass
       dump_as ::TrueClass
 
-      TRUE_VALUES  = [ 1, '1', 't', 'T', 'true',  'TRUE'  ].freeze
-      FALSE_VALUES = [ 0, '0', 'f', 'F', 'false', 'FALSE' ].freeze
-      BOOLEAN_MAP  = Hash[
-        TRUE_VALUES.product([ true ]) + FALSE_VALUES.product([ false ]) ].freeze
+      TRUE_VALUES  = [1, '1', 't', 'T', 'true',  'TRUE'].freeze
+      FALSE_VALUES = [0, '0', 'f', 'F', 'false', 'FALSE'].freeze
+      BOOLEAN_MAP  = (TRUE_VALUES.product([true]) + FALSE_VALUES.product([false])).to_h.freeze
 
       # @api semipublic
       def value_dumped?(value)
@@ -16,7 +15,7 @@ module DataMapper
 
       # @api semipublic
       def value_loaded?(value)
-        value == true || value == false
+        [true, false].include?(value)
       end
 
       # Typecast a value to a true or false
@@ -31,7 +30,6 @@ module DataMapper
       def typecast_to_primitive(value)
         BOOLEAN_MAP.fetch(value, value)
       end
-
-    end # class Boolean
-  end # class Property
-end # module DataMapper
+    end
+  end
+end

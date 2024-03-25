@@ -6,10 +6,10 @@ module DataMapper
     # (1 to 1, 1 to n, n to m) implements a subclass of this class
     # with methods like get and set overridden.
     class Relationship
-      include DataMapper::Assertions
-      include Subject
+      include Subject, DataMapper::Assertions
 
-      OPTIONS = [ :child_repository_name, :parent_repository_name, :child_key, :parent_key, :min, :max, :inverse, :reader_visibility, :writer_visibility, :default ].to_set
+      OPTIONS = %i(child_repository_name parent_repository_name child_key parent_key min max inverse reader_visibility writer_visibility
+                   default).to_set
 
       # Relationship name
       #
@@ -140,7 +140,7 @@ module DataMapper
       #
       # @api private
       def source_scope(source)
-        { inverse => source }
+        {inverse => source}
       end
 
       # Creates and returns Query instance that fetches
@@ -150,12 +150,12 @@ module DataMapper
       def query_for(source, other_query = nil)
         repository_name = relative_target_repository_name_for(source)
 
-        DataMapper.repository(repository_name).scope do
+        DataMapper.repository(repository_name)&.scope do
           query = target_model.query.dup
           query.update(self.query)
-          query.update(:conditions => source_scope(source))
+          query.update(conditions: source_scope(source))
           query.update(other_query) if other_query
-          query.update(:fields => query.fields | target_key)
+          query.update(fields: query.fields | target_key)
         end
       end
 
@@ -167,6 +167,7 @@ module DataMapper
       # @api private
       def child_model
         return @child_model if defined?(@child_model)
+
         child_model_name = self.child_model_name
         @child_model = DataMapper::Ext::Module.find_const(@parent_model || Object, child_model_name)
       rescue NameError
@@ -183,7 +184,7 @@ module DataMapper
 
       # @api private
       def child_model_name
-        @child_model ? child_model.name : @child_model_name
+        @child_model ? child_model&.name : @child_model_name
       end
 
       # Returns a set of keys that identify the target model
@@ -196,14 +197,14 @@ module DataMapper
         return @child_key if defined?(@child_key)
 
         repository_name = child_repository_name || parent_repository_name
-        properties      = child_model.properties(repository_name)
+        properties      = child_model&.properties(repository_name)
 
         @child_key = if @child_properties
-          child_key = properties.values_at(*@child_properties)
-          properties.class.new(child_key).freeze
-        else
-          properties.key
-        end
+                       child_key = properties&.values_at(*@child_properties)
+                       properties.class.new(child_key).freeze
+                     else
+                       properties&.key
+                     end
       end
 
       # Access Relationship#child_key directly
@@ -220,6 +221,7 @@ module DataMapper
       # @api private
       def parent_model
         return @parent_model if defined?(@parent_model)
+
         parent_model_name = self.parent_model_name
         @parent_model = DataMapper::Ext::Module.find_const(@child_model || Object, parent_model_name)
       rescue NameError
@@ -236,7 +238,7 @@ module DataMapper
 
       # @api private
       def parent_model_name
-        @parent_model ? parent_model.name : @parent_model_name
+        @parent_model ? parent_model&.name : @parent_model_name
       end
 
       # Returns a set of keys that identify parent model
@@ -249,14 +251,14 @@ module DataMapper
         return @parent_key if defined?(@parent_key)
 
         repository_name = parent_repository_name || child_repository_name
-        properties      = parent_model.properties(repository_name)
+        properties      = parent_model&.properties(repository_name)
 
         @parent_key = if @parent_properties
-          parent_key = properties.values_at(*@parent_properties)
-          properties.class.new(parent_key).freeze
-        else
-          properties.key
-        end
+                        parent_key = properties&.values_at(*@parent_properties)
+                        properties.class.new(parent_key).freeze
+                      else
+                        properties&.key
+                      end
       end
 
       # Loads and returns "other end" of the association.
@@ -308,9 +310,7 @@ module DataMapper
         targets = source.model.all(query_for(source, query))
 
         # FIXME: cannot associate targets to m:m collection yet
-        if source.loaded? && !source.kind_of?(ManyToMany::Collection)
-          associate_targets(source, targets)
-        end
+        associate_targets(source, targets) if source.loaded? && !source.is_a?(ManyToMany::Collection)
 
         targets
       end
@@ -325,7 +325,7 @@ module DataMapper
 
       # Test the resource to see if it is a valid target
       #
-      # @param [Object] source
+      # @param [Object] value
       #   the resource or collection to be tested
       #
       # @return [Boolean]
@@ -334,11 +334,11 @@ module DataMapper
       # @api semipulic
       def valid?(value, negated = false)
         case value
-          when Enumerable then valid_target_collection?(value, negated)
-          when Resource   then valid_target?(value)
-          when nil        then true
-          else
-            raise ArgumentError, "+value+ should be an Enumerable, Resource or nil, but was a #{value.class.name}"
+        when Enumerable then valid_target_collection?(value, negated)
+        when Resource   then valid_target?(value)
+        when nil        then true
+        else
+          raise ArgumentError, "+value+ should be an Enumerable, Resource or nil, but was a #{value.class.name}"
         end
       end
 
@@ -353,6 +353,7 @@ module DataMapper
       # @api public
       def eql?(other)
         return true if equal?(other)
+
         instance_of?(other.class) && cmp?(other, :eql?)
       end
 
@@ -366,14 +367,15 @@ module DataMapper
       #
       # @api public
       def ==(other)
-        return true  if equal?(other)
+        return true if equal?(other)
+
         other.respond_to?(:cmp_repository?, true) &&
-        other.respond_to?(:cmp_model?, true)      &&
-        other.respond_to?(:cmp_key?, true)        &&
-        other.respond_to?(:min)                   &&
-        other.respond_to?(:max)                   &&
-        other.respond_to?(:query)                 &&
-        cmp?(other, :==)
+          other.respond_to?(:cmp_model?, true)      &&
+          other.respond_to?(:cmp_key?, true)        &&
+          other.respond_to?(:min)                   &&
+          other.respond_to?(:max)                   &&
+          other.respond_to?(:query)                 &&
+          cmp?(other, :==)
       end
 
       # Get the inverse relationship from the target model
@@ -384,14 +386,12 @@ module DataMapper
 
         @inverse = options[:inverse]
 
-        if kind_of_inverse?(@inverse)
-          return @inverse
-        end
+        return @inverse if kind_of_inverse?(@inverse)
 
         relationships = target_model.relationships(relative_target_repository_name)
 
         @inverse = relationships.detect { |relationship| inverse?(relationship) } ||
-          invert
+                   invert
 
         @inverse.child_key
 
@@ -406,28 +406,19 @@ module DataMapper
       # @api private
       def relative_target_repository_name_for(source)
         target_repository_name || if source.respond_to?(:repository)
-          source.repository.name
-        else
-          source_repository_name
-        end
+                                    source.repository.name
+                                  else
+                                    source_repository_name
+                                  end
       end
 
       # @api private
       def hash
-        self.class.hash             ^
-        name.hash                   ^
-        child_repository_name.hash  ^
-        parent_repository_name.hash ^
-        child_model.hash            ^
-        parent_model.hash           ^
-        child_properties.hash       ^
-        parent_properties.hash      ^
-        min.hash                    ^
-        max.hash                    ^
-        query.hash
+        [
+          self.class, name, child_repository_name, parent_repository_name, child_model,
+          parent_model, child_properties, parent_properties, min, max, query
+        ].hash
       end
-
-      private
 
       # @api private
       attr_reader :child_properties
@@ -443,7 +434,7 @@ module DataMapper
       # the resource association belongs to
       #
       # @api semipublic
-      def initialize(name, child_model, parent_model, options = {})
+      private def initialize(name, child_model, parent_model, options = {})
         initialize_object_ivar('child_model',  child_model)
         initialize_object_ivar('parent_model', parent_model)
 
@@ -453,12 +444,8 @@ module DataMapper
         @child_repository_name  = @options[:child_repository_name]
         @parent_repository_name = @options[:parent_repository_name]
 
-        unless @options[:child_key].nil?
-          @child_properties     = DataMapper::Ext.try_dup(@options[:child_key]).freeze
-        end
-        unless @options[:parent_key].nil?
-          @parent_properties    = DataMapper::Ext.try_dup(@options[:parent_key]).freeze
-        end
+        @child_properties     = DataMapper::Ext.try_dup(@options[:child_key]).freeze unless @options[:child_key].nil?
+        @parent_properties    = DataMapper::Ext.try_dup(@options[:parent_key]).freeze unless @options[:parent_key].nil?
 
         @min                    = @options[:min]
         @max                    = @options[:max]
@@ -498,7 +485,7 @@ module DataMapper
       #   raise when object does not respond to expected methods
       #
       # @api private
-      def initialize_object_ivar(name, object)
+      private def initialize_object_ivar(name, object)
         if object.respond_to?(:name)
           instance_variable_set("@#{name}", object)
           initialize_object_ivar(name, object.name)
@@ -525,21 +512,21 @@ module DataMapper
       # @return [undefined]
       #
       # @api private
-      def eager_load_targets(source, targets, query)
+      private def eager_load_targets(source, targets, query)
         raise NotImplementedError, "#{self.class}#eager_load_targets not implemented"
       end
 
       # @api private
-      def valid_target_collection?(collection, negated)
-        if collection.kind_of?(Collection)
+      private def valid_target_collection?(collection, negated)
+        if collection.is_a?(Collection)
           # TODO: move the check for model_key into Collection#reloadable?
           # since what we're really checking is a Collection's ability
           # to reload itself, which is (currently) only possible if the
           # key was loaded.
           model     = target_model
-          model_key = model.key(repository.name)
+          model_key = model.key(repository&.name)
 
-          collection.model <= model                          &&
+          collection.model <= model &&
           (collection.query.fields & model_key) == model_key &&
           (collection.loaded? ? (collection.any? || negated) : true)
         else
@@ -548,22 +535,22 @@ module DataMapper
       end
 
       # @api private
-      def valid_target?(target)
-        target.kind_of?(target_model) &&
+      private def valid_target?(target)
+        target.is_a?(target_model) &&
         source_key.valid?(target_key.get(target))
       end
 
       # @api private
-      def valid_source?(source)
-        source.kind_of?(source_model) &&
+      private def valid_source?(source)
+        source.is_a?(source_model) &&
         target_key.valid?(source_key.get(source))
       end
 
       # @api private
-      def inverse?(other)
+      private def inverse?(other)
         return true if @inverse.equal?(other)
 
-        other != self                        &&
+        other != self &&
         kind_of_inverse?(other)              &&
         cmp_repository?(other, :==, :child)  &&
         cmp_repository?(other, :==, :parent) &&
@@ -577,9 +564,9 @@ module DataMapper
       end
 
       # @api private
-      def inverse_name
+      private def inverse_name
         inverse = options[:inverse]
-        if inverse.kind_of?(Relationship)
+        if inverse.is_a?(Relationship)
           inverse.name
         else
           inverse
@@ -587,23 +574,23 @@ module DataMapper
       end
 
       # @api private
-      def invert
+      private def invert
         inverse_class.new(inverse_name, child_model, parent_model, inverted_options)
       end
 
       # @api private
-      def inverted_options
-        DataMapper::Ext::Hash.only(options, *OPTIONS - [ :min, :max ]).update(:inverse => self)
+      private def inverted_options
+        DataMapper::Ext::Hash.only(options, *OPTIONS - %i(min max)).update(inverse: self)
       end
 
       # @api private
-      def kind_of_inverse?(other)
-        other.kind_of?(inverse_class)
+      private def kind_of_inverse?(other)
+        other.is_a?(inverse_class)
       end
 
       # @api private
-      def cmp?(other, operator)
-        name.send(operator, other.name)           &&
+      private def cmp?(other, operator)
+        name.send(operator, other.name) &&
         cmp_repository?(other, operator, :child)  &&
         cmp_repository?(other, operator, :parent) &&
         cmp_model?(other,      operator, :child)  &&
@@ -616,24 +603,24 @@ module DataMapper
       end
 
       # @api private
-      def cmp_repository?(other, operator, type)
+      private def cmp_repository?(other, operator, type)
         # if either repository is nil, then the relationship is relative,
         # and the repositories are considered equivalent
-        return true unless repository_name = send("#{type}_repository_name")
-        return true unless other_repository_name = other.send("#{type}_repository_name")
+        return true unless (repository_name = send("#{type}_repository_name"))
+        return true unless (other_repository_name = other.send("#{type}_repository_name"))
 
         repository_name.send(operator, other_repository_name)
       end
 
       # @api private
-      def cmp_model?(other, operator, type)
-        send("#{type}_model?")       &&
+      private def cmp_model?(other, operator, type)
+        send("#{type}_model?") &&
         other.send("#{type}_model?") &&
         send("#{type}_model").base_model.send(operator, other.send("#{type}_model").base_model)
       end
 
       # @api private
-      def cmp_key?(other, operator, type)
+      private def cmp_key?(other, operator, type)
         property_method = "#{type}_properties"
 
         self_key  = send(property_method)
@@ -642,7 +629,7 @@ module DataMapper
         self_key.send(operator, other_key)
       end
 
-      def associate_targets(source, targets)
+      private def associate_targets(source, targets)
         # TODO: create an object that wraps this logic, and when the first
         # kicker is fired, then it'll load up the collection, and then
         # populate all the other methods
@@ -653,11 +640,11 @@ module DataMapper
           target_maps[target_key.get(target)] << target
         end
 
-        Array(source).each do |source|
-          key = source_key.get(source)
-          eager_load_targets(source, target_maps[key], query)
+        Array(source).each do |s|
+          key = source_key.get(s)
+          eager_load_targets(s, target_maps[key], query)
         end
       end
-    end # class Relationship
-  end # module Associations
-end # module DataMapper
+    end
+  end
+end

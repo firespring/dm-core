@@ -23,6 +23,7 @@ module DataMapper
     def []=(name, entry)
       warn "#{self.class}#[]= is deprecated. Use #{self.class}#<< instead: #{caller.first}"
       raise "#{entry.class} is not added with the correct name" unless name && name.to_s == entry.name.to_s
+
       self << entry
       entry
     end
@@ -50,17 +51,17 @@ module DataMapper
     # TODO: make PropertySet#reject return a PropertySet instance
     # @api semipublic
     def defaults
-      @defaults ||= self.class.new(key | [ discriminator ].compact | reject { |property| property.lazy? }).freeze
+      @defaults ||= self.class.new(key | [discriminator].compact | reject(&:lazy?)).freeze
     end
 
     # @api semipublic
     def key
-      @key ||= self.class.new(select { |property| property.key? }).freeze
+      @key ||= self.class.new(select(&:key?)).freeze
     end
 
     # @api semipublic
     def discriminator
-      @discriminator ||= detect { |property| property.kind_of?(Property::Discriminator) }
+      @discriminator ||= detect { |property| property.is_a?(Property::Discriminator) }
     end
 
     # @api semipublic
@@ -80,6 +81,7 @@ module DataMapper
     # @api semipublic
     def get(resource)
       return [] if resource.nil?
+
       map { |property| resource.__send__(property.name) }
     end
 
@@ -142,36 +144,34 @@ module DataMapper
 
     # @api private
     def field_map
-      Hash[ map { |property| [ property.field, property ] } ]
+      to_h { |property| [property.field, property] }
     end
 
     def inspect
       to_a.inspect
     end
 
-    private
-
     # @api private
-    def clear_cache
+    private def clear_cache
       @defaults, @key, @discriminator = nil
     end
 
     # @api private
-    def lazy_contexts
+    private def lazy_contexts
       @lazy_contexts ||= {}
     end
 
     # @api private
-    def parse_index(index, property, index_hash)
+    private def parse_index(index, property, index_hash)
       case index
-        when true
-          index_hash[property] = [ property ]
-        when Symbol
-          index_hash[index] ||= []
-          index_hash[index] << property
-        when Array
-          index.each { |idx| parse_index(idx, property, index_hash) }
+      when true
+        index_hash[property] = [property]
+      when Symbol
+        index_hash[index] ||= []
+        index_hash[index] << property
+      when Array
+        index.each { |idx| parse_index(idx, property, index_hash) }
       end
     end
-  end # class PropertySet
-end # module DataMapper
+  end
+end

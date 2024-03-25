@@ -1,7 +1,6 @@
 module DataMapper
   module Resource
     class PersistenceState
-
       # a not-persisted/modifiable resource
       class Transient < PersistenceState
         def get(subject, *args)
@@ -36,58 +35,53 @@ module DataMapper
           @original_attributes ||= {}
         end
 
-      private
-
-        def repository
+        private def repository
           @repository ||= model.repository
         end
 
-        def set_default_values
+        private def set_default_values
           (properties | relationships).each do |subject|
             set_default_value(subject)
           end
         end
 
-        def set_default_value(subject)
+        private def set_default_value(subject)
           return if subject.loaded?(resource) || !subject.default?
+
           default = typecast_default(subject, subject.default_for(resource))
           set(subject, default)
         end
 
-        def typecast_default(subject, default)
+        private def typecast_default(subject, default)
           return default unless subject.respond_to?(:typecast)
 
           typecasted_default = subject.send(:typecast, default)
           unless typecasted_default.eql?(default)
-            warn "Automatic typecasting of default property values is deprecated " +
-                 "(#{default.inspect} was casted to #{typecasted_default.inspect}). " +
+            warn "Automatic typecasting of default property values is deprecated (#{default.inspect} was casted to #{typecasted_default.inspect}). " \
                  "Specify the correct type for #{resource.class}."
           end
           typecasted_default
         end
 
-        def track(subject)
+        private def track(subject)
           original_attributes[subject] = nil
         end
 
-        def create_resource
-          repository.create([ resource ])
+        private def create_resource
+          repository.create([resource])
         end
 
-        def set_repository
+        private def set_repository
           resource.instance_variable_set(:@_repository, repository)
         end
 
-        def assert_valid_attributes
+        private def assert_valid_attributes
           properties.each do |property|
             value = get(property)
-            unless property.serial? && value.nil?
-              property.assert_valid_value(value)
-            end
+            property.assert_valid_value(value) unless property.serial? && value.nil?
           end
         end
-
-      end # class Transient
-    end # class PersistenceState
-  end # module Resource
-end # module DataMapper
+      end
+    end
+  end
+end

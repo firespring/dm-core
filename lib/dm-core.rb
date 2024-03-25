@@ -3,7 +3,6 @@ require 'bigdecimal'
 require 'bigdecimal/util'
 require 'date'
 require 'pathname'
-require 'set'
 require 'time'
 require 'yaml'
 
@@ -114,9 +113,7 @@ require 'dm-core/backwards'                   # TODO: do not load automatically
 # A logger should always be present. Lets be consistent with DO
 DataMapper::Logger.new(StringIO.new, :fatal)
 
-unless defined?(Infinity)
-  Infinity = 1.0/0
-end
+Infinity = 1.0 / 0 unless defined?(Infinity)
 
 # == Setup and Configuration
 # DataMapper uses URIs or a connection hash to connect to your data-store.
@@ -227,9 +224,7 @@ module DataMapper
   def self.setup(*args)
     adapter = args.first
 
-    unless adapter.kind_of?(Adapters::AbstractAdapter)
-      adapter = Adapters.new(*args)
-    end
+    adapter = Adapters.new(*args) unless adapter.is_a?(Adapters::AbstractAdapter)
 
     Repository.adapters[adapter.name] = adapter
   end
@@ -251,12 +246,12 @@ module DataMapper
     context = Repository.context
 
     current_repository = if name
-      name = name.to_sym
-      context.detect { |repository| repository.name == name }
-    else
-      name = Repository.default_name
-      context.last
-    end
+                           name = name.to_sym
+                           context.detect { |repository| repository.name == name }
+                         else
+                           name = Repository.default_name
+                           context.last
+                         end
 
     current_repository ||= Repository.new(name)
 
@@ -279,8 +274,7 @@ module DataMapper
   #
   # @api public
   def self.finalize
-    Model.descendants.each { |model| model.finalize }
+    Model.descendants.each(&:finalize)
     self
   end
-
-end # module DataMapper
+end

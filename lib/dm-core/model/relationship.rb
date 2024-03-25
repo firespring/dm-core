@@ -51,10 +51,10 @@ module DataMapper
         default_repository_name = self.default_repository_name
 
         @relationships[repository_name] ||= if repository_name == default_repository_name
-          RelationshipSet.new
-        else
-          relationships(default_repository_name).dup
-        end
+                                              RelationshipSet.new
+                                            else
+                                              relationships(default_repository_name).dup
+                                            end
       end
 
       # Used to express unlimited cardinality of association,
@@ -100,13 +100,11 @@ module DataMapper
         options = extract_options(args)
 
         min, max = extract_min_max(cardinality)
-        options.update(:min => min, :max => max)
+        options.update(min: min, max: max)
 
         assert_valid_options(options)
 
-        if options.key?(:model) && model
-          raise ArgumentError, 'should not specify options[:model] if passing the model in the third argument'
-        end
+        raise ArgumentError, 'should not specify options[:model] if passing the model in the third argument' if options.key?(:model) && model
 
         model ||= options.delete(:model)
 
@@ -117,10 +115,10 @@ module DataMapper
         options[:parent_repository_name] = repository_name
 
         klass = if max > 1
-          options.key?(:through) ? Associations::ManyToMany::Relationship : Associations::OneToMany::Relationship
-        else
-          Associations::OneToOne::Relationship
-        end
+                  options.key?(:through) ? Associations::ManyToMany::Relationship : Associations::OneToMany::Relationship
+                else
+                  Associations::OneToOne::Relationship
+                end
 
         relationship = klass.new(name, model, self, options)
 
@@ -161,7 +159,8 @@ module DataMapper
         options    = extract_options(args)
 
         if options.key?(:through)
-          raise "#{model_name}#belongs_to with :through is deprecated, use 'has 1, :#{name}, #{options.inspect}' in #{model_name} instead (#{caller.first})"
+          raise "#{model_name}#belongs_to with :through is deprecated, use 'has 1, :#{name}, " \
+                "#{options.inspect}' in #{model_name} instead (#{caller.first})"
         elsif options.key?(:model) && model
           raise ArgumentError, 'should not specify options[:model] if passing the model in the third argument'
         end
@@ -190,8 +189,6 @@ module DataMapper
         relationship
       end
 
-    private
-
       # Extract the model from an Array of arguments
       #
       # @param [Array(Model, String, Hash)]
@@ -201,15 +198,13 @@ module DataMapper
       #   target model for the association
       #
       # @api private
-      def extract_model(args)
+      private def extract_model(args)
         model = args.first
 
-        if model.kind_of?(Model)
+        if model.is_a?(Model)
           model
         elsif model.respond_to?(:to_str)
           model.to_str
-        else
-          nil
         end
       end
 
@@ -222,7 +217,7 @@ module DataMapper
       #   options for the association
       #
       # @api private
-      def extract_options(args)
+      private def extract_options(args)
         options = args.last
         options.respond_to?(:to_hash) ? options.to_hash.dup : {}
       end
@@ -233,13 +228,13 @@ module DataMapper
       # @return [Array]  A pair of integers, min and max
       #
       # @api private
-      def extract_min_max(cardinality)
+      private def extract_min_max(cardinality)
         case cardinality
-          when Integer  then [ cardinality,       cardinality      ]
-          when Range    then [ cardinality.first, cardinality.last ]
-          when Infinity then [ 0,                 Infinity         ]
-          else
-            assert_kind_of 'options', options, Integer, Range, Infinity.class
+        when Integer  then [cardinality,       cardinality]
+        when Range    then [cardinality.first, cardinality.last]
+        when Infinity then [0,                 Infinity]
+        else
+          assert_kind_of 'options', options, Integer, Range, Infinity.class
         end
       end
 
@@ -248,7 +243,7 @@ module DataMapper
       # keys and possible values of :through option.
       #
       # @api private
-      def assert_valid_options(options)
+      private def assert_valid_options(options)
         # TODO: update to match Query#assert_valid_options
         #   - perform options normalization elsewhere
 
@@ -270,9 +265,7 @@ module DataMapper
           end
         end
 
-        if options.key?(:repository)
-          options[:repository] = options[:repository].to_sym
-        end
+        options[:repository] = options[:repository].to_sym if options.key?(:repository)
 
         if options.key?(:class_name)
           raise "+options[:class_name]+ is deprecated, use :model instead (#{caller[1]})"
@@ -280,35 +273,27 @@ module DataMapper
           raise "+options[:remote_name]+ is deprecated, use :via instead (#{caller[1]})"
         end
 
-        if options.key?(:through)
-          assert_kind_of 'options[:through]', options[:through], Symbol, Module
-        end
+        assert_kind_of 'options[:through]', options[:through], Symbol, Module if options.key?(:through)
 
-        [ :via, :inverse ].each do |key|
-          if options.key?(key)
-            assert_kind_of "options[#{key.inspect}]", options[key], Symbol, Associations::Relationship
-          end
+        %i(via inverse).each do |key|
+          assert_kind_of "options[#{key.inspect}]", options[key], Symbol, Associations::Relationship if options.key?(key)
         end
 
         # TODO: deprecate :child_key and :parent_key in favor of :source_key and
         # :target_key (will mean something different for each relationship)
 
-        [ :child_key, :parent_key ].each do |key|
-          if options.key?(key)
-            options[key] = Array(options[key])
-          end
+        %i(child_key parent_key).each do |key|
+          options[key] = Array(options[key]) if options.key?(key)
         end
 
-        if options.key?(:limit)
-          raise ArgumentError, '+options[:limit]+ should not be specified on a relationship'
-        end
+        raise ArgumentError, '+options[:limit]+ should not be specified on a relationship' if options.key?(:limit)
       end
 
       # Defines the anonymous module that is used to add relationships.
       # Using a single module here prevents having a very large number
       # of anonymous modules, where each property has their own module.
       # @api private
-      def relationship_module
+      private def relationship_module
         @relationship_module ||= begin
           mod = Module.new
           class_eval do
@@ -321,7 +306,7 @@ module DataMapper
       # Dynamically defines reader method
       #
       # @api private
-      def create_relationship_reader(relationship)
+      private def create_relationship_reader(relationship)
         name        = relationship.name
         reader_name = name.to_s
 
@@ -346,7 +331,7 @@ module DataMapper
       # Dynamically defines writer method
       #
       # @api private
-      def create_relationship_writer(relationship)
+      private def create_relationship_writer(relationship)
         name        = relationship.name
         writer_name = "#{name}="
 
@@ -365,14 +350,17 @@ module DataMapper
       end
 
       # @api public
-      def method_missing(method, *args, &block)
-        if relationship = relationships(repository_name)[method]
-          return Query::Path.new([ relationship ])
+      private def respond_to_missing?(method, include_private)
+        relationships(repository_name)[method] || super
+      end
+
+      private def method_missing(method, *args, &block)
+        if (relationship = relationships(repository_name)[method])
+          return Query::Path.new([relationship])
         end
 
         super
       end
-
-    end # module Relationship
-  end # module Model
-end # module DataMapper
+    end
+  end
+end

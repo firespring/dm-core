@@ -1,9 +1,7 @@
 module DataMapper
-
   # A {SubjectSet} that keeps track of relationships defined in a {Model}
   #
   class RelationshipSet < SubjectSet
-
     # A list of all relationships in this set
     #
     # @deprecated use DataMapper::RelationshipSet#each or DataMapper::RelationshipSet#to_a instead
@@ -30,13 +28,13 @@ module DataMapper
     # @return [RelationshipSet] self
     #
     # @api semipublic
-    def each_value
+    def each_value(&block)
       warn "#{self.class}#each_value is deprecated. Use #{self.class}#each instead: #{caller.first}"
-      each { |relationship| yield(relationship) }
+      each(&block)
       self
     end
 
-    # Check wether this RelationshipSet includes an entry with the given name
+    # Check whether this RelationshipSet includes an entry with the given name
     #
     # @deprecated use DataMapper::RelationshipSet#named? instead
     #
@@ -52,7 +50,7 @@ module DataMapper
       named?(name)
     end
 
-    # Check wether this RelationshipSet includes an entry with the given name
+    # Check whether this RelationshipSet includes an entry with the given name
     #
     # @deprecated use DataMapper::RelationshipSet#named? instead
     #
@@ -67,6 +65,5 @@ module DataMapper
       warn "#{self.class}#has_key? is deprecated. Use #{self.class}#named? instead: #{caller.first}"
       named?(name)
     end
-
-  end # class RelationshipSet
-end # module DataMapper
+  end
+end

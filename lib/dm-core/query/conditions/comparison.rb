@@ -27,14 +27,12 @@ module DataMapper
     # DataMapper and DataMapper plugins, and are not intended to be used
     # directly in your applications.
     module Conditions
-
       # An abstract class which provides easy access to comparison operators
       #
       # @example Creating a new comparison
       #   Comparison.new(:eql, MyClass.my_property, "value")
       #
       class Comparison
-
         # Creates a new Comparison instance
         #
         # The returned instance will be suitable for matching the given
@@ -56,11 +54,9 @@ module DataMapper
         #
         # @api semipublic
         def self.new(slug, subject, value)
-          if klass = comparison_class(slug)
-            klass.new(subject, value)
-          else
-            raise ArgumentError, "No Comparison class for #{slug.inspect} has been defined"
-          end
+          raise ArgumentError, "No Comparison class for #{slug.inspect} has been defined" unless (klass = comparison_class(slug))
+
+          klass.new(subject, value)
         end
 
         # Returns an array of all slugs registered with Comparison
@@ -69,18 +65,16 @@ module DataMapper
         #
         # @api private
         def self.slugs
-          AbstractComparison.descendants.map { |comparison_class| comparison_class.slug }
+          AbstractComparison.descendants.map(&:slug)
         end
 
         class << self
-          private
-
           # Holds comparison subclasses keyed on their slug
           #
           # @return [Hash]
           #
           # @api private
-          def comparison_classes
+          private def comparison_classes
             @comparison_classes ||= {}
           end
 
@@ -92,11 +86,11 @@ module DataMapper
           # @return [AbstractComparison, nil]
           #
           # @api private
-          def comparison_class(slug)
+          private def comparison_class(slug)
             comparison_classes[slug] ||= AbstractComparison.descendants.detect { |comparison_class| comparison_class.slug == slug }
           end
         end
-      end # class Comparison
+      end
 
       # A base class for the various comparison classes.
       class AbstractComparison
@@ -241,7 +235,7 @@ module DataMapper
         #
         # @api semipublic
         def property?
-          subject.kind_of?(Property)
+          subject.is_a?(Property)
         end
 
         # Returns a human-readable representation of this object
@@ -273,8 +267,6 @@ module DataMapper
           parent ? parent.negated? : false
         end
 
-        private
-
         # @api private
         attr_reader :dumped_value
 
@@ -287,14 +279,14 @@ module DataMapper
         #   The value for the comparison.
         #
         # @api semipublic
-        def initialize(subject, value)
+        private def initialize(subject, value)
           @subject      = subject
           @loaded_value = typecast(value)
           @dumped_value = dump
         end
 
         # @api private
-        def match_property?(record, operator = :===)
+        private def match_property?(record, operator = :===)
           expected.send(operator, record_value(record))
         end
 
@@ -303,7 +295,7 @@ module DataMapper
         # If the subject has no typecast method the value is returned without
         # any changes.
         #
-        # @param [Object] val
+        # @param [Object] value
         #   The object to attempt to typecast.
         #
         # @return [Object]
@@ -312,12 +304,12 @@ module DataMapper
         # @see Property#typecast
         #
         # @api private
-        def typecast(value)
+        private def typecast(value)
           typecast_property(value)
         end
 
         # @api private
-        def typecast_property(value)
+        private def typecast_property(value)
           subject.typecast(value)
         end
 
@@ -332,12 +324,12 @@ module DataMapper
         # @see Property#value
         #
         # @api private
-        def dump
+        private def dump
           dump_property(loaded_value)
         end
 
         # @api private
-        def dump_property(value)
+        private def dump_property(value)
           subject.dump(value)
         end
 
@@ -358,15 +350,15 @@ module DataMapper
         # @return [Object]
         #
         # @api semipublic
-        def record_value(record, key_type = :source_key)
+        private def record_value(record, key_type = :source_key)
           subject = self.subject
           case record
-            when Hash
-              record_value_from_hash(record, subject, key_type)
-            when Resource
-              record_value_from_resource(record, subject, key_type)
-            else
-              record
+          when Hash
+            record_value_from_hash(record, subject, key_type)
+          when Resource
+            record_value_from_resource(record, subject, key_type)
+          else
+            record
           end
         end
 
@@ -380,15 +372,13 @@ module DataMapper
         # @see AbstractComparison#record_value
         #
         # @api private
-        def record_value_from_hash(hash, subject, key_type)
+        private def record_value_from_hash(hash, subject, key_type)
           hash.fetch subject, case subject
-            when Property
-              subject.load(hash[subject.field])
-            when Associations::Relationship
-              subject.send(key_type).map { |property|
-                record_value_from_hash(hash, property, key_type)
-              }
-          end
+                              when Property
+                                subject.load(hash[subject.field])
+                              when Associations::Relationship
+                                subject.send(key_type).map { |property| record_value_from_hash(hash, property, key_type) }
+                              end
         end
 
         # Returns a value from a resource
@@ -401,12 +391,12 @@ module DataMapper
         # @see AbstractComparison#record_value
         #
         # @api private
-        def record_value_from_resource(resource, subject, key_type)
+        private def record_value_from_resource(resource, subject, key_type)
           case subject
-            when Property
-              subject.get!(resource)
-            when Associations::Relationship
-              subject.send(key_type).get!(resource)
+          when Property
+            subject.get!(resource)
+          when Associations::Relationship
+            subject.send(key_type).get!(resource)
           end
         end
 
@@ -415,7 +405,7 @@ module DataMapper
         # @return [Object]
         #
         # @api semipublic
-        def expected(value = @loaded_value)
+        private def expected(value = @loaded_value)
           expected = record_value(value, :target_key)
 
           if @subject.respond_to?(:source_key)
@@ -430,10 +420,10 @@ module DataMapper
         # @return [Boolean] true if the value is valid
         #
         # @api semipublic
-        def valid_for_subject?(loaded_value)
+        private def valid_for_subject?(loaded_value)
           subject.valid?(loaded_value, negated?)
         end
-      end # class AbstractComparison
+      end
 
       # Included into comparisons which are capable of supporting
       # Relationships.
@@ -444,7 +434,7 @@ module DataMapper
         #
         # @api semipublic
         def relationship?
-          subject.kind_of?(Associations::Relationship)
+          subject.is_a?(Associations::Relationship)
         end
 
         # Tests that the record value matches the comparison
@@ -475,10 +465,8 @@ module DataMapper
           Query.target_conditions(value, relationship.source_key, relationship.target_key)
         end
 
-        private
-
         # @api private
-        def match_relationship?(record)
+        private def match_relationship?(record)
           expected.query.conditions.matches?(record_value(record))
         end
 
@@ -486,10 +474,10 @@ module DataMapper
         #
         # @return [Array<Object>]
         #
-        # @see AbtractComparison#typecast
+        # @see AbstractComparison#typecast
         #
         # @api private
-        def typecast(value)
+        private def typecast(value)
           if relationship?
             typecast_relationship(value)
           else
@@ -498,7 +486,7 @@ module DataMapper
         end
 
         # @api private
-        def dump
+        private def dump
           if relationship?
             dump_relationship(loaded_value)
           else
@@ -507,10 +495,10 @@ module DataMapper
         end
 
         # @api private
-        def dump_relationship(value)
+        private def dump_relationship(value)
           value
         end
-      end # module RelationshipHandler
+      end
 
       # Tests whether the value in the record is equal to the expected
       # set for the Comparison.
@@ -535,24 +523,22 @@ module DataMapper
           end
         end
 
-        private
-
         # @api private
-        def typecast_relationship(value)
+        private def typecast_relationship(value)
           case value
-            when Hash     then typecast_hash(value)
-            when Resource then typecast_resource(value)
+          when Hash     then typecast_hash(value)
+          when Resource then typecast_resource(value)
           end
         end
 
         # @api private
-        def typecast_hash(hash)
+        private def typecast_hash(hash)
           subject = self.subject
           subject.target_model.new(subject.query.merge(hash))
         end
 
         # @api private
-        def typecast_resource(resource)
+        private def typecast_resource(resource)
           resource
         end
 
@@ -561,10 +547,10 @@ module DataMapper
         # @see AbstractComparison#to_s
         #
         # @api private
-        def comparator_string
+        private def comparator_string
           '='
         end
-      end # class EqualToComparison
+      end
 
       # Tests whether the value in the record is contained in the
       # expected set for the Comparison, where expected is an
@@ -584,30 +570,28 @@ module DataMapper
         def valid?
           loaded_value = self.loaded_value
           case loaded_value
-            when Collection then valid_collection?(loaded_value)
-            when Range      then valid_range?(loaded_value)
-            when Enumerable then valid_enumerable?(loaded_value)
-            else
-              false
+          when Collection then valid_collection?(loaded_value)
+          when Range      then valid_range?(loaded_value)
+          when Enumerable then valid_enumerable?(loaded_value)
+          else
+            false
           end
         end
 
-        private
-
         # @api private
-        def match_property?(record)
+        private def match_property?(record)
           super(record, :include?)
         end
 
-        # Overloads AbtractComparison#expected
+        # Overloads AbstractComparison#expected
         #
         # @return [Array<Object>]
-        # @see AbtractComparison#expected
+        # @see AbstractComparison#expected
         #
         # @api private
-        def expected
+        private def expected
           loaded_value = self.loaded_value
-          if loaded_value.kind_of?(Range)
+          if loaded_value.is_a?(Range)
             typecast_range(loaded_value)
           elsif loaded_value.respond_to?(:map)
             # FIXME: causes a lazy load when a Collection
@@ -618,25 +602,25 @@ module DataMapper
         end
 
         # @api private
-        def valid_collection?(collection)
+        private def valid_collection?(collection)
           valid_for_subject?(collection)
         end
 
         # @api private
-        def valid_range?(range)
+        private def valid_range?(range)
           (range.any? || negated?) && valid_for_subject?(range.first) && valid_for_subject?(range.last)
         end
 
         # @api private
-        def valid_enumerable?(enumerable)
+        private def valid_enumerable?(enumerable)
           (!enumerable.empty? || negated?) && enumerable.all? { |entry| valid_for_subject?(entry) }
         end
 
         # @api private
-        def typecast_property(value)
-          if value.kind_of?(Range)
+        private def typecast_property(value)
+          if value.is_a?(Range)
             typecast_range(value)
-          elsif value.respond_to?(:map) && !value.kind_of?(String)
+          elsif value.respond_to?(:map) && !value.is_a?(String)
             value.map { |entry| super(entry) }
           else
             super
@@ -644,38 +628,38 @@ module DataMapper
         end
 
         # @api private
-        def typecast_range(range)
+        private def typecast_range(range)
           range.class.new(typecast_property(range.first), typecast_property(range.last), range.exclude_end?)
         end
 
         # @api private
-        def typecast_relationship(value)
+        private def typecast_relationship(value)
           case value
-            when Hash       then typecast_hash(value)
-            when Resource   then typecast_resource(value)
-            when Collection then typecast_collection(value)
-            when Enumerable then typecast_enumerable(value)
+          when Hash       then typecast_hash(value)
+          when Resource   then typecast_resource(value)
+          when Collection then typecast_collection(value)
+          when Enumerable then typecast_enumerable(value)
           end
         end
 
         # @api private
-        def typecast_hash(hash)
+        private def typecast_hash(hash)
           subject = self.subject
           subject.target_model.all(subject.query.merge(hash))
         end
 
         # @api private
-        def typecast_resource(resource)
+        private def typecast_resource(resource)
           resource.collection_for_self
         end
 
         # @api private
-        def typecast_collection(collection)
+        private def typecast_collection(collection)
           collection
         end
 
         # @api private
-        def typecast_enumerable(enumerable)
+        private def typecast_enumerable(enumerable)
           collection = nil
           enumerable.each do |entry|
             typecasted = typecast_relationship(entry)
@@ -695,9 +679,9 @@ module DataMapper
         # @see AbtractComparison#dump
         #
         # @api private
-        def dump
+        private def dump
           loaded_value = self.loaded_value
-          if subject.respond_to?(:dump) && loaded_value.respond_to?(:map) && !loaded_value.kind_of?(Range)
+          if subject.respond_to?(:dump) && loaded_value.respond_to?(:map) && !loaded_value.is_a?(Range)
             dumped_value = loaded_value.map { |value| dump_property(value) }
             dumped_value.uniq!
             dumped_value
@@ -711,10 +695,10 @@ module DataMapper
         # @see AbstractComparison#to_s
         #
         # @api private
-        def comparator_string
+        private def comparator_string
           'IN'
         end
-      end # class InclusionComparison
+      end
 
       # Tests whether the value in the record matches the expected
       # regexp set for the Comparison.
@@ -727,17 +711,15 @@ module DataMapper
         #
         # @api semipublic
         def valid?
-          loaded_value.kind_of?(Regexp)
+          loaded_value.is_a?(Regexp)
         end
-
-        private
 
         # Returns the value untouched
         #
         # @return [Object]
         #
         # @api private
-        def typecast(value)
+        private def typecast(value)
           value
         end
 
@@ -746,10 +728,10 @@ module DataMapper
         # @see AbstractComparison#to_s
         #
         # @api private
-        def comparator_string
+        private def comparator_string
           '=~'
         end
-      end # class RegexpComparison
+      end
 
       # Tests whether the value in the record is like the expected set
       # for the Comparison. Equivalent to a LIKE clause in an SQL database.
@@ -758,8 +740,6 @@ module DataMapper
       class LikeComparison < AbstractComparison
         slug :like
 
-        private
-
         # Overloads the +expected+ method in AbstractComparison
         #
         # Return a regular expression suitable for matching against the
@@ -767,10 +747,10 @@ module DataMapper
         #
         # @return [Regexp]
         #
-        # @see AbtractComparison#expected
+        # @see AbstractComparison#expected
         #
         # @api semipublic
-        def expected
+        private def expected
           Regexp.new('\A' << super.gsub('%', '.*').tr('_', '.') << '\z')
         end
 
@@ -779,10 +759,10 @@ module DataMapper
         # @see AbstractComparison#to_s
         #
         # @api private
-        def comparator_string
+        private def comparator_string
           'LIKE'
         end
-      end # class LikeComparison
+      end
 
       # Tests whether the value in the record is greater than the
       # expected set for the Comparison.
@@ -799,21 +779,20 @@ module DataMapper
         # @api semipublic
         def matches?(record)
           return false if expected.nil?
+
           record_value = record_value(record)
           !record_value.nil? && record_value > expected
         end
-
-        private
 
         # @return [String]
         #
         # @see AbstractComparison#to_s
         #
         # @api private
-        def comparator_string
+        private def comparator_string
           '>'
         end
-      end # class GreaterThanComparison
+      end
 
       # Tests whether the value in the record is less than the expected
       # set for the Comparison.
@@ -830,21 +809,20 @@ module DataMapper
         # @api semipublic
         def matches?(record)
           return false if expected.nil?
+
           record_value = record_value(record)
           !record_value.nil? && record_value < expected
         end
-
-        private
 
         # @return [String]
         #
         # @see AbstractComparison#to_s
         #
         # @api private
-        def comparator_string
+        private def comparator_string
           '<'
         end
-      end # class LessThanComparison
+      end
 
       # Tests whether the value in the record is greater than, or equal to,
       # the expected set for the Comparison.
@@ -861,19 +839,18 @@ module DataMapper
         # @api semipublic
         def matches?(record)
           return false if expected.nil?
+
           record_value = record_value(record)
           !record_value.nil? && record_value >= expected
         end
 
-        private
-
         # @see AbstractComparison#to_s
         #
         # @api private
-        def comparator_string
+        private def comparator_string
           '>='
         end
-      end # class GreaterThanOrEqualToComparison
+      end
 
       # Tests whether the value in the record is less than, or equal to, the
       # expected set for the Comparison.
@@ -890,22 +867,20 @@ module DataMapper
         # @api semipublic
         def matches?(record)
           return false if expected.nil?
+
           record_value = record_value(record)
           !record_value.nil? && record_value <= expected
         end
-
-        private
 
         # @return [String]
         #
         # @see AbstractComparison#to_s
         #
         # @api private
-        def comparator_string
+        private def comparator_string
           '<='
         end
-      end # class LessThanOrEqualToComparison
-
-    end # module Conditions
-  end # class Query
-end # module DataMapper
+      end
+    end
+  end
+end

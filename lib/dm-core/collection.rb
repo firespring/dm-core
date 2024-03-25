@@ -17,7 +17,6 @@ module DataMapper
   # A Collection is typically returned by the Model#all
   # method.
   class Collection < LazyArray
-
     # Returns the Query the Collection is scoped with
     #
     # @return [Query]
@@ -55,7 +54,7 @@ module DataMapper
     #   cars_from_91.reload
     #   cars_from_91.first.year                       #=> 1991
     #
-    # @param [Query, Hash] query (optional)
+    # @param [Query, Hash] other_query (optional)
     #   further restrict results with query
     #
     # @return [self]
@@ -74,10 +73,10 @@ module DataMapper
 
       # sort fields based on declared order, for more consistent reload queries
       properties = self.properties
-      fields     = properties & (query.fields | model_key | [ properties.discriminator ].compact)
+      fields     = properties & (query.fields | model_key | [properties.discriminator].compact)
 
       # replace the list of resources
-      replace(all(query.update(:fields => fields, :reload => true)))
+      replace(all(query.update(fields: fields, reload: true)))
     end
 
     # Return the union with another collection
@@ -128,7 +127,7 @@ module DataMapper
 
     # Lookup a Resource in the Collection by key
     #
-    # This looksup a Resource by key, typecasting the key to the
+    # This looks up a Resource by key, typecasting the key to the
     # proper object if necessary.
     #
     #   toyotas = Cars.all(:manufacturer => 'Toyota')
@@ -151,28 +150,28 @@ module DataMapper
       query = self.query
 
       @identity_map[key] || if !loaded? && (query.limit || query.offset > 0)
-        # current query is exclusive, find resource within the set
+                              # current query is exclusive, find resource within the set
 
-        # TODO: use a subquery to retrieve the Collection and then match
-        #   it up against the key.  This will require some changes to
-        #   how subqueries are generated, since the key may be a
-        #   composite key.  In the case of DO adapters, it means subselects
-        #   like the form "(a, b) IN(SELECT a, b FROM ...)", which will
-        #   require making it so the Query condition key can be a
-        #   Property or an Array of Property objects
+                              # TODO: use a subquery to retrieve the Collection and then match
+                              #   it up against the key.  This will require some changes to
+                              #   how subqueries are generated, since the key may be a
+                              #   composite key.  In the case of DO adapters, it means subselects
+                              #   like the form "(a, b) IN(SELECT a, b FROM ...)", which will
+                              #   require making it so the Query condition key can be a
+                              #   Property or an Array of Property objects
 
-        # use the brute force approach until subquery lookups work
-        lazy_load
-        @identity_map[key]
-      else
-        # current query is all inclusive, lookup using normal approach
-        first(model.key_conditions(repository, key).update(:order => nil))
-      end
+                              # use the brute force approach until subquery lookups work
+                              lazy_load
+                              @identity_map[key]
+                            else
+                              # current query is all inclusive, lookup using normal approach
+                              first(model.key_conditions(repository, key).update(order: nil))
+                            end
     end
 
     # Lookup a Resource in the Collection by key, raising an exception if not found
     #
-    # This looksup a Resource by key, typecasting the key to the
+    # This looks up a Resource by key, typecasting the key to the
     # proper object if necessary.
     #
     # @param [Enumerable] *key
@@ -211,7 +210,7 @@ module DataMapper
     #
     # @api public
     def all(query = Undefined)
-      if query.equal?(Undefined) || (query.kind_of?(Hash) && query.empty?)
+      if query.equal?(Undefined) || (query.is_a?(Hash) && query.empty?)
         dup
       else
         # TODO: if there is no order parameter, and the Collection is not loaded
@@ -241,8 +240,8 @@ module DataMapper
       first_arg = args.first
       last_arg  = args.last
 
-      limit_specified = first_arg.kind_of?(Integer)
-      with_query      = (last_arg.kind_of?(Hash) && !last_arg.empty?) || last_arg.kind_of?(Query)
+      limit_specified = first_arg.is_a?(Integer)
+      with_query      = (last_arg.is_a?(Hash) && !last_arg.empty?) || last_arg.is_a?(Query)
 
       limit = limit_specified ? first_arg : 1
       query = with_query      ? last_arg  : {}
@@ -259,10 +258,10 @@ module DataMapper
       head   = self.head
 
       collection = if !with_query && (loaded || lazy_possible?(head, limit))
-        new_collection(query, super(limit))
-      else
-        all(query)
-      end
+                     new_collection(query, super(limit))
+                   else
+                     all(query)
+                   end
 
       return collection if limit_specified
 
@@ -296,8 +295,8 @@ module DataMapper
       first_arg = args.first
       last_arg  = args.last
 
-      limit_specified = first_arg.kind_of?(Integer)
-      with_query      = (last_arg.kind_of?(Hash) && !last_arg.empty?) || last_arg.kind_of?(Query)
+      limit_specified = first_arg.is_a?(Integer)
+      with_query      = (last_arg.is_a?(Hash) && !last_arg.empty?) || last_arg.is_a?(Query)
 
       limit = limit_specified ? first_arg : 1
       query = with_query      ? last_arg  : {}
@@ -305,7 +304,7 @@ module DataMapper
       query = self.query.slice(0, limit).update(query).reverse!
 
       # tell the Query to prepend each result from the adapter
-      query.update(:add_reversed => !query.add_reversed?)
+      query.update(add_reversed: !query.add_reversed?)
 
       # TODO: when a query provided, and there are enough elements in tail to
       # satisfy the query.limit, filter the tail with the query, and make
@@ -316,10 +315,10 @@ module DataMapper
       tail   = self.tail
 
       collection = if !with_query && (loaded || lazy_possible?(tail, limit))
-        new_collection(query, super(limit))
-      else
-        all(query)
-      end
+                     new_collection(query, super(limit))
+                   else
+                     all(query)
+                   end
 
       return collection if limit_specified
 
@@ -349,11 +348,11 @@ module DataMapper
       elsif offset == 0
         first
       elsif offset > 0
-        first(:offset => offset)
+        first(offset: offset)
       elsif offset == -1
         last
       else
-        last(:offset => offset.abs - 1)
+        last(offset: offset.abs - 1)
       end
     end
 
@@ -371,7 +370,7 @@ module DataMapper
     # arguments provided.
     #
     # If you provide a range, the min is used as the offset
-    # and the max minues the offset is used as the limit.
+    # and the max minus the offset is used as the limit.
     #
     # @param [Integer, Array(Integer), Range] *args
     #   the offset, offset and limit, or range indicating first and last position
@@ -389,9 +388,7 @@ module DataMapper
     def [](*args)
       offset, limit = extract_slice_arguments(*args)
 
-      if args.size == 1 && args.first.kind_of?(Integer)
-        return at(offset)
-      end
+      return at(offset) if args.size == 1 && args.first.is_a?(Integer)
 
       query = sliced_query(offset, limit)
 
@@ -424,9 +421,7 @@ module DataMapper
       # Workaround for Ruby <= 1.8.6
       compact! if RUBY_VERSION <= '1.8.6'
 
-      unless removed.kind_of?(Enumerable)
-        return removed
-      end
+      return removed unless removed.is_a?(Enumerable)
 
       offset, limit = extract_slice_arguments(*args)
 
@@ -487,7 +482,8 @@ module DataMapper
         @array.reverse!
       else
         # reverse and swap the head and tail
-        @head, @tail = tail.reverse!, head.reverse!
+        @head = tail.reverse!
+        @tail = head.reverse!
       end
 
       self
@@ -502,13 +498,13 @@ module DataMapper
     # @api public
     def each
       return to_enum unless block_given?
+
       super do |resource|
-        begin
-          original, resource.collection = resource.collection, self
-          yield resource
-        ensure
-          resource.collection = original
-        end
+        original = resource.collection
+        resource.collection = self
+        yield resource
+      ensure
+        resource.collection = original
       end
     end
 
@@ -600,9 +596,9 @@ module DataMapper
     #
     # @api public
     def pop(*)
-      if removed = super
-        resources_removed(removed)
-      end
+      return unless (removed = super)
+
+      resources_removed(removed)
     end
 
     # Removes and returns the first Resource in the Collection
@@ -612,9 +608,9 @@ module DataMapper
     #
     # @api public
     def shift(*)
-      if removed = super
-        resources_removed(removed)
-      end
+      return unless (removed = super)
+
+      resources_removed(removed)
     end
 
     # Remove Resource from the Collection
@@ -633,9 +629,9 @@ module DataMapper
     #
     # @api public
     def delete(resource)
-      if resource = super
-        resource_removed(resource)
-      end
+      return unless (resource = super)
+
+      resource_removed(resource)
     end
 
     # Remove Resource from the Collection by offset
@@ -654,9 +650,9 @@ module DataMapper
     #
     # @api public
     def delete_at(offset)
-      if resource = super
-        resource_removed(resource)
-      end
+      return unless (resource = super)
+
+      resource_removed(resource)
     end
 
     # Deletes every Resource for which block evaluates to true.
@@ -725,9 +721,7 @@ module DataMapper
     #
     # @api public
     def clear
-      if loaded?
-        resources_removed(self)
-      end
+      resources_removed(self) if loaded?
       super
     end
 
@@ -843,15 +837,11 @@ module DataMapper
 
       dirty_attributes = model.new(attributes).dirty_attributes
 
-      if dirty_attributes.empty?
-        true
-      else
+      unless dirty_attributes.empty?
         dirty_attributes.each do |property, value|
           property.assert_valid_value(value)
         end
-        unless _update(dirty_attributes)
-          return false
-        end
+        return false unless _update(dirty_attributes)
 
         if loaded?
           each do |resource|
@@ -859,9 +849,8 @@ module DataMapper
             repository.identity_map(model)[resource.key] = resource
           end
         end
-
-        true
       end
+      true
     end
 
     # Save every Resource in the Collection
@@ -894,7 +883,7 @@ module DataMapper
     #
     # @api public
     def destroy
-      if destroyed = all? { |resource| resource.destroy }
+      if (destroyed = all?(&:destroy))
         clear
       end
 
@@ -916,9 +905,7 @@ module DataMapper
       deleted    = repository.delete(self)
 
       if loaded?
-        unless deleted == size
-          return false
-        end
+        return false unless deleted == size
 
         each do |resource|
           resource.persistence_state = Resource::PersistenceState::Immutable.new(resource)
@@ -964,7 +951,7 @@ module DataMapper
     #
     # @api public
     def dirty?
-      loaded_entries.any? { |resource| resource.dirty? } || @removed.any?
+      loaded_entries.any?(&:dirty?) || @removed.any?
     end
 
     # Gets a Human-readable representation of this collection,
@@ -975,15 +962,13 @@ module DataMapper
     #
     # @api public
     def inspect
-      "[#{map { |resource| resource.inspect }.join(', ')}]"
+      "[#{map(&:inspect).join(', ')}]"
     end
 
     # @api semipublic
     def hash
-      self.class.hash ^ query.hash
+      [self.class, query].hash
     end
-
-    protected
 
     # Returns the model key
     #
@@ -991,7 +976,7 @@ module DataMapper
     #   the model key
     #
     # @api private
-    def model_key
+    protected def model_key
       model.key(repository_name)
     end
 
@@ -1001,8 +986,8 @@ module DataMapper
     #   Resources in the collection
     #
     # @api private
-    def loaded_entries
-      (loaded? ? self : head + tail).reject { |resource| resource.destroyed? }
+    protected def loaded_entries
+      (loaded? ? self : head + tail).reject(&:destroyed?)
     end
 
     # Returns the PropertySet representing the fields in the Collection scope
@@ -1011,7 +996,7 @@ module DataMapper
     #   The set of properties this Collection's query will retrieve
     #
     # @api private
-    def properties
+    protected def properties
       model.properties(repository_name)
     end
 
@@ -1022,11 +1007,9 @@ module DataMapper
     #   Associations::Relationship object
     #
     # @api private
-    def relationships
+    protected def relationships
       model.relationships(repository_name)
     end
-
-    private
 
     # Initializes a new Collection identified by the query
     #
@@ -1038,7 +1021,7 @@ module DataMapper
     # @return [self]
     #
     # @api private
-    def initialize(query, resources = nil)
+    private def initialize(query, resources = nil)
       raise "#{self.class}#new with a block is deprecated" if block_given?
 
       @query        = query
@@ -1061,7 +1044,7 @@ module DataMapper
     # @return [undefined]
     #
     # @api private
-    def initialize_copy(original)
+    private def initialize_copy(original)
       super
       @query        = @query.dup
       @identity_map = @identity_map.dup
@@ -1077,8 +1060,8 @@ module DataMapper
     #   an initialized resource
     #
     # @api private
-    def initialize_resource(resource)
-      resource.kind_of?(Hash) ? new(resource) : resource
+    private def initialize_resource(resource)
+      resource.is_a?(Hash) ? new(resource) : resource
     end
 
     # Test if the collection is loaded between the offset and limit
@@ -1092,7 +1075,7 @@ module DataMapper
     #   true if the collection is loaded from the offset to the limit
     #
     # @api private
-    def partially_loaded?(offset, limit = 1)
+    private def partially_loaded?(offset, limit = 1)
       if offset >= 0
         lazy_possible?(head, offset + limit)
       else
@@ -1105,10 +1088,8 @@ module DataMapper
     # @return [self]
     #
     # @api private
-    def lazy_load
-      if loaded?
-        return self
-      end
+    private def lazy_load
+      return self if loaded?
 
       mark_loaded
 
@@ -1130,7 +1111,7 @@ module DataMapper
       @array.concat(tail)
 
       @head = @tail = nil
-      @reapers.each { |resource| @array.delete_if(&resource) } if @reapers
+      @reapers&.each { |resource| @array.delete_if(&resource) }
       @array.freeze if frozen?
 
       self
@@ -1142,7 +1123,7 @@ module DataMapper
     #   the repository name
     #
     # @api private
-    def repository_name
+    private def repository_name
       repository.name
     end
 
@@ -1152,10 +1133,8 @@ module DataMapper
     #   A new Collection object
     #
     # @api private
-    def new_collection(query, resources = nil, &block)
-      if loaded?
-        resources ||= filter(query)
-      end
+    private def new_collection(query, resources = nil, &block)
+      resources ||= filter(query) if loaded?
 
       # TOOD: figure out a way to pass not-yet-saved Resources to this newly
       # created Collection.  If the new resource matches the conditions, then
@@ -1175,7 +1154,7 @@ module DataMapper
     #   the collection that was created for the set operation
     #
     # @api private
-    def set_operation(operation, other)
+    private def set_operation(operation, other)
       resources   = set_operation_resources(operation, other)
       other_query = Query.target_query(repository, model, other)
       new_collection(query.send(operation, other_query), resources)
@@ -1194,7 +1173,7 @@ module DataMapper
     #   the resources to prepopulate the set operation results with
     #
     # @api private
-    def set_operation_resources(operation, other)
+    private def set_operation_resources(operation, other)
       entries.send(operation, other.entries) if loaded?
     end
 
@@ -1209,9 +1188,9 @@ module DataMapper
     #   a saved Resource
     #
     # @api private
-    def _create(attributes, execute_hooks = true)
+    private def _create(attributes, execute_hooks = true)
       resource = repository.scope { model.send(execute_hooks ? :create : :create!, default_attributes.merge(attributes)) }
-      self << resource if resource.saved?
+      self << resource if resource&.saved?
       resource
     end
 
@@ -1221,7 +1200,7 @@ module DataMapper
     #   Returns true if collection was updated
     #
     # @api private
-    def _update(dirty_attributes)
+    private def _update(dirty_attributes)
       repository.update(dirty_attributes, self)
       true
     end
@@ -1235,7 +1214,7 @@ module DataMapper
     #   Returns true if collection was updated
     #
     # @api private
-    def _save(execute_hooks = true)
+    private def _save(execute_hooks = true)
       loaded_entries = self.loaded_entries
       loaded_entries.each { |resource| set_default_attributes(resource) }
       @removed.clear
@@ -1247,7 +1226,7 @@ module DataMapper
     # @return [Hash] The default attributes for new instances in this Collection
     #
     # @api private
-    def default_attributes
+    private def default_attributes
       return @default_attributes if @default_attributes
 
       default_attributes = {}
@@ -1258,9 +1237,7 @@ module DataMapper
         model_properties = properties.dup
         model_key        = self.model_key
 
-        if model_properties.to_set.superset?(model_key.to_set)
-          model_properties -= model_key
-        end
+        model_properties -= model_key if model_properties.to_set.superset?(model_key.to_set)
 
         conditions.each do |condition|
           next unless condition.slug == :eql
@@ -1283,10 +1260,8 @@ module DataMapper
     # @return [undefined]
     #
     # @api private
-    def set_default_attributes(resource)
-      unless resource.readonly?
-        resource.attributes = default_attributes
-      end
+    private def set_default_attributes(resource)
+      resource.attributes = default_attributes unless resource.readonly?
     end
 
     # Track the added resource
@@ -1298,10 +1273,10 @@ module DataMapper
     #   the resource that was added
     #
     # @api private
-    def resource_added(resource)
+    private def resource_added(resource)
       resource = initialize_resource(resource)
 
-      if resource.saved?
+      if resource&.saved?
         @identity_map[resource.key] = resource
         @removed.delete(resource)
       else
@@ -1320,8 +1295,8 @@ module DataMapper
     #   the resources that were added
     #
     # @api private
-    def resources_added(resources)
-      if resources.kind_of?(Enumerable)
+    private def resources_added(resources)
+      if resources.is_a?(Enumerable)
         resources.map { |resource| resource_added(resource) }
       else
         resource_added(resources)
@@ -1337,7 +1312,7 @@ module DataMapper
     #   the resource that was removed
     #
     # @api private
-    def resource_removed(resource)
+    private def resource_removed(resource)
       if resource.saved?
         @identity_map.delete(resource.key)
         @removed << resource
@@ -1355,8 +1330,8 @@ module DataMapper
     #   the resources that were removed
     #
     # @api private
-    def resources_removed(resources)
-      if resources.kind_of?(Enumerable)
+    private def resources_removed(resources)
+      if resources.is_a?(Enumerable)
         resources.each { |resource| resource_removed(resource) }
       else
         resource_removed(resources)
@@ -1365,7 +1340,7 @@ module DataMapper
 
     # Filter resources in the collection based on a Query
     #
-    # @param [Query] query
+    # @param [Query] other_query
     #   the query to match each resource in the collection
     #
     # @return [Array]
@@ -1374,21 +1349,18 @@ module DataMapper
     #   nil if no resources match the Query
     #
     # @api private
-    def filter(other_query)
+    private def filter(other_query)
       query  = self.query
       fields = query.fields.to_set
       unique = other_query.unique?
 
       # TODO: push this into a Query#subset? method
-      if other_query.links.empty?                 &&
-        (unique || (!unique && !query.unique?))   &&
-        !other_query.reload?                      &&
-        !other_query.raw?                         &&
-        other_query.fields.to_set.subset?(fields) &&
-        other_query.condition_properties.subset?(fields)
-      then
-        other_query.filter_records(to_a.dup)
-      end
+      other_query.filter_records(to_a.dup) if other_query.links.empty? &&
+                                              (unique || (!unique && !query.unique?)) &&
+                                              !other_query.reload? &&
+                                              !other_query.raw? &&
+                                              other_query.fields.to_set.subset?(fields) &&
+                                              other_query.condition_properties.subset?(fields)
     end
 
     # Return the absolute or relative scoped query
@@ -1400,8 +1372,8 @@ module DataMapper
     #   the absolute or relative scoped query
     #
     # @api private
-    def scoped_query(query)
-      if query.kind_of?(Query)
+    private def scoped_query(query)
+      if query.is_a?(Query)
         query.dup
       else
         self.query.relative(query)
@@ -1409,7 +1381,7 @@ module DataMapper
     end
 
     # @api private
-    def sliced_query(offset, limit)
+    private def sliced_query(offset, limit)
       query = self.query
 
       if offset >= 0
@@ -1418,7 +1390,7 @@ module DataMapper
         query = query.slice((limit + offset).abs, limit).reverse!
 
         # tell the Query to prepend each result from the adapter
-        query.update(:add_reversed => !query.add_reversed?)
+        query.update(add_reversed: !query.add_reversed?)
       end
     end
 
@@ -1439,12 +1411,12 @@ module DataMapper
     #   the return values of the delegated methods
     #
     # @api public
-    def method_missing(method, *args, &block)
+    private def method_missing(method, *args, &block)
       relationships = self.relationships
 
       if model.respond_to?(method)
         delegate_to_model(method, *args, &block)
-      elsif relationship = relationships[method] || relationships[DataMapper::Inflector.singularize(method.to_s).to_sym]
+      elsif (relationship = relationships[method]) || relationships[DataMapper::Inflector.singularize(method.to_s).to_sym]
         delegate_to_relationship(relationship, *args)
       else
         super
@@ -1462,7 +1434,7 @@ module DataMapper
     #   the return value of the model method
     #
     # @api private
-    def delegate_to_model(method, *args, &block)
+    private def delegate_to_model(method, *args, &block)
       model = self.model
       model.send(:with_scope, query) do
         model.send(method, *args, &block)
@@ -1475,7 +1447,7 @@ module DataMapper
     #   the associated Resources
     #
     # @api private
-    def delegate_to_relationship(relationship, query = nil)
+    private def delegate_to_relationship(relationship, query = nil)
       relationship.eager_load(self, query)
     end
 
@@ -1487,10 +1459,8 @@ module DataMapper
     # @return [undefined]
     #
     # @api private
-    def assert_update_clean_only(method)
-      if dirty?
-        raise UpdateConflictError, "#{self.class}##{method} cannot be called on a dirty collection"
-      end
+    private def assert_update_clean_only(method)
+      raise UpdateConflictError, "#{self.class}##{method} cannot be called on a dirty collection" if dirty?
     end
 
     # Raises an exception if #get receives the wrong number of arguments
@@ -1504,13 +1474,13 @@ module DataMapper
     #   raise if the resource is dirty
     #
     # @api private
-    def assert_valid_key_size(key)
+    private def assert_valid_key_size(key)
       expected_key_size = model_key.size
       actual_key_size   = key.size
 
-      if actual_key_size != expected_key_size
-        raise ArgumentError, "The number of arguments for the key is invalid, expected #{expected_key_size} but was #{actual_key_size}"
-      end
+      return unless actual_key_size != expected_key_size
+
+      raise ArgumentError, "The number of arguments for the key is invalid, expected #{expected_key_size} but was #{actual_key_size}"
     end
-  end # class Collection
-end # module DataMapper
+  end
+end

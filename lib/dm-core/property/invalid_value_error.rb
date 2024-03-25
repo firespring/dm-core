@@ -6,17 +6,12 @@ module DataMapper
       attr_reader :property, :value
 
       def initialize(property, value)
-        msg = "Invalid value %s for property %s (%s) on model %s" %
-          [ value.inspect,
-            property.name.inspect,
-            property.class.name,
-            property.model.name
-          ]
+        msg = format('Invalid value %s for property %s (%s) on model %s', value.inspect, property.name.inspect, property.class.name,
+                     property.model.name)
         super(msg)
         @property = property
         @value = value
       end
-
-    end # class InvalidValueError
-  end # class Property
-end # module DataMapper
+    end
+  end
+end

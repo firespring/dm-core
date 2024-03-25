@@ -2,8 +2,8 @@ module DataMapper
   module Model
     include Enumerable
 
-    WRITER_METHOD_REGEXP   = /=\z/.freeze
-    INVALID_WRITER_METHODS = %w[ == != === []= taguri= attributes= collection= persistence_state= raise_on_save_failure= ].to_set.freeze
+    WRITER_METHOD_REGEXP   = /=\z/
+    INVALID_WRITER_METHODS = %w[== != === []= taguri= attributes= collection= persistence_state= raise_on_save_failure=].to_set.freeze
 
     # Creates a new Model class with its constant already set
     #
@@ -16,7 +16,7 @@ module DataMapper
     # @param [Proc] block
     #   a block that will be eval'd in the context of the new Model class
     #
-    # @return [Model]
+    # @return [Class]
     #   the newly created Model class
     #
     # @api private
@@ -58,7 +58,7 @@ module DataMapper
     #
     #   Foo.descendants.first   #=> Bar
     #
-    # @return [Set]
+    # @return [DescendantSet]
     #   Set containing the descendant classes
     #
     # @api semipublic
@@ -167,8 +167,8 @@ module DataMapper
 
     # The current registered extra inclusions
     #
-    # @return [Set]
-    #
+    # @return [Mixed]
+    #   DescendantSet or Array
     # @api private
     def self.extra_inclusions
       @extra_inclusions ||= []
@@ -198,8 +198,8 @@ module DataMapper
 
     # The current registered extra extensions
     #
-    # @return [Set]
-    #
+    # @return [Mixed]
+    #   DescendantSet or Array
     # @api private
     def self.extra_extensions
       @extra_extensions ||= []
@@ -243,7 +243,7 @@ module DataMapper
     #
     # @api public
     def storage_name(repository_name = default_repository_name)
-      storage_names[repository_name] ||= repository(repository_name).adapter.resource_naming_convention.call(default_storage_name).freeze
+      storage_names[repository_name] ||= repository(repository_name)&.adapter&.resource_naming_convention&.call(default_storage_name).freeze
     end
 
     # the names of the storage receptacles for this resource across all repositories
@@ -276,9 +276,10 @@ module DataMapper
       assert_valid_key_size(key)
 
       repository = self.repository
-      key        = self.key(repository.name).typecast(key)
+      key = self.key(repository&.name).typecast(key)
 
-      repository.identity_map(self)[key] || first(key_conditions(repository, key).update(:order => nil))
+      id_map = repository&.identity_map(self)
+      id_map[key] || first(key_conditions(repository, key).update(order: nil))
     end
 
     # Grab a single record just like #get, but raise an ObjectNotFoundError
@@ -293,7 +294,7 @@ module DataMapper
     #
     # @api public
     def get!(*key)
-      get(*key) || raise(ObjectNotFoundError, "Could not find #{self.name} with key #{key.inspect}")
+      get(*key) || raise(ObjectNotFoundError, "Could not find #{name} with key #{key.inspect}")
     end
 
     def [](*args)
@@ -320,6 +321,7 @@ module DataMapper
 
     def each(&block)
       return to_enum unless block_given?
+
       all.each(&block)
       self
     end
@@ -332,15 +334,16 @@ module DataMapper
     #   Zoo.all(:opened_on => start..end)         # all zoos that opened on a date in the date-range
     #   Zoo.all(:order => [ :tiger_count.desc ])  # Ordered by tiger_count
     #
-    # @param [Hash] query
-    #   A hash describing the conditions and order for the query
+    # @param [Mixed] query
+    #   [Hash] A hash describing the conditions and order for the query
+    #   [DataMapper::Query] A query
     # @return [Collection]
     #   A set of records found matching the conditions in +query+
     # @see Collection
     #
     # @api public
     def all(query = Undefined)
-      if query.equal?(Undefined) || (query.kind_of?(Hash) && query.empty?)
+      if query.equal?(Undefined) || (query.is_a?(Hash) && query.empty?)
         # TODO: after adding Enumerable methods to Model, try to return self here
         new_collection(self.query.dup)
       else
@@ -355,9 +358,9 @@ module DataMapper
     # Collection containing the first N Resources.  When the last
     # (optional) argument is a Hash scope the results to the query.
     #
-    # @param [Integer] limit (optional)
-    #   limit the returned Collection to a specific number of entries
-    # @param [Hash] query (optional)
+    # @param [Mixed] args(optional)
+    #   [Integer] limit the returned Collection to a specific number of entries
+    #   [Hash] query (optional)
     #   scope the returned Resource or Collection to the supplied query
     #
     # @return [Resource, Collection]
@@ -369,8 +372,8 @@ module DataMapper
       first_arg = args.first
       last_arg  = args.last
 
-      limit_specified = first_arg.kind_of?(Integer)
-      with_query      = (last_arg.kind_of?(Hash) && !last_arg.empty?) || last_arg.kind_of?(Query)
+      limit_specified = first_arg.is_a?(Integer)
+      with_query      = (last_arg.is_a?(Hash) && !last_arg.empty?) || last_arg.is_a?(Query)
 
       limit = limit_specified ? first_arg : 1
       query = with_query      ? last_arg  : {}
@@ -391,9 +394,9 @@ module DataMapper
     # Collection containing the last N Resources.  When the last
     # (optional) argument is a Hash scope the results to the query.
     #
-    # @param [Integer] limit (optional)
-    #   limit the returned Collection to a specific number of entries
-    # @param [Hash] query (optional)
+    # @param [Mixed] args (optional)
+    #   [Integer] limit the returned Collection to a specific number of entries
+    #   [Hash] query (optional)
     #   scope the returned Resource or Collection to the supplied query
     #
     # @return [Resource, Collection]
@@ -405,8 +408,8 @@ module DataMapper
       first_arg = args.first
       last_arg  = args.last
 
-      limit_specified = first_arg.kind_of?(Integer)
-      with_query      = (last_arg.kind_of?(Hash) && !last_arg.empty?) || last_arg.kind_of?(Query)
+      limit_specified = first_arg.is_a?(Integer)
+      with_query      = (last_arg.is_a?(Hash) && !last_arg.empty?) || last_arg.is_a?(Query)
 
       limit = limit_specified ? first_arg : 1
       query = with_query      ? last_arg  : {}
@@ -536,7 +539,7 @@ module DataMapper
     #   The conditions with which to find the records to copy. These
     #   conditions are merged with Model.query
     #
-    # @return [Collection]
+    # @return [DataMapper::Repository]
     #   A Collection of the Resource instances created in the operation
     #
     # @api public
@@ -550,7 +553,7 @@ module DataMapper
       repository(target_repository_name) do |repository|
         resources = []
 
-        all(query.merge(:repository => source_repository_name)).each do |resource|
+        all(query.merge(repository: source_repository_name)).each do |resource|
           new_resource = new
           query[:fields].each { |property| new_resource.__send__("#{property.name}=", property.get(resource)) }
           resources << new_resource if new_resource.save
@@ -577,7 +580,7 @@ module DataMapper
       discriminator   = properties(repository_name).discriminator
       no_reload       = !query.reload?
 
-      field_map = Hash[ fields.map { |property| [ property, property.field ] } ]
+      field_map = fields.to_h { |property| [property, property.field] }
 
       records.map do |record|
         identity_map = nil
@@ -585,61 +588,60 @@ module DataMapper
         resource     = nil
 
         case record
-          when Hash
-            # remap fields to use the Property object
-            record = record.dup
-            field_map.each { |property, field| record[property] = record.delete(field) if record.key?(field) }
+        when Hash
+          # remap fields to use the Property object
+          record = record.dup
+          field_map.each { |property, field| record[property] = record.delete(field) if record.key?(field) }
 
-            model     = discriminator && discriminator.load(record[discriminator]) || self
-            model_key = model.key(repository_name)
+          model     = discriminator&.load(record[discriminator]) || self
+          model_key = model.key(repository_name)
 
-            resource = if model_key.valid?(key_values = record.values_at(*model_key))
-              identity_map = repository.identity_map(model)
-              identity_map[key_values]
-            end
+          resource = if model_key.valid?((key_values = record.values_at(*model_key)))
+                       identity_map = repository.identity_map(model)
+                       identity_map[key_values]
+                     end
 
-            resource ||= model.allocate
+          resource ||= model.allocate
 
-            fields.each do |property|
-              next if no_reload && property.loaded?(resource)
+          fields.each do |property|
+            next if no_reload && property.loaded?(resource)
 
-              value = record[property]
+            value = record[property]
 
-              # TODO: typecasting should happen inside the Adapter
-              # and all values should come back as expected objects
-              value = property.load(value)
+            # TODO: typecasting should happen inside the Adapter
+            # and all values should come back as expected objects
+            value = property.load(value)
 
-              property.set!(resource, value)
-            end
+            property.set!(resource, value)
+          end
+        when Resource
+          model     = record.model
+          model_key = model.key(repository_name)
 
-          when Resource
-            model     = record.model
-            model_key = model.key(repository_name)
+          resource = if model_key.valid?((key_values = record.key))
+                       identity_map = repository.identity_map(model)
+                       identity_map[key_values]
+                     end
 
-            resource = if model_key.valid?(key_values = record.key)
-              identity_map = repository.identity_map(model)
-              identity_map[key_values]
-            end
+          resource ||= model.allocate
 
-            resource ||= model.allocate
+          fields.each do |property|
+            next if no_reload && property.loaded?(resource)
 
-            fields.each do |property|
-              next if no_reload && property.loaded?(resource)
-
-              property.set!(resource, property.get!(record))
-            end
+            property.set!(resource, property.get!(record))
+          end
         end
 
         resource.instance_variable_set(:@_repository, repository)
 
         if identity_map
-          resource.persistence_state = Resource::PersistenceState::Clean.new(resource) unless resource.persistence_state?
+          resource&.persistence_state = Resource::PersistenceState::Clean.new(resource) unless resource&.persistence_state?
 
           # defer setting the IdentityMap so second level caches can
           # record the state of the resource after loaded
           identity_map[key_values] = resource
         else
-          resource.persistence_state = Resource::PersistenceState::Immutable.new(resource)
+          resource&.persistence_state = Resource::PersistenceState::Immutable.new(resource)
         end
 
         resource
@@ -674,7 +676,7 @@ module DataMapper
     # @param [Block] block
     #   block to execute with the fetched repository as parameter
     #
-    # @return [Object, Respository]
+    # @return [Object, Repository]
     #   whatever the block returns, if given a block,
     #   otherwise the requested repository.
     #
@@ -700,7 +702,7 @@ module DataMapper
     # @api private
     def repository_name
       context = Repository.context
-      context.any? ? context.last.name : default_repository_name
+      context.any? ? context.last&.name : default_repository_name
     end
 
     # Gets the current Set of repositories for which
@@ -712,7 +714,7 @@ module DataMapper
     #
     # @api private
     def repositories
-      [ repository ].to_set + @properties.keys.map { |repository_name| DataMapper.repository(repository_name) }
+      [repository].to_set + @properties.keys.map { |repository_name| DataMapper.repository(repository_name) }
     end
 
     # @api private
@@ -726,17 +728,15 @@ module DataMapper
       end
     end
 
-    private
-
     # @api private
-    def _create(attributes, execute_hooks = true)
+    private def _create(attributes, execute_hooks = true)
       resource = new(attributes)
       resource.__send__(execute_hooks ? :save : :save!)
       resource
     end
 
     # @api private
-    def default_storage_name
+    private def default_storage_name
       base_model.name
     end
 
@@ -746,28 +746,28 @@ module DataMapper
     #   A new Collection object
     #
     # @api private
-    def new_collection(query, resources = nil, &block)
+    private def new_collection(query, resources = nil, &block)
       Collection.new(query, resources, &block)
     end
 
     # @api private
     # TODO: move the logic to create relative query into Query
-    def scoped_query(query)
-      if query.kind_of?(Query)
+    private def scoped_query(query)
+      if query.is_a?(Query)
         query.dup
       else
         repository = if query.key?(:repository)
-          query      = query.dup
-          repository = query.delete(:repository)
+                       query = query.dup
+                       repository = query.delete(:repository)
 
-          if repository.kind_of?(Symbol)
-            DataMapper.repository(repository)
-          else
-            repository
-          end
-        else
-          self.repository
-        end
+                       if repository.is_a?(Symbol)
+                         DataMapper.repository(repository)
+                       else
+                         repository
+                       end
+                     else
+                       self.repository
+                     end
 
         query = self.query.merge(query)
 
@@ -784,8 +784,8 @@ module DataMapper
     # @return [undefined]
     #
     # @api private
-    def finalize_relationships
-      relationships(repository_name).each { |relationship| relationship.finalize }
+    private def finalize_relationships
+      relationships(repository_name).each(&:finalize)
     end
 
     # Initialize the list of allowed writer methods
@@ -793,16 +793,17 @@ module DataMapper
     # @return [undefined]
     #
     # @api private
-    def finalize_allowed_writer_methods
-      @allowed_writer_methods  = public_instance_methods.map { |method| method.to_s }.grep(WRITER_METHOD_REGEXP).to_set
+    private def finalize_allowed_writer_methods
+      @allowed_writer_methods  = public_instance_methods.map(&:to_s).grep(WRITER_METHOD_REGEXP).to_set
       @allowed_writer_methods -= INVALID_WRITER_METHODS
       @allowed_writer_methods.freeze
     end
 
     # @api private
     # TODO: Remove this once appropriate warnings can be added.
-    def assert_valid(force = false) # :nodoc:
+    private def assert_valid(force = false) # :nodoc:
       return if @valid && !force
+
       @valid = true
       finalize
     end
@@ -818,13 +819,13 @@ module DataMapper
     #   raise if the resource is dirty
     #
     # @api private
-    def assert_valid_key_size(key)
+    private def assert_valid_key_size(key)
       expected_key_size = self.key(repository_name).size
       actual_key_size   = key.size
 
-      if actual_key_size != expected_key_size
-        raise ArgumentError, "The number of arguments for the key is invalid, expected #{expected_key_size} but was #{actual_key_size}"
-      end
+      return unless actual_key_size != expected_key_size
+
+      raise ArgumentError, "The number of arguments for the key is invalid, expected #{expected_key_size} but was #{actual_key_size}"
     end
 
     # Test if the model name is valid
@@ -832,10 +833,10 @@ module DataMapper
     # @return [undefined]
     #
     # @api private
-    def assert_valid_name
-      if name.to_s.strip.empty?
-        raise IncompleteModelError, "#{inspect} must have a name"
-      end
+    private def assert_valid_name
+      return unless name.to_s.strip.empty?
+
+      raise IncompleteModelError, "#{inspect} must have a name"
     end
 
     # Test if the model has properties
@@ -849,10 +850,11 @@ module DataMapper
     #   raised if the model has no properties
     #
     # @api private
-    def assert_valid_properties
+    private def assert_valid_properties
       repository_name = self.repository_name
       if properties(repository_name).empty? &&
-        !relationships(repository_name).any? { |relationship| relationship.kind_of?(Associations::ManyToOne::Relationship) }
+         relationships(repository_name).none? { |relationship| relationship.is_a?(Associations::ManyToOne::Relationship) }
+
         raise IncompleteModelError, "#{name} must have at least one property or many to one relationship in #{repository_name} to be valid"
       end
     end
@@ -865,11 +867,10 @@ module DataMapper
     #   raised if the model does not have a valid key
     #
     # @api private
-    def assert_valid_key
-      if key(repository_name).empty?
-        raise IncompleteModelError, "#{name} must have a key in #{repository_name} to be valid"
-      end
-    end
+    private def assert_valid_key
+      return unless key(repository_name).empty?
 
-  end # module Model
-end # module DataMapper
+      raise IncompleteModelError, "#{name} must have a key in #{repository_name} to be valid"
+    end
+  end
+end

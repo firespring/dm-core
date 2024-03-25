@@ -1,8 +1,8 @@
 module DataMapper
   module Associations
-    module OneToOne #:nodoc:
+    module OneToOne # :nodoc:
       class Relationship < Associations::Relationship
-        %w[ public protected private ].map do |visibility|
+        %w(public protected private).map do |visibility|
           methods = superclass.send("#{visibility}_instance_methods", false) |
                     DataMapper::Subject.send("#{visibility}_instance_methods", false)
 
@@ -24,7 +24,7 @@ module DataMapper
         # @api semipublic
         def get!(source)
           collection = relationship.get!(source)
-          collection.first if collection
+          collection&.first
         end
 
         # Sets and returns association target
@@ -32,7 +32,7 @@ module DataMapper
         #
         # @api semipublic
         def set(source, target)
-          relationship.set(source, [ target ].compact).first
+          relationship.set(source, [target].compact).first
         end
 
         # Sets the resource directly
@@ -49,7 +49,7 @@ module DataMapper
 
         # @api public
         def kind_of?(klass)
-          super || relationship.kind_of?(klass)
+          super || relationship.is_a?(klass)
         end
 
         # @api public
@@ -62,25 +62,23 @@ module DataMapper
           super || relationship.respond_to?(method, include_private)
         end
 
-        private
-
         attr_reader :relationship
 
         # Initializes the relationship. Always assumes target model class is
         # a camel cased association name.
         #
         # @api semipublic
-        def initialize(name, target_model, source_model, options = {})
+        private def initialize(name, target_model, source_model, options = {})
           klass = options.key?(:through) ? ManyToMany::Relationship : OneToMany::Relationship
           target_model ||= DataMapper::Inflector.camelize(name).freeze
           @relationship = klass.new(name, target_model, source_model, options)
         end
 
         # @api private
-        def method_missing(method, *args, &block)
+        private def method_missing(method, *args, &block)
           relationship.send(method, *args, &block)
         end
-      end # class Relationship
-    end # module HasOne
-  end # module Associations
-end # module DataMapper
+      end
+    end
+  end
+end

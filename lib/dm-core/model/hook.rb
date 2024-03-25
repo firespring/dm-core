@@ -30,32 +30,30 @@ module DataMapper
         # @api private
         def hooks
           @hooks ||= {
-            :save     => { :before => [], :after => [] },
-            :create   => { :before => [], :after => [] },
-            :update   => { :before => [], :after => [] },
-            :destroy  => { :before => [], :after => [] },
+            save: {before: [], after: []},
+            create: {before: [], after: []},
+            update: {before: [], after: []},
+            destroy: {before: [], after: []}
           }
         end
 
-      private
-
-        def setup_hook(type, name, method, proc)
+        private def setup_hook(type, name, method, proc)
           types = hooks[name]
           if types && types[type]
             types[type] << if proc
-              ProcCommand.new(proc)
-            else
-              MethodCommand.new(self, method)
-            end
+                             ProcCommand.new(proc)
+                           else
+                             MethodCommand.new(self, method)
+                           end
           else
             yield
           end
         end
 
         # deep copy hooks from the parent model
-        def copy_hooks(model)
-          hooks = Hash.new do |hooks, name|
-            hooks[name] = Hash.new do |types, type|
+        private def copy_hooks(model)
+          hooks = Hash.new do |hooks_hash, name|
+            hooks_hash[name] = Hash.new do |types, type|
               if self.hooks[name]
                 types[type] = self.hooks[name][type].map do |command|
                   command.copy(model)
@@ -66,7 +64,6 @@ module DataMapper
 
           model.instance_variable_set(:@hooks, hooks)
         end
-
       end
 
       class ProcCommand
@@ -78,14 +75,15 @@ module DataMapper
           resource.instance_eval(&@proc)
         end
 
-        def copy(model)
+        def copy(_model)
           self
         end
       end
 
       class MethodCommand
         def initialize(model, method)
-          @model, @method = model, method.to_sym
+          @model = model
+          @method = method.to_sym
         end
 
         def call(resource)
@@ -95,9 +93,7 @@ module DataMapper
         def copy(model)
           self.class.new(model, @method)
         end
-
       end
-
-    end # module Hook
-  end # module Model
-end # module DataMapper
+    end
+  end
+end

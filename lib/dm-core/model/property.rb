@@ -1,5 +1,5 @@
 # TODO: update Model#respond_to? to return true if method_method missing
-# would handle the message
+#   would handle the message
 
 module DataMapper
   module Model
@@ -44,9 +44,7 @@ module DataMapper
         # use that class rather than the primitive
         klass = DataMapper::Property.determine_class(type)
 
-        unless klass
-          raise ArgumentError, "+type+ was #{type.inspect}, which is not a supported type"
-        end
+        raise ArgumentError, "+type+ was #{type.inspect}, which is not a supported type" unless klass
 
         property = klass.new(self, name, options)
 
@@ -79,9 +77,7 @@ module DataMapper
           context = options.fetch(:lazy, :default)
           context = :default if context == true
 
-          Array(context).each do |context|
-            properties.lazy_context(context) << property
-          end
+          Array(context).each { |c| properties.lazy_context(c) << property }
         end
 
         # add the property to the child classes only if the property was
@@ -118,10 +114,10 @@ module DataMapper
         default_repository_name = self.default_repository_name
 
         @properties[repository_name] ||= if repository_name == default_repository_name
-          PropertySet.new
-        else
-          properties(default_repository_name).dup
-        end
+                                           PropertySet.new
+                                         else
+                                           properties(default_repository_name).dup
+                                         end
       end
 
       # Gets the list of key fields for this Model in +repository_name+
@@ -139,7 +135,7 @@ module DataMapper
 
       # @api public
       def serial(repository_name = default_repository_name)
-        key(repository_name).detect { |property| property.serial? }
+        key(repository_name).detect(&:serial?)
       end
 
       # Gets the field naming conventions for this resource in the given Repository
@@ -171,16 +167,14 @@ module DataMapper
 
       # @api private
       def key_conditions(repository, key)
-        Hash[self.key(repository.name).zip(Array(key))]
+        self.key(repository.name).zip(Array(key)).to_h
       end
-
-    private
 
       # Defines the anonymous module that is used to add properties.
       # Using a single module here prevents having a very large number
       # of anonymous modules, where each property has their own module.
       # @api private
-      def property_module
+      private def property_module
         @property_module ||= begin
           mod = Module.new
           class_eval do
@@ -193,7 +187,7 @@ module DataMapper
       # defines the reader method for the property
       #
       # @api private
-      def create_reader_for(property)
+      private def create_reader_for(property)
         name                   = property.name.to_s
         reader_visibility      = property.reader_visibility
         instance_variable_name = property.instance_variable_name
@@ -208,20 +202,20 @@ module DataMapper
 
         boolean_reader_name = "#{name}?"
 
-        if property.kind_of?(DataMapper::Property::Boolean)
-          property_module.module_eval <<-RUBY, __FILE__, __LINE__ + 1
-            #{reader_visibility}
-            def #{boolean_reader_name}
-              #{name}
-            end
-          RUBY
-        end
+        return unless property.is_a?(DataMapper::Property::Boolean)
+
+        property_module.module_eval <<-RUBY, __FILE__, __LINE__ + 1
+          #{reader_visibility}
+          def #{boolean_reader_name}
+            #{name}
+          end
+        RUBY
       end
 
       # defines the setter for the property
       #
       # @api private
-      def create_writer_for(property)
+      private def create_writer_for(property)
         name              = property.name
         writer_visibility = property.writer_visibility
 
@@ -238,13 +232,13 @@ module DataMapper
       end
 
       # @api public
-      def method_missing(method, *args, &block)
-        if property = properties(repository_name)[method]
+      private def method_missing(method, *args, &block)
+        if (property = properties(repository_name)[method])
           return property
         end
 
         super
       end
-    end # module Property
-  end # module Model
-end # module DataMapper
+    end
+  end
+end

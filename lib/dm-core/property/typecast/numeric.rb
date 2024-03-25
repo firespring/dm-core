@@ -16,7 +16,7 @@ module DataMapper
         def typecast_to_numeric(value, method)
           if value.respond_to?(:to_str)
             if value.to_str =~ /\A(-?(?:0|[1-9]\d*)(?:\.\d+)?|(?:\.\d+))\z/
-              $1.send(method)
+              ::Regexp.last_match(1).send(method)
             else
               value
             end
@@ -26,7 +26,7 @@ module DataMapper
             value
           end
         end
-      end # Numeric
-    end # Typecast
-  end # Property
-end # DataMapper
+      end
+    end
+  end
+end

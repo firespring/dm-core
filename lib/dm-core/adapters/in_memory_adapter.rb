@@ -19,7 +19,7 @@ module DataMapper
       #
       # @api semipublic
       def create(resources)
-        records = records_for(resources.first.model)
+        records = records_for(resources.first&.model)
 
         resources.each do |resource|
           initialize_serial(resource, records.size.succ)
@@ -31,7 +31,7 @@ module DataMapper
       # "SELECT" in SQL.
       #
       # @param [Query] query
-      #   The query to be used to seach for the resources
+      #   The query to be used to search for the resources
       #
       # @return [Array]
       #   An Array of Hashes containing the key-value pairs for
@@ -49,18 +49,18 @@ module DataMapper
       #
       # @param [Hash] attributes
       #   A set of key-value pairs of the attributes to update the resources with.
-      # @param [DataMapper::Collection] resources
+      # @param [DataMapper::Collection] collection
       #   The collection of resources to update.
       #
       # @api semipublic
       def update(attributes, collection)
         attributes = attributes_as_fields(attributes)
-        read(collection.query).each { |record| record.update(attributes) }.size
+        read(collection.query)&.each { |record| record.update(attributes) }&.size
       end
 
       # Destroys all the records matching the given query. "DELETE" in SQL.
       #
-      # @param [DataMapper::Collection] resources
+      # @param [DataMapper::Collection] collection
       #   The collection of resources to delete.
       #
       # @return [Integer]
@@ -71,15 +71,13 @@ module DataMapper
         records = records_for(collection.model)
         records_to_delete = collection.query.filter_records(records.dup)
         records.replace(records - records_to_delete)
-        records_to_delete.size
+        records_to_delete&.size
       end
 
-      # TODO consider proper automigrate functionality
+      # TODO: consider proper automigrate functionality
       def reset
         @records = {}
       end
-
-      private
 
       # Make a new instance of the adapter. The @records ivar is the 'data-store'
       # for this adapter. It is not shared amongst multiple incarnations of this
@@ -89,12 +87,12 @@ module DataMapper
       #
       # @param [String, Symbol] name
       #   The name of the Repository using this adapter.
-      # @param [String, Hash] uri_or_options
+      # @param [String, Hash] options
       #   The connection uri string, or a hash of options to set up
       #   the adapter
       #
       # @api semipublic
-      def initialize(name, options = {})
+      private def initialize(name, options = {})
         super
         @records = {}
       end
@@ -102,12 +100,11 @@ module DataMapper
       # All the records we're storing. This method will look them up by model name
       #
       # @api private
-      def records_for(model)
+      private def records_for(model)
         @records[model.storage_name(name)] ||= []
       end
-
-    end # class InMemoryAdapter
+    end
 
     const_added(:InMemoryAdapter)
-  end # module Adapters
-end # module DataMapper
+  end
+end

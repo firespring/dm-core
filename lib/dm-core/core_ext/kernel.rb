@@ -1,23 +1,21 @@
 module Kernel
-
   # Returns the object's singleton class.
   #
   # @return [Class]
   #
   # @api private
-  def singleton_class
-    class << self
-      self
+  unless respond_to?(:singleton_class)
+    def singleton_class
+      class << self
+        self
+      end
     end
-  end unless respond_to?(:singleton_class)  # exists in 1.9.2
-
-private
+  end
 
   # Delegates to DataMapper.repository()
   #
   # @api public
-  def repository(*args, &block)
+  private def repository(*args, &block)
     DataMapper.repository(*args, &block)
   end
-
-end # module Kernel
+end
