@@ -18,7 +18,6 @@ module DataMapper
       rescue NameError
         value
       end
-
-    end # class Class
-  end # class Property
-end # module DataMapper
+    end
+  end
+end

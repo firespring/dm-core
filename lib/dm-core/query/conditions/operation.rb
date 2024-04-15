@@ -17,11 +17,9 @@ module DataMapper
         #
         # @api semipublic
         def self.new(slug, *operands)
-          if klass = operation_class(slug)
-            klass.new(*operands)
-          else
-            raise ArgumentError, "No Operation class for #{slug.inspect} has been defined"
-          end
+          raise ArgumentError, "No Operation class for #{slug.inspect} has been defined" unless (klass = operation_class(slug))
+
+          klass.new(*operands)
         end
 
         # Return an Array of all the slugs for the operation classes
@@ -31,19 +29,17 @@ module DataMapper
         #
         # @api private
         def self.slugs
-          AbstractOperation.descendants.map { |operation_class| operation_class.slug }
+          AbstractOperation.descendants.map(&:slug)
         end
 
         class << self
-          private
-
           # Returns a Hash mapping the slugs to each class
           #
           # @return [Hash]
           #   Hash mapping the slug to the class
           #
           # @api private
-          def operation_classes
+          private def operation_classes
             @operation_classes ||= {}
           end
 
@@ -59,15 +55,14 @@ module DataMapper
           #   the operation class
           #
           # @api private
-          def operation_class(slug)
+          private def operation_class(slug)
             operation_classes[slug] ||= AbstractOperation.descendants.detect { |operation_class| operation_class.slug == slug }
           end
         end
-      end # class Operation
+      end
 
       class AbstractOperation
-        include DataMapper::Assertions
-        include Enumerable
+        include Enumerable, DataMapper::Assertions
         extend Equalizer
 
         equalize :sorted_operands
@@ -156,8 +151,8 @@ module DataMapper
         #   returns the operation
         #
         # @api semipublic
-        def each
-          @operands.each { |op| yield op }
+        def each(&block)
+          @operands.each(&block)
           self
         end
 
@@ -294,7 +289,7 @@ module DataMapper
         #
         # @api semipublic
         def to_s
-          empty? ? '' : "(#{sort_by { |op| op.to_s }.map { |op| op.to_s }.join(" #{slug.to_s.upcase} ")})"
+          empty? ? '' : "(#{sort_by(&:to_s).map(&:to_s).join(" #{slug.to_s.upcase} ")})"
         end
 
         # Test if the operation is negated
@@ -317,10 +312,8 @@ module DataMapper
         #
         # @api private
         def sorted_operands
-          sort_by { |op| op.hash }
+          sort_by(&:hash)
         end
-
-        private
 
         # Initialize an operation
         #
@@ -331,21 +324,21 @@ module DataMapper
         #   the operation
         #
         # @api semipublic
-        def initialize(*operands)
+        private def initialize(*operands)
           @operands = Set.new
           merge(operands)
         end
 
         # Copy an operation
         #
-        # @param [AbstractOperation] original
+        # @param [AbstractOperation] *
         #   the original operation
         #
         # @return [undefined]
         #
         # @api semipublic
-        def initialize_copy(*)
-          @operands = map { |op| op.dup }.to_set
+        private def initialize_copy(*)
+          @operands = to_set(&:dup)
         end
 
         # Minimize the operands recursively
@@ -353,11 +346,11 @@ module DataMapper
         # @return [undefined]
         #
         # @api private
-        def minimize_operands
+        private def minimize_operands
           # FIXME: why does Set#map! not work here?
-          @operands = map do |op|
+          @operands = to_set do |op|
             relate_operand(op.respond_to?(:minimize) ? op.minimize : op)
-          end.to_set
+          end
         end
 
         # Prune empty operands recursively
@@ -365,7 +358,7 @@ module DataMapper
         # @return [undefined]
         #
         # @api private
-        def prune_operands
+        private def prune_operands
           @operands.delete_if { |op| op.respond_to?(:empty?) ? op.empty? : false }
         end
 
@@ -378,7 +371,7 @@ module DataMapper
         #   true if the operand is valid
         #
         # @api private
-        def valid_operand?(operand)
+        private def valid_operand?(operand)
           if operand.respond_to?(:valid?)
             operand.valid?
           else
@@ -392,7 +385,7 @@ module DataMapper
         #   the operand that was related to self
         #
         # @api private
-        def relate_operand(operand)
+        private def relate_operand(operand)
           operand.parent = self if operand.respond_to?(:parent=)
           operand
         end
@@ -408,10 +401,10 @@ module DataMapper
         #   raised if the operand is not a valid type
         #
         # @api private
-        def assert_valid_operand_type(operand)
+        private def assert_valid_operand_type(operand)
           assert_kind_of 'operand', operand, AbstractOperation, AbstractComparison, Array
         end
-      end # class AbstractOperation
+      end
 
       module FlattenOperation
         # Add an operand to the operation, flattening the same types
@@ -430,13 +423,13 @@ module DataMapper
         #
         # @api semipublic
         def <<(operand)
-          if kind_of?(operand.class)
+          if is_a?(operand.class)
             merge(operand.operands)
           else
             super
           end
         end
-      end # module FlattenOperation
+      end
 
       class AndOperation < AbstractOperation
         include FlattenOperation
@@ -473,13 +466,13 @@ module DataMapper
         def minimize
           minimize_operands
 
-          return Operation.new(:null) if any? && all? { |op| op.nil? }
+          return Operation.new(:null) if any? && all?(&:nil?)
 
           prune_operands
 
           one? ? first : self
         end
-      end # class AndOperation
+      end
 
       class OrOperation < AbstractOperation
         include FlattenOperation
@@ -491,7 +484,7 @@ module DataMapper
         # @param [Resource, Hash] record
         #   the resource to match
         #
-        # @return [true]
+        # @return [boolean]
         #   true if the record matches, false if not
         #
         # @api semipublic
@@ -522,13 +515,13 @@ module DataMapper
         def minimize
           minimize_operands
 
-          return Operation.new(:null) if any? { |op| op.nil? }
+          return Operation.new(:null) if any?(&:nil?)
 
           prune_operands
 
           one? ? first : self
         end
-      end # class OrOperation
+      end
 
       class NotOperation < AbstractOperation
         slug :not
@@ -544,7 +537,7 @@ module DataMapper
         # @api semipublic
         def matches?(record)
           operand = self.operand
-          operand.respond_to?(:matches?) ? !operand.matches?(record) : true
+          operand.respond_to?(:matches?) ? !operand&.matches?(record) : true
         end
 
         # Add an operand to the operation
@@ -588,7 +581,7 @@ module DataMapper
 
           # factor out double negatives if possible
           operand = self.operand
-          one? && instance_of?(operand.class) ? operand.operand : self
+          (one? && instance_of?(operand.class)) ? operand&.operand : self
         end
 
         # Return the string representation of the operation
@@ -598,7 +591,7 @@ module DataMapper
         #
         # @api semipublic
         def to_s
-          empty? ? '' : "NOT(#{operand.to_s})"
+          empty? ? '' : "NOT(#{operand})"
         end
 
         # Test if the operation is negated
@@ -614,8 +607,6 @@ module DataMapper
           parent ? !parent.negated? : true
         end
 
-        private
-
         # Assert there is only one operand
         #
         # @param [AbstractOperation, AbstractComparison, Array] operand
@@ -627,10 +618,10 @@ module DataMapper
         #   raised if the operand is not a valid type
         #
         # @api private
-        def assert_one_operand(operand)
-          unless empty? || self.operand == operand
-            raise ArgumentError, "#{self.class} cannot have more than one operand"
-          end
+        private def assert_one_operand(operand)
+          return if empty? || self.operand == operand
+
+          raise ArgumentError, "#{self.class} cannot have more than one operand"
         end
 
         # Assert the operand is not equal to self
@@ -644,12 +635,12 @@ module DataMapper
         #  raised if object is appended to itself
         #
         # @api private
-        def assert_no_self_reference(operand)
-          if equal?(operand)
-            raise ArgumentError, 'cannot append operand to itself'
-          end
+        private def assert_no_self_reference(operand)
+          return unless equal?(operand)
+
+          raise ArgumentError, 'cannot append operand to itself'
         end
-      end # class NotOperation
+      end
 
       class NullOperation < AbstractOperation
         undef_method :<<
@@ -664,12 +655,12 @@ module DataMapper
         # @param [Resource, Hash] record
         #   the resource to match
         #
-        # @return [true]
+        # @return [boolean]
         #   every record matches
         #
         # @api semipublic
         def matches?(record)
-          record.kind_of?(Hash) || record.kind_of?(Resource)
+          record.is_a?(Hash) || record.is_a?(Resource)
         end
 
         # Test validity of the operation
@@ -704,18 +695,16 @@ module DataMapper
           'nil'
         end
 
-        private
-
         # Initialize a NullOperation
         #
         # @return [NullOperation]
         #   the operation
         #
         # @api semipublic
-        def initialize
+        private def initialize
           @operands = Set.new
         end
       end
-    end # module Conditions
-  end # class Query
-end # module DataMapper
+    end
+  end
+end

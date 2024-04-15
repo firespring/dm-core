@@ -1,7 +1,6 @@
 module DataMapper
   module Adapters
-    extend Chainable
-    extend DataMapper::Assertions
+    extend DataMapper::Assertions, Chainable
 
     # Set up an adapter for a storage engine
     #
@@ -12,32 +11,30 @@ module DataMapper
       options = normalize_options(options)
 
       case options.fetch(:adapter)
-      when 'java'      
+      when 'java'
         # discover the real adapter
         jndi_uri = "#{options[:scheme]}:#{options[:path]}"
-        context = javax.naming.InitialContext.new 
-        ds= context.lookup(jndi_uri)
+        context = javax.naming.InitialContext.new
+        ds = context.lookup(jndi_uri)
         conn = ds.getConnection
         begin
           metadata = conn.getMetaData
           driver_name = metadata.getDriverName
 
           driver = case driver_name
-            when /mysql/i  then 'mysql'
-            when /oracle/i then 'oracle'
-            when /postgres/i then 'postgres'
-            when /sqlite/i then 'sqlite'
-            when /sqlserver|tds|Microsoft SQL/i then 'sqlserver'
-            else
-              nil # not supported
-            end # case
-            options[:adapter] = driver
+                   when /mysql/i  then 'mysql'
+                   when /oracle/i then 'oracle'
+                   when /postgres/i then 'postgres'
+                   when /sqlite/i then 'sqlite'
+                   when /sqlserver|tds|Microsoft SQL/i then 'sqlserver'
+                   end
+          options[:adapter] = driver
         ensure
           conn.close
         end
       else
         driver = options.fetch(:adapter)
-      end # case 
+      end
 
       adapter_class(driver).new(repository_name, options)
     end
@@ -71,8 +68,6 @@ module DataMapper
     end
 
     class << self
-      private
-
       # Normalize the arguments passed to new()
       #
       # Turns options hash or connection URI into the options hash used
@@ -85,13 +80,13 @@ module DataMapper
       #   the options normalized as a Mash
       #
       # @api private
-      def normalize_options(options)
+      private def normalize_options(options)
         case options
-          when Hash             then normalize_options_hash(options)
-          when Addressable::URI then normalize_options_uri(options)
-          when String           then normalize_options_string(options)
-          else
-            assert_kind_of 'options', options, Hash, Addressable::URI, String
+        when Hash             then normalize_options_hash(options)
+        when Addressable::URI then normalize_options_uri(options)
+        when String           then normalize_options_string(options)
+        else
+          assert_kind_of 'options', options, Hash, Addressable::URI, String
         end
       end
 
@@ -104,7 +99,7 @@ module DataMapper
       #   the options normalized as a Mash
       #
       # @api private
-      def normalize_options_hash(hash)
+      private def normalize_options_hash(hash)
         DataMapper::Ext::Hash.to_mash(hash)
       end
 
@@ -117,14 +112,12 @@ module DataMapper
       #   the options normalized as a Mash
       #
       # @api private
-      def normalize_options_uri(uri)
+      private def normalize_options_uri(uri)
         options = normalize_options_hash(uri.to_hash)
 
         # Extract the name/value pairs from the query portion of the
         # connection uri, and set them as options directly.
-        if options.fetch(:query)
-          options.update(uri.query_values)
-        end
+        options.update(uri.query_values) if options.fetch(:query)
 
         options[:adapter] = options.fetch(:scheme)
 
@@ -140,7 +133,7 @@ module DataMapper
       #   the options normalized as a Mash
       #
       # @api private
-      def normalize_options_string(string)
+      private def normalize_options_string(string)
         normalize_options_uri(Addressable::URI.parse(string))
       end
 
@@ -156,7 +149,7 @@ module DataMapper
       #   the AbstractAdapter subclass
       #
       # @api private
-      def adapter_class(name)
+      private def adapter_class(name)
         adapter_name = normalize_adapter_name(name)
         class_name = (DataMapper::Inflector.camelize(adapter_name) << 'Adapter').to_sym
         load_adapter(adapter_name) unless const_defined?(class_name)
@@ -175,7 +168,7 @@ module DataMapper
       #   the name of the adapter
       #
       # @api semipublic
-      def adapter_name(const_name)
+      private def adapter_name(const_name)
         const_name.to_s.chomp('Adapter').downcase
       end
 
@@ -188,17 +181,17 @@ module DataMapper
       #   true if the adapter is loaded
       #
       # @api private
-      def load_adapter(name)
+      private def load_adapter(name)
         require "dm-#{name}-adapter"
-      rescue LoadError => original_error
+      rescue LoadError => e
         begin
           require in_memory_adapter?(name) ? in_memory_adapter_path : legacy_path(name)
         rescue LoadError
-          raise original_error
+          raise e
         end
       end
 
-      # Returns wether or not the given adapter name is considered an in memory adapter
+      # Returns whether or not the given adapter name is considered an in memory adapter
       #
       # @param [String, Symbol] name
       #   the name of the adapter
@@ -207,7 +200,7 @@ module DataMapper
       #   true if the adapter is considered to be an in memory adapter
       #
       # @api private
-      def in_memory_adapter?(name)
+      private def in_memory_adapter?(name)
         name.to_s == 'in_memory'
       end
 
@@ -223,7 +216,7 @@ module DataMapper
       #   the filename that gets required for the adapter identified by name
       #
       # @api private
-      def legacy_path(name)
+      private def legacy_path(name)
         "#{name}_adapter"
       end
 
@@ -236,7 +229,7 @@ module DataMapper
       #   the normalized adapter name
       #
       # @api private
-      def normalize_adapter_name(name)
+      private def normalize_adapter_name(name)
         case (original = name.to_s)
         when 'sqlite3'
           'sqlite'
@@ -246,13 +239,11 @@ module DataMapper
           original
         end
       end
-
     end
 
     extendable do
       # @api private
-      def const_added(const_name)
-      end
+      def const_added(_const_name); end
     end
-  end # module Adapters
-end # module DataMapper
+  end
+end

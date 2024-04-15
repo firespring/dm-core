@@ -68,9 +68,7 @@ module DataMapper
         begin
           adapters = self.class.adapters
 
-          unless adapters.key?(@name)
-            raise RepositoryNotSetupError, "Adapter not set: #{@name}. Did you forget to setup?"
-          end
+          raise RepositoryNotSetupError, "Adapter not set: #{@name}. Did you forget to setup?" unless adapters.key?(@name)
 
           adapters[@name]
         end
@@ -153,12 +151,14 @@ module DataMapper
     # @param [Query] query
     #   composition of the query to perform
     #
-    # @return [Array]
-    #   result set of the query
+    # @return [Mixed]
+    #   [DataMapper::Resource] result set of the query
+    #   [Array]
     #
     # @api semipublic
     def read(query)
       return [] unless query.valid?
+
       query.model.load(adapter.read(query), query)
     end
 
@@ -177,6 +177,7 @@ module DataMapper
     # @api semipublic
     def update(attributes, collection)
       return 0 unless collection.query.valid? && attributes.any?
+
       adapter.update(attributes, collection)
     end
 
@@ -193,6 +194,7 @@ module DataMapper
     # @api semipublic
     def delete(collection)
       return 0 unless collection.query.valid?
+
       adapter.delete(collection)
     end
 
@@ -208,8 +210,6 @@ module DataMapper
       "#<#{self.class.name} @name=#{@name}>"
     end
 
-    private
-
     # Initializes a new Repository
     #
     #   TODO: create example
@@ -218,9 +218,9 @@ module DataMapper
     #   The name of the Repository
     #
     # @api semipublic
-    def initialize(name)
+    private def initialize(name)
       @name          = name.to_sym
       @identity_maps = {}
     end
-  end # class Repository
-end # module DataMapper
+  end
+end

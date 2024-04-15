@@ -10,8 +10,6 @@ module DataMapper
       precision(DEFAULT_PRECISION)
       scale(DEFAULT_SCALE)
 
-      protected
-
       # Typecast a value to a Float
       #
       # @param [#to_str, #to_f] value
@@ -21,9 +19,9 @@ module DataMapper
       #   Float constructed from value
       #
       # @api private
-      def typecast_to_primitive(value)
+      protected def typecast_to_primitive(value)
         typecast_to_numeric(value, :to_f)
       end
-    end # class Float
-  end # class Property
-end # module DataMapper
+    end
+  end
+end

@@ -16,12 +16,12 @@ module DataMapper
 
       # @api semipublic
       def marshal(value)
-        [ Marshal.dump(value) ].pack('m') unless value.nil?
+        [Marshal.dump(value)].pack('m') unless value.nil?
       end
 
       # @api semipublic
       def unmarshal(value)
-        Marshal.load(value.unpack('m').first) unless value.nil?
+        Marshal.load(value.unpack1('m')) unless value.nil?
       end
 
       # @api private

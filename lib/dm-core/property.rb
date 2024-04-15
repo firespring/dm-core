@@ -300,8 +300,7 @@ module DataMapper
   # * You may declare a Property with the data-type of <tt>Class</tt>.
   #   see SingleTableInheritance for more on how to use <tt>Class</tt> columns.
   class Property
-    include DataMapper::Assertions
-    include Subject
+    include Subject, DataMapper::Assertions
     extend Equalizer
 
     equalize :model, :name, :options
@@ -318,26 +317,26 @@ module DataMapper
       ::Class
     ].to_set.freeze
 
-    OPTIONS = [
-      :load_as, :dump_as,
-      :accessor, :reader, :writer,
-      :lazy, :default, :key, :field,
-      :index, :unique_index,
-      :unique, :allow_nil, :allow_blank, :required
-    ]
+    OPTIONS = %i(
+      load_as dump_as
+      accessor reader writer
+      lazy default key field
+      index unique_index
+      unique allow_nil allow_blank required
+    ).freeze
 
     # Possible :visibility option values
-    VISIBILITY_OPTIONS = [ :public, :protected, :private ].to_set.freeze
+    VISIBILITY_OPTIONS = %i(public protected private).to_set.freeze
 
     # Invalid property names
     INVALID_NAMES = (Resource.instance_methods +
                      Resource.private_instance_methods +
                      Query::OPTIONS.to_a
-                    ).map { |name| name.to_s }
+                    ).map(&:to_s)
 
     attr_reader :load_as, :dump_as, :model, :name, :instance_variable_name,
-      :reader_visibility, :writer_visibility, :options,
-      :default, :repository_name, :allow_nil, :allow_blank, :required
+                :reader_visibility, :writer_visibility, :options,
+                :default, :repository_name, :allow_nil, :allow_blank, :required
 
     alias_method :load_class, :load_as
     alias_method :dump_class, :dump_as
@@ -350,6 +349,7 @@ module DataMapper
       # @api semipublic
       def determine_class(type)
         return type if type < DataMapper::Property::Object
+
         find_class(DataMapper::Inflector.demodulize(type.name))
       end
 
@@ -431,7 +431,7 @@ module DataMapper
       end
 
       # @api private
-      def nullable(*args)
+      def nullable(*_args)
         # :required is preferable to :allow_nil, but :nullable maps precisely to :allow_nil
         raise "#nullable is deprecated, use #required instead (#{caller.first})"
       end
@@ -456,7 +456,7 @@ module DataMapper
       end
     end
 
-    accept_options *Property::OPTIONS
+    accept_options(*Property::OPTIONS)
 
     # A hook to allow properties to extend or modify the model it's bound to.
     # Implementations are not supposed to modify the state of the property
@@ -471,9 +471,7 @@ module DataMapper
     #
     # @api semipublic
     def field(repository_name = nil)
-      if repository_name
-        raise "Passing in +repository_name+ to #{self.class}#field is deprecated (#{caller.first})"
-      end
+      raise "Passing in +repository_name+ to #{self.class}#field is deprecated (#{caller.first})" if repository_name
 
       # defer setting the field with the adapter specific naming
       # conventions until after the adapter has been setup
@@ -655,6 +653,7 @@ module DataMapper
     # @api private
     def lazy_load(resource)
       return if loaded?(resource)
+
       resource.__send__(:lazy_load, lazy_load_properties)
     end
 
@@ -663,7 +662,7 @@ module DataMapper
       @lazy_load_properties ||=
         begin
           properties = self.properties
-          properties.in_context(lazy? ? [ self ] : properties.defaults)
+          properties.in_context(lazy? ? [self] : properties.defaults)
         end
     end
 
@@ -674,24 +673,22 @@ module DataMapper
 
     # @api semipublic
     def typecast(value)
-      if value.nil? || value_loaded?(value)
+      if (value.nil? || value_loaded?(value)) && !respond_to?(:typecast_to_primitive, true)
         value
       elsif respond_to?(:typecast_to_primitive, true)
         typecast_to_primitive(value)
-      else
-        value
       end
     end
 
     # Test the value to see if it is a valid value for this Property
     #
-    # @param [Object] loaded_value
+    # @param [Object] value
     #   the value to be tested
     #
     # @return [Boolean]
     #   true if the value is valid
     #
-    # @api semipulic
+    # @api semipublic
     def valid?(value, negated = false)
       dumped_value = dump(value)
 
@@ -704,7 +701,7 @@ module DataMapper
 
     # Asserts value is valid
     #
-    # @param [Object] loaded_value
+    # @param [Object] value
     #   the value to be tested
     #
     # @return [Boolean]
@@ -713,9 +710,8 @@ module DataMapper
     # @raise [Property::InvalidValueError]
     #   if value is not valid
     def assert_valid_value(value)
-      unless valid?(value)
-        raise Property::InvalidValueError.new(self,value)
-      end
+      raise Property::InvalidValueError.new(self, value) unless valid?(value)
+
       true
     end
 
@@ -750,23 +746,21 @@ module DataMapper
 
     # @api semipublic
     def value_dumped?(value)
-      value.kind_of?(dump_as)
+      value.is_a?(dump_as)
     end
 
     # @api semipublic
     def value_loaded?(value)
-      value.kind_of?(load_as)
+      value.is_a?(load_as)
     end
 
-  protected
-
     # @api semipublic
-    def initialize(model, name, options = {})
+    protected def initialize(model, name, options = {})
       options = options.to_hash.dup
 
-      if INVALID_NAMES.include?(name.to_s) || (kind_of?(Boolean) && INVALID_NAMES.include?("#{name}?"))
+      if INVALID_NAMES.include?(name.to_s) || (is_a?(Boolean) && INVALID_NAMES.include?("#{name}?"))
         raise ArgumentError,
-          "+name+ was #{name.inspect}, which cannot be used as a property name since it collides with an existing method or a query option"
+              "+name+ was #{name.inspect}, which cannot be used as a property name since it collides with an existing method or a query option"
       end
 
       assert_valid_options(options)
@@ -799,51 +793,45 @@ module DataMapper
     end
 
     # @api private
-    def assert_valid_options(options)
+    protected def assert_valid_options(options)
       keys = options.keys
 
       if (unknown_keys = keys - self.class.accepted_options).any?
-        raise ArgumentError, "options #{unknown_keys.map { |key| key.inspect }.join(' and ')} are unknown"
+        raise ArgumentError, "options #{unknown_keys.map(&:inspect).join(' and ')} are unknown"
       end
 
       options.each do |key, value|
-        boolean_value = value == true || value == false
+        boolean_value = [true, false].include?(value)
 
         case key
-          when :field
-            assert_kind_of "options[:#{key}]", value, ::String
+        when :field
+          assert_kind_of "options[:#{key}]", value, ::String
 
-          when :default
-            if value.nil?
-              raise ArgumentError, "options[:#{key}] must not be nil"
-            end
+        when :default
+          raise ArgumentError, "options[:#{key}] must not be nil" if value.nil?
 
-          when :serial, :key, :allow_nil, :allow_blank, :required, :auto_validation
-            unless boolean_value
-              raise ArgumentError, "options[:#{key}] must be either true or false"
-            end
+        when :serial, :key, :allow_nil, :allow_blank, :required, :auto_validation
+          raise ArgumentError, "options[:#{key}] must be either true or false" unless boolean_value
 
-            if key == :required && (keys.include?(:allow_nil) || keys.include?(:allow_blank))
-              raise ArgumentError, 'options[:required] cannot be mixed with :allow_nil or :allow_blank'
-            end
+          if key == :required && (keys.include?(:allow_nil) || keys.include?(:allow_blank))
+            raise ArgumentError, 'options[:required] cannot be mixed with :allow_nil or :allow_blank'
+          end
 
-          when :index, :unique_index, :unique, :lazy
-            unless boolean_value || value.kind_of?(Symbol) || (value.kind_of?(Array) && value.any? && value.all? { |val| val.kind_of?(Symbol) })
-              raise ArgumentError, "options[:#{key}] must be either true, false, a Symbol or an Array of Symbols"
-            end
+        when :index, :unique_index, :unique, :lazy
+          unless boolean_value || value.is_a?(Symbol) || (value.is_a?(Array) && value.any? && value.all? { |val| val.is_a?(Symbol) })
+            raise ArgumentError, "options[:#{key}] must be either true, false, a Symbol or an Array of Symbols"
+          end
 
-          when :length
-            assert_kind_of "options[:#{key}]", value, Range, ::Integer
+        when :length
+          assert_kind_of "options[:#{key}]", value, Range, ::Integer
 
-          when :size, :precision, :scale
-            assert_kind_of "options[:#{key}]", value, ::Integer
+        when :size, :precision, :scale
+          assert_kind_of "options[:#{key}]", value, ::Integer
 
-          when :reader, :writer, :accessor
-            assert_kind_of "options[:#{key}]", value, Symbol
+        when :reader, :writer, :accessor
+          assert_kind_of "options[:#{key}]", value, Symbol
 
-            unless VISIBILITY_OPTIONS.include?(value)
-              raise ArgumentError, "options[:#{key}] must be #{VISIBILITY_OPTIONS.join(' or ')}"
-            end
+          raise ArgumentError, "options[:#{key}] must be #{VISIBILITY_OPTIONS.join(' or ')}" unless VISIBILITY_OPTIONS.include?(value)
         end
       end
     end
@@ -858,11 +846,11 @@ module DataMapper
     # @raise [ArgumentError] "property visibility must be :public, :protected, or :private"
     #
     # @api private
-    def determine_visibility
+    protected def determine_visibility
       default_accessor = @options.fetch(:accessor, :public)
 
       @reader_visibility = @options.fetch(:reader, default_accessor)
       @writer_visibility = @options.fetch(:writer, default_accessor)
     end
-  end # class Property
+  end
 end

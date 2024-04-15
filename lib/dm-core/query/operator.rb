@@ -24,12 +24,11 @@ module DataMapper
         "#<#{self.class.name} @target=#{target.inspect} @operator=#{operator.inspect}>"
       end
 
-      private
-
       # @api private
-      def initialize(target, operator)
-        @target, @operator = target, operator.to_sym
+      private def initialize(target, operator)
+        @target = target
+        @operator = operator.to_sym
       end
-    end # class Operator
-  end # class Query
-end # module DataMapper
+    end
+  end
+end

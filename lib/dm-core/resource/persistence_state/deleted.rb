@@ -1,10 +1,9 @@
 module DataMapper
   module Resource
     class PersistenceState
-
       # a persisted/deleted resource
       class Deleted < Persisted
-        def set(subject, value)
+        def set(_subject, _value)
           raise ImmutableDeletedError, 'Deleted resource cannot be modified'
         end
 
@@ -18,13 +17,10 @@ module DataMapper
           Immutable.new(resource)
         end
 
-      private
-
-        def delete_resource
+        private def delete_resource
           repository.delete(collection_for_self)
         end
-
-      end # class Deleted
-    end # class PersistenceState
-  end # module Resource
-end # module DataMapper
+      end
+    end
+  end
+end

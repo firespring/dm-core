@@ -13,8 +13,7 @@ module DataMapper
     # sense to inherit from DataObjectsAdapter class.
     class AbstractAdapter
       include DataMapper::Assertions
-      extend DataMapper::Assertions
-      extend Equalizer
+      extend Equalizer, DataMapper::Assertions
 
       equalize :name, :options, :resource_naming_convention, :field_naming_convention
 
@@ -173,8 +172,6 @@ module DataMapper
         Query.new(repository, model, options)
       end
 
-      protected
-
       # Set the serial value of the Resource
       #
       # @param [Resource] resource
@@ -185,14 +182,15 @@ module DataMapper
       # @return [undefined]
       #
       # @api semipublic
-      def initialize_serial(resource, next_id)
-        return unless serial = resource.model.serial(name)
+      protected def initialize_serial(resource, next_id)
+        return unless (serial = resource.model.serial(name))
         return unless serial.get!(resource).nil?
+
         serial.set!(resource, next_id)
 
         # TODO: replace above with this, once
         # specs can handle random, non-sequential ids
-        #serial.set!(resource, rand(2**32))
+        # serial.set!(resource, rand(2**32))
       end
 
       # Translate the attributes into a Hash with the field as the key
@@ -208,11 +206,9 @@ module DataMapper
       #   the attributes with the Property#field as the key
       #
       # @api semipublic
-      def attributes_as_fields(attributes)
-        Hash[ attributes.map { |property, value| [ property.field, property.dump(value) ] } ]
+      protected def attributes_as_fields(attributes)
+        attributes.to_h { |property, value| [property.field, property.dump(value)] }
       end
-
-      private
 
       # Initialize an AbstractAdapter instance
       #
@@ -224,14 +220,14 @@ module DataMapper
       # @return [undefined]
       #
       # @api semipublic
-      def initialize(name, options)
+      private def initialize(name, options)
         @name                       = name
         @options                    = options.dup.freeze
         @resource_naming_convention = NamingConventions::Resource::UnderscoredAndPluralized
         @field_naming_convention    = NamingConventions::Field::Underscored
       end
-    end # class AbstractAdapter
+    end
 
     const_added(:AbstractAdapter)
-  end # module Adapters
-end # module DataMapper
+  end
+end

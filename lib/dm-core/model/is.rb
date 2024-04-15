@@ -19,14 +19,12 @@ module DataMapper
       def is(plugin, *args, &block)
         generator_method = "is_#{plugin}".to_sym
 
-        if respond_to?(generator_method)
-          send(generator_method, *args, &block)
-        else
-          raise PluginNotFoundError, "could not find plugin named #{plugin}"
-        end
+        raise PluginNotFoundError, "could not find plugin named #{plugin}" unless respond_to?(generator_method)
+
+        send(generator_method, *args, &block)
       end
-    end # module Is
+    end
 
     include Is
-  end # module Model
-end # module DataMapper
+  end
+end

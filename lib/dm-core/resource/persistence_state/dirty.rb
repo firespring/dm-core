@@ -1,7 +1,6 @@
 module DataMapper
   module Resource
     class PersistenceState
-
       # a persisted/dirty resource
       class Dirty < Persisted
         def set(subject, value)
@@ -36,34 +35,30 @@ module DataMapper
           @original_attributes ||= {}
         end
 
-      private
-
-        def track(subject, value)
+        private def track(subject, value)
           if original_attributes.key?(subject)
             # stop tracking if the new value is the same as the original
-            if original_attributes[subject].eql?(value)
-              original_attributes.delete(subject)
-            end
-          elsif !value.eql?(original = get(subject))
+            original_attributes.delete(subject) if original_attributes[subject].eql?(value)
+          elsif !value.eql?((original = get(subject)))
             # track the original value
             original_attributes[subject] = original
           end
         end
 
-        def update_resource
+        private def update_resource
           repository.update(resource.dirty_attributes, collection_for_self)
         end
 
-        def reset_resource
+        private def reset_resource
           reset_resource_properties
           reset_resource_relationships
         end
 
-        def reset_resource_key
+        private def reset_resource_key
           resource.instance_eval { remove_instance_variable(:@_key) }
         end
 
-        def reset_resource_properties
+        private def reset_resource_properties
           # delete every original attribute after resetting the resource
           original_attributes.delete_if do |property, value|
             property.set!(resource, value)
@@ -71,26 +66,26 @@ module DataMapper
           end
         end
 
-        def reset_resource_relationships
+        private def reset_resource_relationships
           relationships.each do |relationship|
             next unless relationship.loaded?(resource)
+
             # TODO: consider a method in Relationship that can reset the relationship
             resource.instance_eval { remove_instance_variable(relationship.instance_variable_name) }
           end
         end
 
-        def reset_original_attributes
+        private def reset_original_attributes
           original_attributes.clear
         end
 
-        def assert_valid_attributes
+        private def assert_valid_attributes
           properties.each do |property|
             value = property.get! resource
             property.assert_valid_value(value)
           end
         end
-
-      end # class Dirty
-    end # class PersistenceState
-  end # module Resource
-end # module DataMapper
+      end
+    end
+  end
+end

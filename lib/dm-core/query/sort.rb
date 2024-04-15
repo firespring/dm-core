@@ -17,23 +17,22 @@ module DataMapper
         value_nil   = @value.nil?
         other_nil   = other_value.nil?
 
-        cmp = case
-          when value_nil then other_nil ? 0 : 1
-          when other_nil then -1
-          else
-            @value <=> other_value
-        end
+        cmp = if value_nil
+                other_nil ? 0 : 1
+              elsif other_nil
+                -1
+              else
+                @value <=> other_value
+              end
 
         @ascending ? cmp : cmp * -1
       end
 
-      private
-
       # @api private
-      def initialize(value, ascending = true)
+      private def initialize(value, ascending = true)
         @value     = value
         @ascending = ascending
       end
-    end # class Sort
-  end # class Query
-end # module DataMapper
+    end
+  end
+end

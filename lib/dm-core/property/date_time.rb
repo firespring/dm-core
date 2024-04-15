@@ -39,6 +39,6 @@ module DataMapper
       def typecast_hash_to_datetime(value)
         ::DateTime.new(*extract_time(value))
       end
-    end # class DateTime
-  end # class Property
-end # module DataMapper
+    end
+  end
+end

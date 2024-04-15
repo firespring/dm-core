@@ -40,6 +40,6 @@ module DataMapper
       def typecast_hash_to_date(value)
         ::Date.new(*extract_time(value)[0, 3])
       end
-    end # class Date
-  end # class Property
-end # module DataMapper
+    end
+  end
+end

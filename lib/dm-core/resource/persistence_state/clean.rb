@@ -1,7 +1,6 @@
 module DataMapper
   module Resource
     class PersistenceState
-
       # a persisted/unmodified resource
       class Clean < Persisted
         def set(subject, value)
@@ -28,13 +27,10 @@ module DataMapper
           self
         end
 
-      private
-
-        def not_modified?(subject, value)
+        private def not_modified?(subject, value)
           subject.loaded?(resource) && subject.get!(resource).eql?(value)
         end
-
-      end # class Clean
-    end # class PersistenceState
-  end # module Resource
-end # module DataMapper
+      end
+    end
+  end
+end

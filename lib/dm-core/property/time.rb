@@ -41,6 +41,6 @@ module DataMapper
       def typecast_hash_to_time(value)
         ::Time.local(*extract_time(value))
       end
-    end # class Time
-  end # class Property
-end # module DataMapper
+    end
+  end
+end

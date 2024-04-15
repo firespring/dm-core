@@ -18,16 +18,14 @@ module DataMapper
       #
       # @api semipublic
       def length
-        if @length.kind_of?(Range)
+        if @length.is_a?(Range)
           @length.max
         else
           @length
         end
       end
 
-      protected
-
-      def initialize(model, name, options = {})
+      protected def initialize(model, name, options = {})
         super
         @length = @options.fetch(:length)
       end
@@ -41,9 +39,9 @@ module DataMapper
       #   String constructed from value
       #
       # @api private
-      def typecast_to_primitive(value)
+      protected def typecast_to_primitive(value)
         value.to_s
       end
-    end # class String
-  end # class Property
-end # module DataMapper
+    end
+  end
+end

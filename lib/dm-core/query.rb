@@ -21,7 +21,6 @@
 #   other convention that we establish)
 
 module DataMapper
-
   # Query class represents a query which will be run against the data-store.
   # Generally Query objects can be found inside Collection objects.
   #
@@ -29,7 +28,7 @@ module DataMapper
     include DataMapper::Assertions
     extend Equalizer
 
-    OPTIONS = [ :fields, :links, :conditions, :offset, :limit, :order, :unique, :add_reversed, :reload ].to_set.freeze
+    OPTIONS = %i(fields links conditions offset limit order unique add_reversed reload).to_set.freeze
 
     equalize :repository, :model, :sorted_fields, :links, :conditions, :order, :offset, :limit, :reload?, :unique?, :add_reversed?
 
@@ -37,9 +36,9 @@ module DataMapper
     #
     # @param [Array, Collection, Resource] source
     #   the source to extract the values from
-    # @param [ProperySet] source_key
+    # @param [PropertySet] source_key
     #   the key to extract the value from the resource
-    # @param [ProperySet] target_key
+    # @param [PropertySet] target_key
     #   the key to match the resource with
     #
     # @return [AbstractComparison, AbstractOperation]
@@ -51,12 +50,14 @@ module DataMapper
       source_values   = []
 
       if source.nil?
-        source_values << [ nil ] * target_key_size
+        source_values << ([nil] * target_key_size)
       else
         Array(source).each do |resource|
           next unless source_key.loaded?(resource)
+
           source_value = source_key.get!(resource)
           next unless target_key.valid?(source_value)
+
           source_values << source_value
         end
       end
@@ -103,10 +104,10 @@ module DataMapper
     def self.target_query(repository, model, source)
       if source.respond_to?(:query)
         source.query
-      elsif source.kind_of?(Enumerable)
+      elsif source.is_a?(Enumerable)
         key        = model.key(repository.name)
         conditions = Query.target_conditions(source, key, key)
-        repository.new_query(model, :conditions => conditions)
+        repository.new_query(model, conditions:)
       else
         raise ArgumentError, "+source+ must respond to #query or be an Enumerable, but was #{source.class}"
       end
@@ -327,7 +328,7 @@ module DataMapper
       @order.map! { |direction| direction.dup.reverse! }
 
       # copy the order to the options
-      @options = @options.merge(:order => @order).freeze
+      @options = @options.merge(order: @order).freeze
 
       self
     end
@@ -349,26 +350,28 @@ module DataMapper
     #
     # @api semipublic
     def update(other)
-      other_options = if kind_of?(other.class)
-        return self if self.eql?(other)
-        assert_valid_other(other)
-        other.options
-      else
-        other = other.to_hash
-        return self if other.empty?
-        other
-      end
+      other_options = if is_a?(other.class)
+                        return self if eql?(other)
+
+                        assert_valid_other(other)
+                        other.options
+                      else
+                        other = other.to_hash
+                        return self if other.empty?
+
+                        other
+                      end
 
       @options = @options.merge(other_options).freeze
       assert_valid_options(@options)
 
-      normalize = DataMapper::Ext::Hash.only(other_options, *OPTIONS - [ :conditions ]).map do |attribute, value|
+      normalize = DataMapper::Ext::Hash.only(other_options, *OPTIONS - [:conditions]).map do |attribute, value|
         instance_variable_set("@#{attribute}", DataMapper::Ext.try_dup(value))
         attribute
       end
 
-      merge_conditions([ DataMapper::Ext::Hash.except(other_options, *OPTIONS), other_options[:conditions] ])
-      normalize_options(normalize | [ :links, :unique ])
+      merge_conditions([DataMapper::Ext::Hash.except(other_options, *OPTIONS), other_options[:conditions]])
+      normalize_options(normalize | %i(links unique))
 
       self
     end
@@ -408,7 +411,7 @@ module DataMapper
       if options.key?(:offset) && (options.key?(:limit) || limit)
         options = options.dup
         offset  = options.delete(:offset)
-        limit   = options.delete(:limit) || limit - offset
+        limit   = options.delete(:limit) || (limit - offset)
       end
 
       query = merge(options)
@@ -427,6 +430,7 @@ module DataMapper
     # @api semipublic
     def union(other)
       return dup if self == other
+
       set_operation(:union, other)
     end
 
@@ -444,6 +448,7 @@ module DataMapper
     # @api semipublic
     def intersection(other)
       return dup if self == other
+
       set_operation(:intersection, other)
     end
 
@@ -517,7 +522,7 @@ module DataMapper
     #
     # @api semipublic
     def sort_records(records)
-      sort_order = order.map { |direction| [ direction.target, direction.operator == :asc ] }
+      sort_order = order.map { |direction| [direction.target, direction.operator == :asc] }
 
       records.sort_by do |record|
         sort_order.map do |(property, ascending)|
@@ -588,11 +593,9 @@ module DataMapper
     def slice!(*args)
       offset, limit = extract_slice_arguments(*args)
 
-      if self.limit || self.offset > 0
-        offset, limit = get_relative_position(offset, limit)
-      end
+      offset, limit = get_relative_position(offset, limit) if self.limit || self.offset > 0
 
-      update(:offset => offset, :limit => limit)
+      update(offset: offset, limit: limit)
     end
 
     # Returns detailed human readable
@@ -603,16 +606,16 @@ module DataMapper
     # @api semipublic
     def inspect
       attrs = [
-        [ :repository, repository.name ],
-        [ :model,      model           ],
-        [ :fields,     fields          ],
-        [ :links,      links           ],
-        [ :conditions, conditions      ],
-        [ :order,      order           ],
-        [ :limit,      limit           ],
-        [ :offset,     offset          ],
-        [ :reload,     reload?         ],
-        [ :unique,     unique?         ],
+        [:repository, repository.name],
+        [:model,      model],
+        [:fields,     fields],
+        [:links,      links],
+        [:conditions, conditions],
+        [:order,      order],
+        [:limit,      limit],
+        [:offset,     offset],
+        [:reload,     reload?],
+        [:unique,     unique?]
       ]
 
       "#<#{self.class.name} #{attrs.map { |key, value| "@#{key}=#{value.inspect}" }.join(' ')}>"
@@ -629,8 +632,9 @@ module DataMapper
 
       each_comparison do |comparison|
         next unless comparison.respond_to?(:subject)
+
         subject = comparison.subject
-        properties << subject if subject.kind_of?(Property)
+        properties << subject if subject.is_a?(Property)
       end
 
       properties
@@ -643,7 +647,7 @@ module DataMapper
     #
     # @api private
     def sorted_fields
-      fields.sort_by { |property| property.hash }
+      fields.sort_by(&:hash)
     end
 
     # Transform Query into subquery conditions
@@ -653,7 +657,7 @@ module DataMapper
     #
     # @api private
     def to_subquery
-      collection = model.all(merge(:fields => model_key))
+      collection = model.all(merge(fields: model_key))
       Conditions::Operation.new(:and, Conditions::Comparison.new(:in, self_relationship, collection))
     end
 
@@ -665,17 +669,17 @@ module DataMapper
     # @api private
     def to_hash
       {
-        :repository   => repository.name,
-        :model        => model.name,
-        :fields       => fields,
-        :links        => links,
-        :conditions   => conditions,
-        :offset       => offset,
-        :limit        => limit,
-        :order        => order,
-        :unique       => unique?,
-        :add_reversed => add_reversed?,
-        :reload       => reload?,
+        repository: repository.name,
+        model: model.name,
+        fields: fields,
+        links: links,
+        conditions: conditions,
+        offset: offset,
+        limit: limit,
+        order: order,
+        unique: unique?,
+        add_reversed: add_reversed?,
+        reload: reload?
       }
     end
 
@@ -691,8 +695,6 @@ module DataMapper
     def to_relative_hash
       DataMapper::Ext::Hash.only(to_hash, :fields, :order, :unique, :add_reversed, :reload)
     end
-
-    private
 
     # Initializes a Query instance
     #
@@ -711,7 +713,7 @@ module DataMapper
     #   the conditions and scope
     #
     # @api semipublic
-    def initialize(repository, model, options = {})
+    private def initialize(repository, model, options = {})
       assert_kind_of 'repository', repository, Repository
       assert_kind_of 'model',      model,      Model
 
@@ -726,7 +728,7 @@ module DataMapper
 
       assert_valid_options(@options)
 
-      @fields       = @options.fetch :fields,       @properties.defaults
+      @fields       = @options.fetch :fields, @properties.defaults
       @links        = @options.key?(:links) ? @options[:links].dup : []
       @conditions   = Conditions::Operation.new(:null)
       @offset       = @options.fetch :offset,       0
@@ -737,14 +739,14 @@ module DataMapper
       @reload       = @options.fetch :reload,       false
       @raw          = false
 
-      merge_conditions([ DataMapper::Ext::Hash.except(@options, *OPTIONS), @options[:conditions] ])
+      merge_conditions([DataMapper::Ext::Hash.except(@options, *OPTIONS), @options[:conditions]])
       normalize_options
     end
 
-    # Copying contructor, called for Query#dup
+    # Copying constructor, called for Query#dup
     #
     # @api semipublic
-    def initialize_copy(*)
+    private def initialize_copy(*)
       @fields     = @fields.dup
       @links      = @links.dup
       @conditions = @conditions.dup
@@ -760,20 +762,20 @@ module DataMapper
     #   if any pairs in +options+ are invalid options
     #
     # @api private
-    def assert_valid_options(options)
+    private def assert_valid_options(options)
       options = options.to_hash
 
       options.each do |attribute, value|
         case attribute
-          when :fields                         then assert_valid_fields(value, options[:unique])
-          when :links                          then assert_valid_links(value)
-          when :conditions                     then assert_valid_conditions(value)
-          when :offset                         then assert_valid_offset(value, options[:limit])
-          when :limit                          then assert_valid_limit(value)
-          when :order                          then assert_valid_order(value, options[:fields])
-          when :unique, :add_reversed, :reload then assert_valid_boolean("options[:#{attribute}]", value)
-          else
-            assert_valid_conditions(attribute => value)
+        when :fields                         then assert_valid_fields(value, options[:unique])
+        when :links                          then assert_valid_links(value)
+        when :conditions                     then assert_valid_conditions(value)
+        when :offset                         then assert_valid_offset(value, options[:limit])
+        when :limit                          then assert_valid_limit(value)
+        when :order                          then assert_valid_order(value, options[:fields])
+        when :unique, :add_reversed, :reload then assert_valid_boolean("options[:#{attribute}]", value)
+        else
+          assert_valid_conditions(attribute => value)
         end
       end
     end
@@ -782,7 +784,7 @@ module DataMapper
     # refers to existing properties
     #
     # @api private
-    def assert_valid_fields(fields, unique)
+    private def assert_valid_fields(fields, _unique)
       valid_properties = model.properties
 
       model.descendants.each do |descendant|
@@ -791,10 +793,10 @@ module DataMapper
 
       fields.each do |field|
         case field
-          when Symbol, String
-            unless valid_properties.named?(field)
-              raise ArgumentError, "+options[:fields]+ entry #{field.inspect} does not map to a property in #{model}"
-            end
+        when Symbol, String
+          unless valid_properties.named?(field)
+            raise ArgumentError, "+options[:fields]+ entry #{field.inspect} does not map to a property in #{model}"
+          end
         end
       end
     end
@@ -803,17 +805,15 @@ module DataMapper
     # refers to existing associations
     #
     # @api private
-    def assert_valid_links(links)
-      if links.empty?
-        raise ArgumentError, '+options[:links]+ should not be empty'
-      end
+    private def assert_valid_links(links)
+      raise ArgumentError, '+options[:links]+ should not be empty' if links.empty?
 
       links.each do |link|
         case link
-          when Symbol, String
-            unless @relationships.named?(link.to_sym)
-              raise ArgumentError, "+options[:links]+ entry #{link.inspect} does not map to a relationship in #{model}"
-            end
+        when Symbol, String
+          unless @relationships.named?(link.to_sym)
+            raise ArgumentError, "+options[:links]+ entry #{link.inspect} does not map to a relationship in #{model}"
+          end
         end
       end
     end
@@ -822,45 +822,39 @@ module DataMapper
     # refers to existing properties
     #
     # @api private
-    def assert_valid_conditions(conditions)
+    private def assert_valid_conditions(conditions)
       case conditions
-        when Hash
-          conditions.each do |subject, bind_value|
-            case subject
-              when Symbol, String
-                original = subject
-                subject  = subject.to_s
-                name     = subject[0, subject.index('.') || subject.length]
+      when Hash
+        conditions.each_key do |subject|
+          case subject
+          when Symbol, String
+            original = subject
+            subject  = subject.to_s
+            name     = subject[0, subject.index('.') || subject.length]
 
-                unless @properties.named?(name) || @relationships.named?(name)
-                  raise ArgumentError, "condition #{original.inspect} does not map to a property or relationship in #{model}"
-                end
+            unless @properties.named?(name) || @relationships.named?(name)
+              raise ArgumentError, "condition #{original.inspect} does not map to a property or relationship in #{model}"
             end
           end
+        end
 
-        when Array
-          if conditions.empty?
-            raise ArgumentError, '+options[:conditions]+ should not be empty'
-          end
+      when Array
+        raise ArgumentError, '+options[:conditions]+ should not be empty' if conditions.empty?
 
-          first_condition = conditions.first
+        first_condition = conditions.first
 
-          unless first_condition.kind_of?(String) && !DataMapper::Ext.blank?(first_condition)
-            raise ArgumentError, '+options[:conditions]+ should have a statement for the first entry'
-          end
+        unless first_condition.is_a?(String) && !DataMapper::Ext.blank?(first_condition)
+          raise ArgumentError, '+options[:conditions]+ should have a statement for the first entry'
+        end
       end
     end
 
     # Verifies that query offset is non-negative and only used together with limit
     # @api private
-    def assert_valid_offset(offset, limit)
-      unless offset >= 0
-        raise ArgumentError, "+options[:offset]+ must be greater than or equal to 0, but was #{offset.inspect}"
-      end
+    private def assert_valid_offset(offset, limit)
+      raise ArgumentError, "+options[:offset]+ must be greater than or equal to 0, but was #{offset.inspect}" unless offset >= 0
 
-      if offset > 0 && limit.nil?
-        raise ArgumentError, '+options[:offset]+ cannot be greater than 0 if limit is not specified'
-      end
+      raise ArgumentError, '+options[:offset]+ cannot be greater than 0 if limit is not specified' if offset > 0 && limit.nil?
     end
 
     # Verifies the limit is equal to or greater than 0
@@ -869,40 +863,36 @@ module DataMapper
     #   raised if the limit is not an Integer or less than 0
     #
     # @api private
-    def assert_valid_limit(limit)
-      unless limit >= 0
-        raise ArgumentError, "+options[:limit]+ must be greater than or equal to 0, but was #{limit.inspect}"
-      end
+    private def assert_valid_limit(limit)
+      raise ArgumentError, "+options[:limit]+ must be greater than or equal to 0, but was #{limit.inspect}" unless limit >= 0
     end
 
     # Verifies that :order option uses proper operator and refers
     # to existing property
     #
     # @api private
-    def assert_valid_order(order, fields)
+    private def assert_valid_order(order, _fields)
       Array(order).each do |order_entry|
         case order_entry
-          when Symbol, String
-            unless @properties.named?(order_entry)
-              raise ArgumentError, "+options[:order]+ entry #{order_entry.inspect} does not map to a property in #{model}"
-            end
+        when Symbol, String
+          unless @properties.named?(order_entry)
+            raise ArgumentError, "+options[:order]+ entry #{order_entry.inspect} does not map to a property in #{model}"
+          end
         end
       end
     end
 
     # Used to verify value of boolean properties in conditions
     # @api private
-    def assert_valid_boolean(name, value)
-      if value != true && value != false
-        raise ArgumentError, "+#{name}+ should be true or false, but was #{value.inspect}"
-      end
+    private def assert_valid_boolean(name, value)
+      raise ArgumentError, "+#{name}+ should be true or false, but was #{value.inspect}" if value != true && value != false
     end
 
     # Verifies that associations given in conditions belong
     # to the same repository as query's model
     #
     # @api private
-    def assert_valid_other(other)
+    private def assert_valid_other(other)
       other_repository = other.repository
       repository       = self.repository
       other_class      = other.class
@@ -914,9 +904,7 @@ module DataMapper
       other_model = other.model
       model       = self.model
 
-      unless other_model >= model
-        raise ArgumentError, "+other+ #{other_class} must be for the #{model.name} model, not #{other_model.name}"
-      end
+      raise ArgumentError, "+other+ #{other_class} must be for the #{model.name} model, not #{other_model.name}" unless other_model >= model
     end
 
     # Handle all the conditions options provided
@@ -927,24 +915,24 @@ module DataMapper
     # @return [undefined]
     #
     # @api private
-    def merge_conditions(conditions)
+    private def merge_conditions(conditions)
       @conditions = Conditions::Operation.new(:and) << @conditions unless @conditions.nil?
 
-      conditions.compact!
-      conditions.each do |condition|
+      conditions&.compact!
+      conditions&.each do |condition|
         case condition
-          when Conditions::AbstractOperation, Conditions::AbstractComparison
-            add_condition(condition)
+        when Conditions::AbstractOperation, Conditions::AbstractComparison
+          add_condition(condition)
 
-          when Hash
-            condition.each { |key, value| append_condition(key, value) }
+        when Hash
+          condition.each { |key, value| append_condition(key, value) }
 
-          when Array
-            statement, *bind_values = *condition
-            raw_condition = [ statement ]
-            raw_condition << bind_values if bind_values.size > 0
-            add_condition(raw_condition)
-            @raw = true
+        when Array
+          statement, *bind_values = *condition
+          raw_condition = [statement]
+          raw_condition << bind_values unless bind_values.empty?
+          add_condition(raw_condition)
+          @raw = true
         end
       end
     end
@@ -957,7 +945,7 @@ module DataMapper
     # @return [undefined]
     #
     # @api private
-    def normalize_options(options = OPTIONS)
+    private def normalize_options(options = OPTIONS)
       normalize_order  if options.include? :order
       normalize_fields if options.include? :fields
       normalize_links  if options.include? :links
@@ -967,31 +955,31 @@ module DataMapper
     # Normalize order elements to Query::Direction instances
     #
     # @api private
-    def normalize_order
+    private def normalize_order
       return if @order.nil?
 
       @order = Array(@order).map do |order|
         case order
-          when Direction
-            order.dup
+        when Direction
+          order.dup
 
-          when Operator
-            target   = order.target
-            property = target.kind_of?(Property) ? target : @properties[target]
+        when Operator
+          target   = order.target
+          property = target.is_a?(Property) ? target : @properties[target]
 
-            Direction.new(property, order.operator)
+          Direction.new(property, order.operator)
 
-          when Symbol, String
-            Direction.new(@properties[order])
+        when Symbol, String
+          Direction.new(@properties[order])
 
-          when Property
-            Direction.new(order)
+        when Property
+          Direction.new(order)
 
-          when Path
-            Direction.new(order.property)
+        when Path
+          Direction.new(order.property)
 
-          else
-            order
+        else
+          order
         end
       end
     end
@@ -999,13 +987,13 @@ module DataMapper
     # Normalize fields to Property instances
     #
     # @api private
-    def normalize_fields
+    private def normalize_fields
       @fields = @fields.map do |field|
         case field
-          when Symbol, String
-            @properties[field]
-          else
-            field
+        when Symbol, String
+          @properties[field]
+        else
+          field
         end
       end
     end
@@ -1017,18 +1005,18 @@ module DataMapper
     # and duplicates are removed
     #
     # @api private
-    def normalize_links
+    private def normalize_links
       stack = @links.dup
 
       @links.clear
 
-      while link = stack.pop
+      while (link = stack.pop)
         relationship = case link
-          when Symbol, String
-            @relationships[link]
-          else
-            link
-        end
+                       when Symbol, String
+                         @relationships[link]
+                       else
+                         link
+                       end
 
         if relationship.respond_to?(:links)
           stack.concat(relationship.links)
@@ -1046,7 +1034,7 @@ module DataMapper
     # explicitly specified, then make sure the query is marked as unique
     #
     # @api private
-    def normalize_unique
+    private def normalize_unique
       @unique = links.any? unless @options.key?(:unique)
     end
 
@@ -1065,30 +1053,30 @@ module DataMapper
     #   the Query conditions
     #
     # @api private
-    def append_condition(subject, bind_value, model = self.model, operator = :eql)
+    private def append_condition(subject, bind_value, model = self.model, operator = :eql)
       case subject
-        when Property, Associations::Relationship then append_property_condition(subject, bind_value, operator)
-        when Symbol                               then append_symbol_condition(subject, bind_value, model, operator)
-        when String                               then append_string_condition(subject, bind_value, model, operator)
-        when Operator                             then append_operator_conditions(subject, bind_value, model)
-        when Path                                 then append_path(subject, bind_value, model, operator)
-        else
-          raise ArgumentError, "#{subject} is an invalid instance: #{subject.class}"
+      when Property, Associations::Relationship then append_property_condition(subject, bind_value, operator)
+      when Symbol                               then append_symbol_condition(subject, bind_value, model, operator)
+      when String                               then append_string_condition(subject, bind_value, model, operator)
+      when Operator                             then append_operator_conditions(subject, bind_value, model)
+      when Path                                 then append_path(subject, bind_value, model, operator)
+      else
+        raise ArgumentError, "#{subject} is an invalid instance: #{subject.class}"
       end
     end
 
     # @api private
-    def equality_operator_for_type(bind_value)
+    private def equality_operator_for_type(bind_value)
       case bind_value
-        when Model, String then :eql
-        when Enumerable    then :in
-        when Regexp        then :regexp
-        else                    :eql
+      when Model, String then :eql
+      when Enumerable    then :in
+      when Regexp        then :regexp
+      else                    :eql
       end
     end
 
     # @api private
-    def append_property_condition(subject, bind_value, operator)
+    private def append_property_condition(subject, bind_value, operator)
       negated = operator == :not
 
       if operator == :eql || negated
@@ -1103,26 +1091,24 @@ module DataMapper
 
       condition = Conditions::Comparison.new(operator, subject, bind_value)
 
-      if negated
-        condition = Conditions::Operation.new(:not, condition)
-      end
+      condition = Conditions::Operation.new(:not, condition) if negated
 
       add_condition(condition)
     end
 
     # @api private
-    def append_symbol_condition(symbol, bind_value, model, operator)
+    private def append_symbol_condition(symbol, bind_value, model, operator)
       append_condition(symbol.to_s, bind_value, model, operator)
     end
 
     # @api private
-    def append_string_condition(string, bind_value, model, operator)
+    private def append_string_condition(string, bind_value, model, operator)
       if string.include?('.')
         query_path = model
 
         target_components = string.split('.')
         last_component    = target_components.last
-        operator          = target_components.pop.to_sym if DataMapper::Query::Conditions::Comparison.slugs.any? { |slug| slug.to_s == last_component }
+        operator = target_components.pop.to_sym if DataMapper::Query::Conditions::Comparison.slugs.any? { |slug| slug.to_s == last_component }
 
         target_components.each { |method| query_path = query_path.send(method) }
 
@@ -1137,12 +1123,12 @@ module DataMapper
     end
 
     # @api private
-    def append_operator_conditions(operator, bind_value, model)
+    private def append_operator_conditions(operator, bind_value, model)
       append_condition(operator.target, bind_value, model, operator.operator)
     end
 
     # @api private
-    def append_path(path, bind_value, model, operator)
+    private def append_path(path, bind_value, _model, operator)
       path.relationships.each do |relationship|
         inverse = relationship.inverse
         @links.unshift(inverse) unless @links.include?(inverse)
@@ -1159,7 +1145,7 @@ module DataMapper
     # @return [undefined]
     #
     # @api private
-    def add_condition(condition)
+    private def add_condition(condition)
       @conditions = Conditions::Operation.new(:and) if @conditions.nil?
       @conditions << condition
     end
@@ -1173,11 +1159,11 @@ module DataMapper
     # @return [Integer, nil] the limit, if any
     #
     # @api private
-    def extract_slice_arguments(*args)
+    private def extract_slice_arguments(*args)
       offset, limit = case args.size
-        when 2 then extract_offset_limit_from_two_arguments(*args)
-        when 1 then extract_offset_limit_from_one_argument(*args)
-      end
+                      when 2 then extract_offset_limit_from_two_arguments(*args)
+                      when 1 then extract_offset_limit_from_one_argument(*args)
+                      end
 
       return offset, limit if offset && limit
 
@@ -1185,33 +1171,33 @@ module DataMapper
     end
 
     # @api private
-    def extract_offset_limit_from_two_arguments(*args)
-      args if args.all? { |arg| arg.kind_of?(Integer) }
+    private def extract_offset_limit_from_two_arguments(*args)
+      args if args.all? { |arg| arg.is_a?(Integer) }
     end
 
     # @api private
-    def extract_offset_limit_from_one_argument(arg)
+    private def extract_offset_limit_from_one_argument(arg)
       case arg
-        when Integer then extract_offset_limit_from_integer(arg)
-        when Range   then extract_offset_limit_from_range(arg)
+      when Integer then extract_offset_limit_from_integer(arg)
+      when Range   then extract_offset_limit_from_range(arg)
       end
     end
 
     # @api private
-    def extract_offset_limit_from_integer(integer)
-      [ integer, 1 ]
+    private def extract_offset_limit_from_integer(integer)
+      [integer, 1]
     end
 
     # @api private
-    def extract_offset_limit_from_range(range)
+    private def extract_offset_limit_from_range(range)
       offset = range.first
       limit  = range.last - offset
       limit  = limit.succ unless range.exclude_end?
-      return offset, limit
+      [offset, limit]
     end
 
     # @api private
-    def get_relative_position(offset, limit)
+    private def get_relative_position(offset, limit)
       self_offset = self.offset
       self_limit  = self.limit
       new_offset  = self_offset + offset
@@ -1225,17 +1211,17 @@ module DataMapper
 
     # TODO: DRY this up with conditions
     # @api private
-    def record_value(record, property)
+    private def record_value(record, property)
       case record
-        when Hash
-          record.fetch(property, record[property.field])
-        when Resource
-          property.get!(record)
+      when Hash
+        record.fetch(property, record[property.field])
+      when Resource
+        property.get!(record)
       end
     end
 
     # @api private
-    def collection_for_nil(relationship)
+    private def collection_for_nil(relationship)
       query = relationship.query.dup
 
       relationship.target_key.each do |target_key|
@@ -1246,10 +1232,10 @@ module DataMapper
     end
 
     # @api private
-    def each_comparison
+    private def each_comparison
       operands = conditions.operands.to_a
 
-      while operand = operands.shift
+      while (operand = operands.shift)
         if operand.respond_to?(:operands)
           operands.unshift(*operand.operands)
         else
@@ -1269,7 +1255,7 @@ module DataMapper
     #   the query that was created for the set operation
     #
     # @api private
-    def set_operation(operation, other)
+    private def set_operation(operation, other)
       assert_valid_other(other)
       query = self.class.new(@repository, @model, other.to_relative_hash)
       query.instance_variable_set(:@conditions, other_conditions(other, operation))
@@ -1285,10 +1271,10 @@ module DataMapper
     #   the union of the query conditions and other conditions
     #
     # @api private
-    def other_conditions(other, operation)
+    private def other_conditions(other, operation)
       self_conditions = query_conditions(self)
 
-      unless self_conditions.kind_of?(Conditions::Operation)
+      unless self_conditions.is_a?(Conditions::Operation)
         operation_slug = case operation
                          when :intersection, :difference then :and
                          when :union                     then :or
@@ -1309,7 +1295,7 @@ module DataMapper
     #   the operation
     #
     # @api private
-    def query_conditions(query)
+    private def query_conditions(query)
       if query.limit || query.links.any?
         query.to_subquery
       else
@@ -1317,13 +1303,13 @@ module DataMapper
       end
     end
 
-    # Return a self referrential relationship
+    # Return a self referential relationship
     #
     # @return [Associations::OneToMany::Relationship]
     #   the 1:m association to the same model
     #
     # @api private
-    def self_relationship
+    private def self_relationship
       @self_relationship ||=
         begin
           model = self.model
@@ -1336,20 +1322,20 @@ module DataMapper
         end
     end
 
-    # Return options for the self referrential relationship
+    # Return options for the self referential relationship
     #
     # @return [Hash]
-    #   the options to use with the self referrential relationship
+    #   the options to use with the self referential relationship
     #
     # @api private
-    def self_relationship_options
-      keys       = model_key.map { |property| property.name }
+    private def self_relationship_options
+      keys       = model_key.map(&:name)
       repository = self.repository
       {
-        :child_key              => keys,
-        :parent_key             => keys,
-        :child_repository_name  => repository.name,
-        :parent_repository_name => repository.name,
+        child_key: keys,
+        parent_key: keys,
+        child_repository_name: repository.name,
+        parent_repository_name: repository.name
       }
     end
 
@@ -1359,8 +1345,8 @@ module DataMapper
     #   the model key
     #
     # @api private
-    def model_key
+    private def model_key
       @properties.key
     end
-  end # class Query
-end # module DataMapper
+  end
+end
