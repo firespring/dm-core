@@ -1,24 +1,36 @@
-share_examples_for 'A method that delegates to the superclass #set' do
+shared_examples 'A method that delegates to the superclass #set' do
   it 'should delegate to the superclass' do
     # this is the only way I could think of to test if the
     # superclass method is being called
-    DataMapper::Resource::PersistenceState.class_eval { alias_method :original_set, :set; undef_method(:set) }
+    DataMapper::Resource::PersistenceState.class_eval do
+      alias_method :original_set, :set
+      undef_method(:set)
+    end
     method(:subject).should raise_error(NoMethodError)
-    DataMapper::Resource::PersistenceState.class_eval { alias_method :set, :original_set; undef_method(:original_set) }
+    DataMapper::Resource::PersistenceState.class_eval do
+      alias_method :set, :original_set
+      undef_method(:original_set)
+    end
   end
 end
 
-share_examples_for 'A method that does not delegate to the superclass #set' do
+shared_examples 'A method that does not delegate to the superclass #set' do
   it 'should delegate to the superclass' do
     # this is the only way I could think of to test if the
     # superclass method is not being called
-    DataMapper::Resource::PersistenceState.class_eval { alias_method :original_set, :set; undef_method(:set) }
+    DataMapper::Resource::PersistenceState.class_eval do
+      alias_method :original_set, :set
+      undef_method(:set)
+    end
     method(:subject).should_not raise_error(NoMethodError)
-    DataMapper::Resource::PersistenceState.class_eval { alias_method :set, :original_set; undef_method(:original_set) }
+    DataMapper::Resource::PersistenceState.class_eval do
+      alias_method :set, :original_set
+      undef_method(:original_set)
+    end
   end
 end
 
-share_examples_for 'It resets resource state' do
+shared_examples 'It resets resource state' do
   it 'should reset the dirty property' do
     method(:subject).should change(@resource, :name).from('John Doe').to('Dan Kubb')
   end
@@ -36,7 +48,7 @@ share_examples_for 'It resets resource state' do
   end
 end
 
-share_examples_for 'Resource::PersistenceState::Persisted#get' do
+shared_examples 'Resource::PersistenceState::Persisted#get' do
   subject { @state.get(@key) }
 
   supported_by :all do
@@ -49,8 +61,8 @@ share_examples_for 'Resource::PersistenceState::Persisted#get' do
         @resource.should be_dirty
         @resource.save.should be(true)
 
-        attributes = Hash[ @model.key.zip(@resource.key) ]
-        @resource  = @model.first(attributes.merge(:fields => @model.key))
+        attributes = @model.key.zip(@resource.key).to_h
+        @resource  = @model.first(attributes.merge(fields: @model.key))
         @state     = @state.class.new(@resource)
 
         # make sure the subject is not loaded
@@ -64,7 +76,7 @@ share_examples_for 'Resource::PersistenceState::Persisted#get' do
 
     describe 'with a loaded subject' do
       before do
-        @key           = @model.properties[:name]
+        @key = @model.properties[:name]
         @loaded_value ||= 'Dan Kubb'
 
         # make sure the subject is loaded

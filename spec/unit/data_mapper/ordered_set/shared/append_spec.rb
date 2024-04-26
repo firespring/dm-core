@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../../../spec_helper'
 
-shared_examples_for 'DataMapper::OrderedSet#<< when appending a not yet included entry' do
+shared_examples 'DataMapper::OrderedSet#<< when appending a not yet included entry' do
   its(:size   ) { should == 2            }
   its(:entries) { should include(entry1) }
   its(:entries) { should include(entry2) }
@@ -14,7 +14,7 @@ shared_examples_for 'DataMapper::OrderedSet#<< when appending a not yet included
   end
 end
 
-shared_examples_for 'DataMapper::OrderedSet#<< when updating an already included entry' do
+shared_examples 'DataMapper::OrderedSet#<< when updating an already included entry' do
   its(:size   ) { should == 1            }
   its(:entries) { should include(entry2) }
 

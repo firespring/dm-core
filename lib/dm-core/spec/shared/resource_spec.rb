@@ -1,4 +1,4 @@
-share_examples_for 'A public Resource' do
+shared_examples 'A public Resource' do
   before :all do
     @no_join = defined?(DataMapper::Adapters::InMemoryAdapter) && @adapter.kind_of?(DataMapper::Adapters::InMemoryAdapter) ||
                defined?(DataMapper::Adapters::YamlAdapter)     && @adapter.kind_of?(DataMapper::Adapters::YamlAdapter)

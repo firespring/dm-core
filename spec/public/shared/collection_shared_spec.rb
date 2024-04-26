@@ -1,4 +1,4 @@
-share_examples_for 'A public Collection' do
+shared_examples 'A public Collection' do
   before :all do
     %w[ @article_model @article @other @original @articles @other_articles ].each do |ivar|
       raise "+#{ivar}+ should be defined in before block" unless instance_variable_defined?(ivar)

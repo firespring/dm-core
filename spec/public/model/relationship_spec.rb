@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-share_examples_for 'it creates a one accessor' do
+shared_examples 'it creates a one accessor' do
   describe 'accessor' do
     describe 'when there is no associated resource' do
       describe 'without a query' do
@@ -15,7 +15,7 @@ share_examples_for 'it creates a one accessor' do
 
       describe 'with a query' do
         before :all do
-          @return = @car.__send__(@name, :id => 99)
+          @return = @car.__send__(@name, id: 99)
         end
 
         it 'should return nil' do
@@ -50,7 +50,7 @@ share_examples_for 'it creates a one accessor' do
 
           @expected.id.should_not be_nil
 
-          @return = @car.__send__(@name, :id => @expected.id)
+          @return = @car.__send__(@name, id: @expected.id)
         end
 
         it 'should return a Resource' do
@@ -82,7 +82,7 @@ share_examples_for 'it creates a one accessor' do
   end
 end
 
-share_examples_for 'it creates a one mutator' do
+shared_examples 'it creates a one mutator' do
   describe 'mutator' do
     describe 'when setting a Resource' do
       before :all do
@@ -101,8 +101,8 @@ share_examples_for 'it creates a one mutator' do
 
       it 'should relate associated Resource' do
         relationship       = Car.relationships[@name]
-        many_to_one        = relationship.kind_of?(DataMapper::Associations::ManyToOne::Relationship)
-        one_to_one_through = relationship.kind_of?(DataMapper::Associations::OneToOne::Relationship) && relationship.respond_to?(:through)
+        many_to_one        = relationship.is_a?(DataMapper::Associations::ManyToOne::Relationship)
+        one_to_one_through = relationship.is_a?(DataMapper::Associations::OneToOne::Relationship) && relationship.respond_to?(:through)
 
         pending_if many_to_one || one_to_one_through do
           @expected.car.should == @car
@@ -125,7 +125,7 @@ share_examples_for 'it creates a one mutator' do
       before :all do
         @car.__send__("#{@name}=", @model.new)
 
-        attributes = { :id => 10 }
+        attributes = {id: 10}
         @expected  = @model.new(attributes)
 
         @return = @car.__send__("#{@name}=", attributes)
@@ -141,8 +141,8 @@ share_examples_for 'it creates a one mutator' do
 
       it 'should relate associated Resource' do
         relationship       = Car.relationships[@name]
-        many_to_one        = relationship.kind_of?(DataMapper::Associations::ManyToOne::Relationship)
-        one_to_one_through = relationship.kind_of?(DataMapper::Associations::OneToOne::Relationship) && relationship.respond_to?(:through)
+        many_to_one        = relationship.is_a?(DataMapper::Associations::ManyToOne::Relationship)
+        one_to_one_through = relationship.is_a?(DataMapper::Associations::OneToOne::Relationship) && relationship.respond_to?(:through)
 
         pending_if many_to_one || one_to_one_through do
           @return.car.should == @car
@@ -200,8 +200,8 @@ share_examples_for 'it creates a one mutator' do
 
       it 'should relate associated Resource' do
         relationship       = Car.relationships[@name]
-        many_to_one        = relationship.kind_of?(DataMapper::Associations::ManyToOne::Relationship)
-        one_to_one_through = relationship.kind_of?(DataMapper::Associations::OneToOne::Relationship) && relationship.respond_to?(:through)
+        many_to_one        = relationship.is_a?(DataMapper::Associations::ManyToOne::Relationship)
+        one_to_one_through = relationship.is_a?(DataMapper::Associations::OneToOne::Relationship) && relationship.respond_to?(:through)
 
         pending_if 'should create back-reference', many_to_one || one_to_one_through do
           @expected.car.should == @car
@@ -222,7 +222,7 @@ share_examples_for 'it creates a one mutator' do
   end
 end
 
-share_examples_for 'it creates a many accessor' do
+shared_examples 'it creates a many accessor' do
   describe 'accessor' do
     describe 'when there is no child resource and the source is saved' do
       before :all do
@@ -258,7 +258,7 @@ share_examples_for 'it creates a many accessor' do
         @return = nil
 
         @expected = @model.new
-        @car.__send__("#{@name}=", [ @expected ])
+        @car.__send__("#{@name}=", [@expected])
 
         @return = @car.__send__(@name)
       end
@@ -268,7 +268,7 @@ share_examples_for 'it creates a many accessor' do
       end
 
       it 'should return expected Resources' do
-        @return.should == [ @expected ]
+        @return.should == [@expected]
       end
     end
 
@@ -282,7 +282,7 @@ share_examples_for 'it creates a many accessor' do
 
         # set the model scope to only return the first record
         @model.default_scope.update(
-          Hash[ @model.key(@repository.name).zip(@expected.key) ]
+          @model.key(@repository.name).zip(@expected.key).to_h
         )
 
         @return = @car.model.get!(*@car.key).__send__(@name)
@@ -293,17 +293,17 @@ share_examples_for 'it creates a many accessor' do
       end
 
       it 'should return expected Resources' do
-        @return.should == [ @expected ]
+        @return.should == [@expected]
       end
     end
   end
 end
 
-share_examples_for 'it creates a many mutator' do
+shared_examples 'it creates a many mutator' do
   describe 'mutator' do
     describe 'when setting an Array of Resources' do
       before :all do
-        @expected = [ @model.new ]
+        @expected = [@model.new]
 
         @return = @car.__send__("#{@name}=", @expected)
       end
@@ -318,7 +318,7 @@ share_examples_for 'it creates a many mutator' do
       end
 
       it 'should relate the associated Collection' do
-        pending_if Car.relationships[@name].kind_of?(DataMapper::Associations::ManyToMany::Relationship) do
+        pending_if Car.relationships[@name].is_a?(DataMapper::Associations::ManyToMany::Relationship) do
           @expected.each { |resource| resource.car.should == @car }
         end
       end
@@ -330,16 +330,18 @@ share_examples_for 'it creates a many mutator' do
 
       it 'should persist the associated Resource' do
         @car.save.should be(true)
-        @expected.each { |resource| resource.should be_saved }
-        @expected.each { |resource| resource.model.get!(*resource.key).car.should == @car }
+        @expected.each do |resource|
+          resource.should be_saved
+          resource.model.get!(*resource.key).car.should == @car
+        end
       end
     end
 
     describe 'when setting an Array of Hashes' do
       before :all do
-        attributes = { :id => 11 }
-        @hashes    = [ attributes             ]
-        @expected  = [ @model.new(attributes) ]
+        attributes = {id: 11}
+        @hashes    = [attributes]
+        @expected  = [@model.new(attributes)]
 
         @return = @car.__send__("#{@name}=", @hashes)
       end
@@ -353,7 +355,7 @@ share_examples_for 'it creates a many mutator' do
       end
 
       it 'should relate the associated Collection' do
-        pending_if Car.relationships[@name].kind_of?(DataMapper::Associations::ManyToMany::Relationship) do
+        pending_if Car.relationships[@name].is_a?(DataMapper::Associations::ManyToMany::Relationship) do
           @return.each { |resource| resource.car.should == @car }
         end
       end
@@ -365,14 +367,16 @@ share_examples_for 'it creates a many mutator' do
 
       it 'should persist the associated Resource' do
         @car.save.should be(true)
-        @return.each { |resource| resource.should be_saved }
-        @return.each { |resource| resource.model.get!(*resource.key).car.should == @car }
+        @return&.each do |resource|
+          resource.should be_saved
+          resource.model.get!(*resource.key).car.should == @car
+        end
       end
     end
 
     describe 'when setting an empty collection' do
       before :all do
-        @car.__send__("#{@name}=", [ @model.new ])
+        @car.__send__("#{@name}=", [@model.new])
 
         @return = @car.__send__("#{@name}=", [])
       end
@@ -393,9 +397,9 @@ share_examples_for 'it creates a many mutator' do
 
     describe 'when changing an associated collection' do
       before :all do
-        @car.__send__("#{@name}=", [ @model.new ])
+        @car.__send__("#{@name}=", [@model.new])
 
-        @expected = [ @model.new ]
+        @expected = [@model.new]
 
         @return = @car.__send__("#{@name}=", @expected)
       end
@@ -410,7 +414,7 @@ share_examples_for 'it creates a many mutator' do
       end
 
       it 'should relate associated Resource' do
-        pending_if Car.relationships[@name].kind_of?(DataMapper::Associations::ManyToMany::Relationship) do
+        pending_if Car.relationships[@name].is_a?(DataMapper::Associations::ManyToMany::Relationship) do
           @expected.each { |resource| resource.car.should == @car }
         end
       end
@@ -422,8 +426,10 @@ share_examples_for 'it creates a many mutator' do
 
       it 'should persist the associated Resource' do
         @car.save.should be(true)
-        @expected.each { |resource| resource.should be_saved }
-        @expected.each { |resource| resource.model.get!(*resource.key).car.should == @car }
+        @expected.each do |resource|
+          resource.should be_saved
+          resource.model.get!(*resource.key).car.should == @car
+        end
       end
     end
   end
@@ -468,7 +474,7 @@ describe DataMapper::Associations do
       @model = Engine
       @name  = :engine
 
-      Car.belongs_to(@name, :required => false)
+      Car.belongs_to(@name, required: false)
       Engine.has(1, :car)
       DataMapper.finalize
     end
@@ -488,7 +494,7 @@ describe DataMapper::Associations do
 
       describe 'with a :key option' do
         before :all do
-          @relationship = Car.belongs_to("#{@name}_with_key".to_sym, @model, :required => false, :key => true)
+          @relationship = Car.belongs_to("#{@name}_with_key".to_sym, @model, required: false, key: true)
           DataMapper.finalize
         end
 
@@ -500,10 +506,10 @@ describe DataMapper::Associations do
       end
 
       describe 'with a :unique option' do
-        let(:unique) { [ :one, :two, :three ] }
+        let(:unique) { %i(one two three) }
 
         before :all do
-          @relationship = Car.belongs_to("#{@name}_with_unique".to_sym, @model, :unique => unique)
+          @relationship = Car.belongs_to("#{@name}_with_unique".to_sym, @model, unique: unique)
           DataMapper.finalize
         end
 
@@ -537,7 +543,7 @@ describe DataMapper::Associations do
             Car.create
 
             @car = Car.create
-            engine = Engine.new(:car_id => @car.id)
+            engine = Engine.new(car_id: @car.id)
 
             @return = engine.car
           end
@@ -554,8 +560,8 @@ describe DataMapper::Associations do
         describe 'querying for a parent resource' do
           before :all do
             @car = Car.create
-            @engine = Engine.create(:car => @car)
-            @resource = @engine.car(:id => @car.id)
+            @engine = Engine.create(car: @car)
+            @resource = @engine.car(id: @car.id)
           end
 
           it 'should return a Resource' do
@@ -570,7 +576,7 @@ describe DataMapper::Associations do
         describe 'querying for a parent resource that does not exist' do
           before :all do
             @car = Car.create
-            @engine = Engine.create(:car => @car)
+            @engine = Engine.create(car: @car)
             @resource = @engine.car(:id.not => @car.id)
           end
 
@@ -601,7 +607,7 @@ describe DataMapper::Associations do
           before :all do
             @car = Car.create
 
-            @engine = Engine.new(:car_id => @car.id)
+            @engine = Engine.new(car_id: @car.id)
           end
 
           it 'should set the associated resource' do
@@ -613,7 +619,7 @@ describe DataMapper::Associations do
           before :all do
             @car1 = Car.create
             @car2 = Car.create
-            @engine = Engine.create(:car => @car1)
+            @engine = Engine.create(car: @car1)
             @engine.car = @car2
           end
 
@@ -632,7 +638,7 @@ describe DataMapper::Associations do
           before :all do
             @car1 = Car.create
             @car2 = Car.create
-            @engine = Engine.create(:car => @car1)
+            @engine = Engine.create(car: @car1)
             @engine.car_id = @car2.id
           end
 
@@ -662,7 +668,7 @@ describe DataMapper::Associations do
 
     describe 'with a :model option' do
       before :all do
-        Engine.belongs_to(:vehicle, :model => Car)
+        Engine.belongs_to(:vehicle, model: Car)
         DataMapper.finalize
       end
 
@@ -673,45 +679,45 @@ describe DataMapper::Associations do
 
     describe 'with a single element as :child_key option' do
       before :all do
-        Engine.belongs_to(:vehicle, :model => Car, :child_key => :bike_id)
+        Engine.belongs_to(:vehicle, model: Car, child_key: :bike_id)
         DataMapper.finalize
       end
 
       it 'should set the relationship child key' do
-        Engine.relationships[:vehicle].child_key.map { |property| property.name }.should == [:bike_id]
+        Engine.relationships[:vehicle].child_key.map(&:name).should == [:bike_id]
       end
     end
 
     describe 'with an array as :child_key option' do
       before :all do
-        Engine.belongs_to(:vehicle, :model => Car, :child_key => [:bike_id])
+        Engine.belongs_to(:vehicle, model: Car, child_key: [:bike_id])
         DataMapper.finalize
       end
 
       it 'should set the relationship child key' do
-        Engine.relationships[:vehicle].child_key.map { |property| property.name }.should == [:bike_id]
+        Engine.relationships[:vehicle].child_key.map(&:name).should == [:bike_id]
       end
     end
 
     describe 'with a single element as :parent_key option' do
       before :all do
-        Engine.belongs_to(:vehicle, :model => Car, :parent_key => :name)
+        Engine.belongs_to(:vehicle, model: Car, parent_key: :name)
         DataMapper.finalize
       end
 
       it 'should set the relationship parent key' do
-        Engine.relationships[:vehicle].parent_key.map { |property| property.name }.should == [:name]
+        Engine.relationships[:vehicle].parent_key.map(&:name).should == [:name]
       end
     end
 
     describe 'with an array as :parent_key option' do
       before :all do
-        Engine.belongs_to(:vehicle, :model => Car, :parent_key => [:name])
+        Engine.belongs_to(:vehicle, model: Car, parent_key: [:name])
         DataMapper.finalize
       end
 
       it 'should set the relationship parent key' do
-        Engine.relationships[:vehicle].parent_key.map { |property| property.name }.should == [:name]
+        Engine.relationships[:vehicle].parent_key.map(&:name).should == [:name]
       end
     end
   end
@@ -749,15 +755,15 @@ describe DataMapper::Associations do
         @model = Engine
         @name  = :engine
 
-        Car.has(1, @name, :through => DataMapper::Resource)
-        Engine.has(1, :car, :through => DataMapper::Resource)
+        Car.has(1, @name, through: DataMapper::Resource)
+        Engine.has(1, :car, through: DataMapper::Resource)
         DataMapper.finalize
       end
 
       supported_by :all do
         before :all do
-          @no_join = defined?(DataMapper::Adapters::InMemoryAdapter) && @adapter.kind_of?(DataMapper::Adapters::InMemoryAdapter) ||
-                     defined?(DataMapper::Adapters::YamlAdapter)     && @adapter.kind_of?(DataMapper::Adapters::YamlAdapter)
+          @no_join = (defined?(DataMapper::Adapters::InMemoryAdapter) && @adapter.is_a?(DataMapper::Adapters::InMemoryAdapter)) ||
+                     (defined?(DataMapper::Adapters::YamlAdapter)     && @adapter.is_a?(DataMapper::Adapters::YamlAdapter))
         end
 
         before :all do
@@ -784,7 +790,7 @@ describe DataMapper::Associations do
         @name  = :doors
 
         Car.has(1..4, @name)
-        Door.belongs_to(:car, :required => false)
+        Door.belongs_to(:car, required: false)
         DataMapper.finalize
       end
 
@@ -808,15 +814,15 @@ describe DataMapper::Associations do
         @model = Window
         @name  = :windows
 
-        Window.has(1, :car, :through => DataMapper::Resource)
-        Car.has(1..4, :windows, :through => DataMapper::Resource)
+        Window.has(1, :car, through: DataMapper::Resource)
+        Car.has(1..4, :windows, through: DataMapper::Resource)
         DataMapper.finalize
       end
 
       supported_by :all do
         before :all do
-          @no_join = defined?(DataMapper::Adapters::InMemoryAdapter) && @adapter.kind_of?(DataMapper::Adapters::InMemoryAdapter) ||
-                     defined?(DataMapper::Adapters::YamlAdapter)     && @adapter.kind_of?(DataMapper::Adapters::YamlAdapter)
+          @no_join = (defined?(DataMapper::Adapters::InMemoryAdapter) && @adapter.is_a?(DataMapper::Adapters::InMemoryAdapter)) ||
+                     (defined?(DataMapper::Adapters::YamlAdapter)     && @adapter.is_a?(DataMapper::Adapters::YamlAdapter))
         end
 
         before :all do
@@ -871,13 +877,13 @@ describe DataMapper::Associations do
   describe 'property prefix inference' do
     describe 'when a relationship has an inverse' do
       before :all do
-        @engine_relationship = Car.has(1, :engine, :inverse => Engine.belongs_to(:sports_car, Car))
+        @engine_relationship = Car.has(1, :engine, inverse: Engine.belongs_to(:sports_car, Car))
         DataMapper.finalize
       end
 
       supported_by :all do
         it 'should have a child key prefix the same as the inverse relationship' do
-          @engine_relationship.child_key.map { |property| property.name }.should == [ :sports_car_id ]
+          @engine_relationship.child_key.map(&:name).should == [:sports_car_id]
         end
       end
     end
@@ -890,7 +896,7 @@ describe DataMapper::Associations do
 
       supported_by :all do
         it 'should have a child key prefix inferred from the source model name' do
-          @engine_relationship.child_key.map { |property| property.name }.should == [ :car_id ]
+          @engine_relationship.child_key.map(&:name).should == [:car_id]
         end
       end
     end
@@ -902,7 +908,7 @@ describe DataMapper::Associations do
 
           class ::ElectricCar < Car; end
 
-          Car.has(1, :engine, :inverse => Engine.belongs_to(:sports_car, Car))
+          Car.has(1, :engine, inverse: Engine.belongs_to(:sports_car, Car))
           DataMapper.finalize
         end
 
@@ -916,7 +922,7 @@ describe DataMapper::Associations do
           end
 
           it 'should have a child key prefix the same as the inverse relationship' do
-            @engine_relationship.child_key.map { |property| property.name }.should == [ :sports_car_id ]
+            @engine_relationship.child_key.map(&:name).should == [:sports_car_id]
           end
         end
       end
@@ -941,7 +947,7 @@ describe DataMapper::Associations do
           end
 
           it 'should have a child key prefix inferred from the source model name' do
-            @engine_relationship.child_key.map { |property| property.name }.should == [ :car_id ]
+            @engine_relationship.child_key.map(&:name).should == [:car_id]
           end
         end
       end
@@ -954,7 +960,7 @@ describe DataMapper::Associations do
 
           class ::ElectricCar < Car; end
 
-          ElectricCar.has(1, :engine, :inverse => Engine.belongs_to(:sports_car, Car))
+          ElectricCar.has(1, :engine, inverse: Engine.belongs_to(:sports_car, Car))
           DataMapper.finalize
         end
 
@@ -968,7 +974,7 @@ describe DataMapper::Associations do
           end
 
           it 'should have a child key prefix the same as the inverse relationship' do
-            @engine_relationship.child_key.map { |property| property.name }.should == [ :sports_car_id ]
+            @engine_relationship.child_key.map(&:name).should == [:sports_car_id]
           end
         end
       end
@@ -993,7 +999,7 @@ describe DataMapper::Associations do
           end
 
           it 'should have a child key prefix inferred from the source model name' do
-            @engine_relationship.child_key.map { |property| property.name }.should == [ :electric_car_id ]
+            @engine_relationship.child_key.map(&:name).should == [:electric_car_id]
           end
         end
       end
@@ -1017,7 +1023,7 @@ describe DataMapper::Associations do
         property :id,   Serial
         property :name, String
 
-        belongs_to :owner, Employee, :required => false
+        belongs_to :owner, Employee, required: false
         has n, :employees
       end
       DataMapper.finalize
@@ -1025,8 +1031,8 @@ describe DataMapper::Associations do
 
     supported_by :all do
       before :all do
-        @company  = Company.create(:name => 'ACME Inc.')
-        @employee = @company.employees.create(:name => 'Wil E. Coyote')
+        @company  = Company.create(name: 'ACME Inc.')
+        @employee = @company.employees.create(name: 'Wil E. Coyote')
       end
 
       it 'should save the child as a parent' do

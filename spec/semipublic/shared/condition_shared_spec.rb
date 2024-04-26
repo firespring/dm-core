@@ -1,4 +1,4 @@
-share_examples_for 'A valid query condition' do
+shared_examples 'A valid query condition' do
   before :all do
     raise "+@comp+ should be defined in before block" unless instance_variable_get(:@comp)
   end

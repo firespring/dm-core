@@ -1,4 +1,4 @@
-share_examples_for 'A Collection supporting Strategic Eager Loading' do
+shared_examples 'A Collection supporting Strategic Eager Loading' do
   describe 'using SEL when looping within a loop' do
     before :all do
       @many_to_many = @articles.kind_of?(DataMapper::Associations::ManyToMany::Collection)
@@ -63,7 +63,7 @@ share_examples_for 'A Collection supporting Strategic Eager Loading' do
   end
 end
 
-share_examples_for 'A Resource supporting Strategic Eager Loading' do
+shared_examples 'A Resource supporting Strategic Eager Loading' do
   describe 'using SEL when inside a Collection' do
     before :all do
       @referrer = @user_model.create(:name => 'Referrer', :comment => @comment)

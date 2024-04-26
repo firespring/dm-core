@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
-shared_examples_for "a correct property declaration" do
+shared_examples 'a correct property declaration' do
   it 'should define a name accessor' do
     @model.should_not be_method_defined(@property_name)
     subject
@@ -26,7 +26,7 @@ describe DataMapper::Model::Property do
   end
 
   describe '#property' do
-    context "using default repository" do
+    context 'using default repository' do
       before do
         Object.send(:remove_const, :UserDefault) if defined?(::UserDefault)
 
@@ -43,10 +43,10 @@ describe DataMapper::Model::Property do
         ::UserDefault.property(:name, String)
       end
 
-      it_should_behave_like "a correct property declaration"
+      it_should_behave_like 'a correct property declaration'
     end
 
-    context "using alternate repository" do
+    context 'using alternate repository' do
       before do
         Object.send(:remove_const, :UserAlternate) if defined?(::UserAlternate)
 
@@ -64,7 +64,7 @@ describe DataMapper::Model::Property do
         ::UserAlternate.property(:alt_name, String)
       end
 
-      it_should_behave_like "a correct property declaration"
+      it_should_behave_like 'a correct property declaration'
     end
 
     it 'should raise an exception if the method exists' do

@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
-share_examples_for 'A Limited Many to Many Collection' do
+shared_examples 'A Limited Many to Many Collection' do
   describe '#destroy!' do
     describe 'on a limited collection' do
       before :all do

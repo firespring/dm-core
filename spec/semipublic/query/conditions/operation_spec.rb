@@ -36,7 +36,7 @@ module OperationMatchers
   end
 end
 
-shared_examples_for 'DataMapper::Query::Conditions::AbstractOperation' do
+shared_examples 'DataMapper::Query::Conditions::AbstractOperation' do
   before :all do
     module ::Blog
       class Article

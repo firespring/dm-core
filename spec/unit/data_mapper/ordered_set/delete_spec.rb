@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/ordered_set'
 require 'unit/data_mapper/ordered_set/shared/delete_spec'
 

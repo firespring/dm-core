@@ -1,8 +1,8 @@
-require 'spec_helper'
 describe 'Many to Many Associations read across multiple join associations' do
   before :all do
     class ::User
       include DataMapper::Resource
+require_relative '../../../spec_helper'
 
       property :id, Serial
 
@@ -50,8 +50,8 @@ describe 'Many to Many Associations read across multiple join associations' do
     end
 
     before :all do
-      @no_join = defined?(DataMapper::Adapters::InMemoryAdapter) && @adapter.kind_of?(DataMapper::Adapters::InMemoryAdapter) ||
-                 defined?(DataMapper::Adapters::YamlAdapter)     && @adapter.kind_of?(DataMapper::Adapters::YamlAdapter)
+      @no_join = (defined?(DataMapper::Adapters::InMemoryAdapter) && @adapter.is_a?(DataMapper::Adapters::InMemoryAdapter)) ||
+                 (defined?(DataMapper::Adapters::YamlAdapter)     && @adapter.is_a?(DataMapper::Adapters::YamlAdapter))
 
       @skip = @no_join
     end
@@ -61,8 +61,8 @@ describe 'Many to Many Associations read across multiple join associations' do
     end
 
     it 'should return all the created entries' do
-      @user.items.to_a.should == Item.all.to_a
-      @sale.items.to_a.should == Item.all.to_a
+      @user.items.to_a.should eq Item.all.to_a
+      @sale.items.to_a.should eq Item.all.to_a
     end
   end
 end

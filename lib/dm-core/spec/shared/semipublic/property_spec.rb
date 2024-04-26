@@ -1,6 +1,6 @@
-share_examples_for 'A semipublic Property' do
+shared_examples 'A semipublic Property' do
   before :all do
-    %w[ @type @name @value @other_value ].each do |ivar|
+    %w(@type @name @value @other_value).each do |ivar|
       raise "+#{ivar}+ should be defined in before block" unless instance_variable_defined?(ivar)
     end
 
@@ -35,9 +35,9 @@ share_examples_for 'A semipublic Property' do
       end
     end
 
-    [ :index, :unique_index, :unique, :lazy ].each do |attribute|
-      [ true, false, :title, [ :title ] ].each do |value|
-        describe "when provided #{(options = { attribute => value }).inspect}" do
+    %i(index unique_index unique lazy).each do |attribute|
+      [true, false, :title, [:title]].each do |value|
+        describe "when provided #{(options = {attribute => value}).inspect}" do
           before :all do
             @property = @type.new(@model, @name, @options.merge(options))
           end
@@ -60,8 +60,8 @@ share_examples_for 'A semipublic Property' do
         end
       end
 
-      [ [], nil ].each do |value|
-        describe "when provided #{(invalid_options = { attribute => value }).inspect}" do
+      [[], nil].each do |value|
+        describe "when provided #{(invalid_options = {attribute => value}).inspect}" do
           it 'should raise an exception' do
             lambda {
               @type.new(@model, @name, @options.merge(invalid_options))
@@ -82,7 +82,7 @@ share_examples_for 'A semipublic Property' do
     it { should eql(@value) }
   end
 
-  describe "#typecast" do
+  describe '#typecast' do
     describe "when is able to do typecasting on it's own" do
       it 'delegates all the work to the type' do
         return_value = mock(@other_value)
@@ -119,14 +119,14 @@ share_examples_for 'A semipublic Property' do
 
     describe 'when provide a nil value when required' do
       it 'should return false' do
-        @property = @type.new(@model, @name, @options.merge(:required => true))
+        @property = @type.new(@model, @name, @options.merge(required: true))
         @property.valid?(nil).should be(false)
       end
     end
 
     describe 'when provide a nil value when not required' do
       it 'should return false' do
-        @property = @type.new(@model, @name, @options.merge(:required => false))
+        @property = @type.new(@model, @name, @options.merge(required: false))
         @property.valid?(nil).should be(true)
       end
     end
@@ -137,7 +137,7 @@ share_examples_for 'A semipublic Property' do
       @property.assert_valid_value(value)
     end
 
-    shared_examples_for 'assert_valid_value on invalid value' do
+    shared_examples 'assert_valid_value on invalid value' do
       it 'should raise DataMapper::Property::InvalidValueError' do
         expect { subject }.to(raise_error(DataMapper::Property::InvalidValueError) do |error|
           error.property.should == @property
@@ -161,7 +161,7 @@ share_examples_for 'A semipublic Property' do
 
     describe 'when provide a nil value when required' do
       before do
-        @property = @type.new(@model, @name, @options.merge(:required => true))
+        @property = @type.new(@model, @name, @options.merge(required: true))
       end
 
       let(:value) { nil }
@@ -171,7 +171,7 @@ share_examples_for 'A semipublic Property' do
 
     describe 'when provide a nil value when not required' do
       before do
-        @property = @type.new(@model, @name, @options.merge(:required => false))
+        @property = @type.new(@model, @name, @options.merge(required: false))
       end
 
       let(:value) { nil }

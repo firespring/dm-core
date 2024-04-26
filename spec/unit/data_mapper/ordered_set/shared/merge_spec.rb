@@ -1,12 +1,12 @@
-require 'spec_helper'
+require_relative '../../../../spec_helper'
 
-shared_examples_for 'DataMapper::OrderedSet#merge when merging two empty sets' do
+shared_examples 'DataMapper::OrderedSet#merge when merging two empty sets' do
   it { should be_instance_of(set.class) }
   it { should equal(set)                }
   it { should == set                    }
 end
 
-shared_examples_for 'DataMapper::OrderedSet#merge when merging a set with already present entries' do
+shared_examples 'DataMapper::OrderedSet#merge when merging a set with already present entries' do
   it { should equal(set)     }
   it { should == set         }
   it { should include(entry) }
@@ -16,7 +16,7 @@ shared_examples_for 'DataMapper::OrderedSet#merge when merging a set with alread
   end
 end
 
-shared_examples_for 'DataMapper::OrderedSet#merge when merging a set with not yet present entries' do
+shared_examples 'DataMapper::OrderedSet#merge when merging a set with not yet present entries' do
   it { should equal(set)      }
   it { should != set          }
   it { should include(entry1) }

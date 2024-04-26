@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../../../spec_helper'
 
-shared_examples_for 'DataMapper::OrderedSet#delete when deleting an already included entry' do
+shared_examples 'DataMapper::OrderedSet#delete when deleting an already included entry' do
   its(:entries) { should_not include(entry1) }
   its(:entries) { should     include(entry2) }
   its(:entries) { should     include(entry3) }
@@ -12,7 +12,7 @@ shared_examples_for 'DataMapper::OrderedSet#delete when deleting an already incl
   end
 end
 
-shared_examples_for 'DataMapper::OrderedSet#delete when deleting a not yet included entry' do
+shared_examples 'DataMapper::OrderedSet#delete when deleting a not yet included entry' do
   its(:entries) { should include(entry1) }
   its(:entries) { should include(entry2) }
   its(:entries) { should include(entry3) }

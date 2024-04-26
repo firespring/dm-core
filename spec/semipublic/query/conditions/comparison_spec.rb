@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 describe DataMapper::Query::Conditions::Comparison do
   before :all do
     module ::Blog
@@ -6,7 +6,7 @@ describe DataMapper::Query::Conditions::Comparison do
         include DataMapper::Resource
 
         property :id,    Serial
-        property :title, String, :required => true
+        property :title, String, required: true
       end
     end
     DataMapper.finalize
@@ -22,14 +22,14 @@ describe DataMapper::Query::Conditions::Comparison do
 
   describe '.new' do
     {
-      :eql    => DataMapper::Query::Conditions::EqualToComparison,
-      :in     => DataMapper::Query::Conditions::InclusionComparison,
-      :regexp => DataMapper::Query::Conditions::RegexpComparison,
-      :like   => DataMapper::Query::Conditions::LikeComparison,
-      :gt     => DataMapper::Query::Conditions::GreaterThanComparison,
-      :lt     => DataMapper::Query::Conditions::LessThanComparison,
-      :gte    => DataMapper::Query::Conditions::GreaterThanOrEqualToComparison,
-      :lte    => DataMapper::Query::Conditions::LessThanOrEqualToComparison,
+      eql: DataMapper::Query::Conditions::EqualToComparison,
+      in: DataMapper::Query::Conditions::InclusionComparison,
+      regexp: DataMapper::Query::Conditions::RegexpComparison,
+      like: DataMapper::Query::Conditions::LikeComparison,
+      gt: DataMapper::Query::Conditions::GreaterThanComparison,
+      lt: DataMapper::Query::Conditions::LessThanComparison,
+      gte: DataMapper::Query::Conditions::GreaterThanOrEqualToComparison,
+      lte: DataMapper::Query::Conditions::LessThanOrEqualToComparison,
     }.each do |slug, klass|
       describe "with a slug #{slug.inspect}" do
         subject { DataMapper::Query::Conditions::Comparison.new(slug, @property, @value) }
@@ -56,7 +56,7 @@ describe DataMapper::Query::Conditions::EqualToComparison do
     @other_value    = 2
     @slug           = :eql
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
@@ -66,14 +66,14 @@ describe DataMapper::Query::Conditions::EqualToComparison do
   describe '#foreign_key_mapping' do
     supported_by :all do
       before do
-        @parent = @model.create(:title => 'Parent')
-        @child  = @parent.children.create(:title => 'Child')
+        @parent = @model.create(title: 'Parent')
+        @child  = @parent.children.create(title: 'Child')
 
         @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent)
       end
 
       it 'should return criteria that matches the record' do
-        @model.all(:conditions => @comparison.foreign_key_mapping).should == [ @child ]
+        @model.all(conditions: @comparison.foreign_key_mapping).should == [ @child ]
       end
     end
   end
@@ -151,8 +151,8 @@ describe DataMapper::Query::Conditions::EqualToComparison do
       describe 'with a Relationship subject' do
         describe 'with a nil value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, nil)
           end
@@ -184,8 +184,8 @@ describe DataMapper::Query::Conditions::EqualToComparison do
 
         describe 'with a Hash value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent.attributes.except(:id))
           end
@@ -217,8 +217,8 @@ describe DataMapper::Query::Conditions::EqualToComparison do
 
         describe 'with new Resource value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             new_resource = @model.new(@parent.attributes.except(:id))
 
@@ -252,8 +252,8 @@ describe DataMapper::Query::Conditions::EqualToComparison do
 
         describe 'with a saved Resource value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent)
           end
@@ -324,16 +324,16 @@ describe DataMapper::Query::Conditions::EqualToComparison do
 
       describe 'with a Relationship subject' do
         before :all do
-          @parent = @model.create(:title => 'Parent')
-          @child  = @parent.children.create(:title => 'Child')
+          @parent = @model.create(title: 'Parent')
+          @child  = @parent.children.create(title: 'Child')
         end
 
         describe 'with an Hash value' do
           before do
-            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, :id => 1)
+            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, id: 1)
           end
 
-          it { should == @model.new(:id => 1) }
+          it { should == @model.new(id: 1) }
         end
 
         describe 'with a Resource value' do
@@ -358,7 +358,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
     @other_value    = [ 2 ]
     @slug           = :in
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
@@ -368,14 +368,14 @@ describe DataMapper::Query::Conditions::InclusionComparison do
   describe '#foreign_key_mapping' do
     supported_by :all do
       before do
-        @parent = @model.create(:title => 'Parent')
-        @child  = @parent.children.create(:title => 'Child')
+        @parent = @model.create(title: 'Parent')
+        @child  = @parent.children.create(title: 'Child')
 
         @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @model.all)
       end
 
       it 'should return criteria that matches the record' do
-        @model.all(:conditions => @comparison.foreign_key_mapping).should == [ @child ]
+        @model.all(conditions: @comparison.foreign_key_mapping).should == [ @child ]
       end
     end
   end
@@ -516,8 +516,8 @@ describe DataMapper::Query::Conditions::InclusionComparison do
       describe 'with a Relationship subject' do
         describe 'with a Hash value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent.attributes.except(:id))
           end
@@ -549,8 +549,8 @@ describe DataMapper::Query::Conditions::InclusionComparison do
 
         describe 'with a new Resource value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             new_resource = @model.new(@parent.attributes.except(:id))
 
@@ -584,8 +584,8 @@ describe DataMapper::Query::Conditions::InclusionComparison do
 
         describe 'with a saved Resource value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent)
           end
@@ -617,10 +617,10 @@ describe DataMapper::Query::Conditions::InclusionComparison do
 
         describe 'with a Collection value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
-            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @model.all(:title => 'Parent'))
+            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @model.all(title: 'Parent'))
           end
 
           describe 'with a matching Hash' do
@@ -650,10 +650,10 @@ describe DataMapper::Query::Conditions::InclusionComparison do
 
         describe 'with an Enumerable value containing a Hash' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
-            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, [ @parent.attributes.except(:id), { :title => 'Other' } ])
+            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, [ @parent.attributes.except(:id), { title: 'Other' } ])
           end
 
           describe 'with a matching Hash' do
@@ -683,8 +683,8 @@ describe DataMapper::Query::Conditions::InclusionComparison do
 
         describe 'with an Enumerable value containing a new Resource' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             new_resource = @model.new(@parent.attributes.except(:id))
 
@@ -718,8 +718,8 @@ describe DataMapper::Query::Conditions::InclusionComparison do
 
         describe 'with an Enumerable value containing a saved Resource' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, [ @parent ])
           end
@@ -846,7 +846,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
       supported_by :all do
         describe 'with a valid Array value' do
           before do
-            @value      = [ @model.new(:id => 1) ]
+            @value      = [ @model.new(id: 1) ]
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @value)
           end
 
@@ -914,13 +914,13 @@ describe DataMapper::Query::Conditions::InclusionComparison do
 
       describe 'with a Relationship subject' do
         before :all do
-          @parent = @model.create(:title => 'Parent')
-          @child  = @parent.children.create(:title => 'Child')
+          @parent = @model.create(title: 'Parent')
+          @child  = @parent.children.create(title: 'Child')
         end
 
         describe 'with an Hash value' do
           before do
-            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, :id => @parent.id)
+            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, id: @parent.id)
           end
 
           it { should be_kind_of(DataMapper::Collection) }
@@ -978,7 +978,7 @@ describe DataMapper::Query::Conditions::RegexpComparison do
     @other_value = /Other Title/
     @slug        = :regexp
     @comparison  = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other       = OtherComparison.new(@property, @value)
+    @other       = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
@@ -1060,7 +1060,7 @@ describe DataMapper::Query::Conditions::LikeComparison do
     @other_value    = 'Other Title'
     @slug           = :like
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
@@ -1142,7 +1142,7 @@ describe DataMapper::Query::Conditions::GreaterThanComparison do
     @other_value    = 2
     @slug           = :gt
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
@@ -1234,7 +1234,7 @@ describe DataMapper::Query::Conditions::LessThanComparison do
     @other_value    = 2
     @slug           = :lt
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
@@ -1326,7 +1326,7 @@ describe DataMapper::Query::Conditions::GreaterThanOrEqualToComparison do
     @other_value    = 2
     @slug           = :gte
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
@@ -1418,7 +1418,7 @@ describe DataMapper::Query::Conditions::LessThanOrEqualToComparison do
     @other_value    = 2
     @slug           = :lte
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }

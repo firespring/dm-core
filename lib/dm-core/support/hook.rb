@@ -21,11 +21,10 @@ module DataMapper
   # Please bring up any issues regarding Hooks with carllerche on IRC
   #
   module Hook
-
     def self.included(base)
       base.extend(ClassMethods)
-      base.const_set("CLASS_HOOKS", {}) unless base.const_defined?("CLASS_HOOKS")
-      base.const_set("INSTANCE_HOOKS", {}) unless base.const_defined?("INSTANCE_HOOKS")
+      base.const_set('CLASS_HOOKS', {}) unless base.const_defined?('CLASS_HOOKS')
+      base.const_set('INSTANCE_HOOKS', {}) unless base.const_defined?('INSTANCE_HOOKS')
       base.class_eval do
         class << self
           def method_added(name)
@@ -107,24 +106,24 @@ module DataMapper
         install_hook :after, target_method, method_sym, :instance, &block
       end
 
-      # Register a class method as hookable. Registering a method means that
+      # Register a class method as hook-able. Registering a method means that
       # before hooks will be run immediately before the method is invoked and
       # after hooks will be called immediately after the method is invoked.
       #
-      # @param hookable_method<Symbol> The name of the class method that should
-      #   be hookable
+      # @param hooks <Symbol> The name of the class method that should
+      #   be hook-able
       # -
       # @api public
       def register_class_hooks(*hooks)
         hooks.each { |hook| register_hook(hook, :class) }
       end
 
-      # Register aninstance method as hookable. Registering a method means that
+      # Register an instance method as hook-able. Registering a method means that
       # before hooks will be run immediately before the method is invoked and
       # after hooks will be called immediately after the method is invoked.
       #
-      # @param hookable_method<Symbol> The name of the instance method that should
-      #   be hookable
+      # @param hooks <Symbol> The name of the instance method that should
+      #   be hook-able
       # -
       # @api public
       def register_instance_hooks(*hooks)
@@ -132,7 +131,7 @@ module DataMapper
       end
 
       # Not yet implemented
-      def reset_hook!(target_method, scope)
+      def reset_hook!(_target_method, _scope)
         raise NotImplementedError
       end
 
@@ -142,29 +141,29 @@ module DataMapper
       # working with class methods or instance methods
       def hooks_with_scope(scope)
         case scope
-          when :class    then class_hooks
-          when :instance then instance_hooks
-          else raise ArgumentError, 'You need to pass :class or :instance as scope'
+        when :class    then class_hooks
+        when :instance then instance_hooks
+        else raise ArgumentError, 'You need to pass :class or :instance as scope'
         end
       end
 
       def class_hooks
-        self.const_get("CLASS_HOOKS")
+        const_get('CLASS_HOOKS')
       end
 
       def instance_hooks
-        self.const_get("INSTANCE_HOOKS")
+        const_get('INSTANCE_HOOKS')
       end
 
-      # Registers a method as hookable. Registering hooks involves the following
+      # Registers a method as hook-able. Registering hooks involves the following
       # process
       #
       # * Create a blank entry in the HOOK Hash for the method.
       # * Define the methods that execute the before and after hook stack.
       #   These methods will be no-ops at first, but everytime a new hook is
       #   defined, the methods will be redefined to incorporate the new hook.
-      # * Redefine the method that is to be hookable so that the hook stacks
-      #   are invoked approprietly.
+      # * Redefine the method that is to be hook-able so that the hook stacks
+      #   are invoked appropriately.
       def register_hook(target_method, scope)
         if scope == :instance && !method_defined?(target_method)
           raise ArgumentError, "#{target_method} instance method does not exist"
@@ -174,23 +173,23 @@ module DataMapper
 
         hooks = hooks_with_scope(scope)
 
-        if hooks[target_method].nil?
-          hooks[target_method] = {
-            # We need to keep track of which class in the Inheritance chain the
-            # method was declared hookable in. Every time a child declares a new
-            # hook for the method, the hook stack invocations need to be redefined
-            # in the original Class. See #define_hook_stack_execution_methods
-            :before => [], :after => [], :in => self
-          }
+        return unless hooks[target_method].nil?
 
-          define_hook_stack_execution_methods(target_method, scope)
-          define_advised_method(target_method, scope)
-        end
+        hooks[target_method] = {
+          # We need to keep track of which class in the Inheritance chain the
+          # method was declared hook-able in. Every time a child declares a new
+          # hook for the method, the hook stack invocations need to be redefined
+          # in the original Class. See #define_hook_stack_execution_methods
+          before: [], after: [], in: self
+        }
+
+        define_hook_stack_execution_methods(target_method, scope)
+        define_advised_method(target_method, scope)
       end
 
-      # Is the method registered as a hookable in the given scope.
+      # Is the method registered as a hook-able in the given scope.
       def registered_as_hook?(target_method, scope)
-        ! hooks_with_scope(scope)[target_method].nil?
+        !hooks_with_scope(scope)[target_method].nil?
       end
 
       # Generates names for the various utility methods. We need to do this because
@@ -199,26 +198,21 @@ module DataMapper
       def hook_method_name(target_method, prefix, suffix)
         target_method = target_method.to_s
 
-        case target_method[-1,1]
-          when '?' then "#{prefix}_#{target_method[0..-2]}_ques_#{suffix}"
-          when '!' then "#{prefix}_#{target_method[0..-2]}_bang_#{suffix}"
-          when '=' then "#{prefix}_#{target_method[0..-2]}_eq_#{suffix}"
+        case target_method[-1, 1]
+        when '?' then "#{prefix}_#{target_method[0..-2]}_ques_#{suffix}"
+        when '!' then "#{prefix}_#{target_method[0..-2]}_bang_#{suffix}"
+        when '=' then "#{prefix}_#{target_method[0..-2]}_eq_#{suffix}"
           # I add a _nan_ suffix here so that we don't ever encounter
           # any naming conflicts.
-          else "#{prefix}_#{target_method[0..-1]}_nan_#{suffix}"
+        else "#{prefix}_#{target_method}_nan_#{suffix}"
         end
       end
 
       # This will need to be refactored
       def process_method_added(method_name, scope)
         hooks_with_scope(scope).each do |target_method, hooks|
-          if hooks[:before].any? { |hook| hook[:name] == method_name }
-            define_hook_stack_execution_methods(target_method, scope)
-          end
-
-          if hooks[:after].any? { |hook| hook[:name] == method_name }
-            define_hook_stack_execution_methods(target_method, scope)
-          end
+          define_hook_stack_execution_methods(target_method, scope) if hooks[:before].any? { |hook| hook[:name] == method_name }
+          define_hook_stack_execution_methods(target_method, scope) if hooks[:after].any? { |hook| hook[:name] == method_name }
         end
       end
 
@@ -227,23 +221,21 @@ module DataMapper
       # process. It should be called for each hook that is defined. It will also be called
       # when a hook is redefined (to make sure that the arity hasn't changed).
       def define_hook_stack_execution_methods(target_method, scope)
-        unless registered_as_hook?(target_method, scope)
-          raise ArgumentError, "#{target_method} has not be registered as a hookable #{scope} method"
-        end
+        raise ArgumentError, "#{target_method} has not be registered as a hook-able #{scope} method" unless registered_as_hook?(target_method, scope)
 
         hooks = hooks_with_scope(scope)
 
         before_hooks = hooks[target_method][:before]
-        before_hooks = before_hooks.map{ |info| inline_call(info, scope) }.join("\n")
+        before_hooks = before_hooks.map { |info| inline_call(info, scope) }.join("\n")
 
         after_hooks  = hooks[target_method][:after]
-        after_hooks  = after_hooks.map{ |info| inline_call(info, scope) }.join("\n")
+        after_hooks  = after_hooks.map { |info| inline_call(info, scope) }.join("\n")
 
         before_hook_name = hook_method_name(target_method, 'execute_before', 'hook_stack')
         after_hook_name  = hook_method_name(target_method, 'execute_after',  'hook_stack')
 
         hooks[target_method][:in].class_eval <<-RUBY, __FILE__, __LINE__ + 1
-          #{scope == :class ? 'class << self' : ''}
+          #{(scope == :class) ? 'class << self' : ''}
 
           private
 
@@ -257,7 +249,7 @@ module DataMapper
             #{after_hooks}
           end
 
-          #{scope == :class ? 'end' : ''}
+          #{(scope == :class) ? 'end' : ''}
         RUBY
       end
 
@@ -267,10 +259,10 @@ module DataMapper
         DataMapper::Hook::ClassMethods.hook_scopes << method_info[:from]
         name = method_info[:name]
         if scope == :instance
-          args = method_defined?(name) && instance_method(name).arity != 0 ? '*args' : ''
+          args = (method_defined?(name) && instance_method(name).arity != 0) ? '*args' : ''
           %(#{name}(#{args}) if self.class <= DataMapper::Hook::ClassMethods.object_by_id(#{method_info[:from].object_id}))
         else
-          args = respond_to?(name) && method(name).arity != 0 ? '*args' : ''
+          args = (respond_to?(name) && method(name).arity != 0) ? '*args' : ''
           %(#{name}(#{args}) if self <= DataMapper::Hook::ClassMethods.object_by_id(#{method_info[:from].object_id}))
         end
       end
@@ -292,15 +284,15 @@ module DataMapper
           end
         EOD
 
-        if scope == :instance && !instance_methods(false).any? { |m| m.to_sym == target_method }
+        if scope == :instance && instance_methods(false).none? { |m| m.to_sym == target_method }
           send(:alias_method, renamed_target, target_method)
 
           proxy_module = Module.new
           proxy_module.class_eval(source, __FILE__, __LINE__)
-          self.send(:include, proxy_module)
+          send(:include, proxy_module)
         else
-          source = %{alias_method :#{renamed_target}, :#{target_method}\n#{source}}
-          source = %{class << self\n#{source}\nend} if scope == :class
+          source = %(alias_method :#{renamed_target}, :#{target_method}\n#{source})
+          source = %(class << self\n#{source}\nend) if scope == :class
           class_eval(source, __FILE__, __LINE__)
         end
       end
@@ -312,24 +304,18 @@ module DataMapper
         assert_kind_of 'method_sym',    method_sym,    Symbol unless method_sym.nil?
         assert_kind_of 'scope',         scope,         Symbol
 
-        if !block_given? and method_sym.nil?
-          raise ArgumentError, "You need to pass 2 arguments to \"#{type}\"."
-        end
+        raise ArgumentError, "You need to pass 2 arguments to \"#{type}\"." if !block_given? && method_sym.nil?
 
-        if method_sym.to_s[-1,1] == '='
-          raise ArgumentError, "Methods ending in = cannot be hooks"
-        end
+        raise ArgumentError, 'Methods ending in = cannot be hooks' if method_sym.to_s[-1, 1] == '='
 
-        unless [ :class, :instance ].include?(scope)
-          raise ArgumentError, 'You need to pass :class or :instance as scope'
-        end
+        raise ArgumentError, 'You need to pass :class or :instance as scope' unless %i(class instance).include?(scope)
 
         if registered_as_hook?(target_method, scope)
           hooks = hooks_with_scope(scope)
 
-          #if this hook is previously declared in a sibling or cousin we must move the :in class
-          #to the common ancestor to get both hooks to run.
-          if !(hooks[target_method][:in] <=> self)
+          # if this hook is previously declared in a sibling or cousin we must move the :in class
+          # to the common ancestor to get both hooks to run.
+          unless hooks[target_method][:in] <=> self
             before_hook_name = hook_method_name(target_method, 'execute_before', 'hook_stack')
             after_hook_name  = hook_method_name(target_method, 'execute_after',  'hook_stack')
 
@@ -345,19 +331,17 @@ module DataMapper
               end
             RUBY
 
-            while !(hooks[target_method][:in] <=> self) do
-              hooks[target_method][:in] = hooks[target_method][:in].superclass
-            end
+            hooks[target_method][:in] = hooks[target_method][:in].superclass until hooks[target_method][:in] <=> self
 
             define_hook_stack_execution_methods(target_method, scope)
-            hooks[target_method][:in].class_eval{define_advised_method(target_method, scope)}
+            hooks[target_method][:in].class_eval { define_advised_method(target_method, scope) }
           end
         else
           register_hook(target_method, scope)
           hooks = hooks_with_scope(scope)
         end
 
-        #if  we were passed a block, create a method out of it.
+        # if we were passed a block, create a method out of it.
         if block
           method_sym = "__hooks_#{type}_#{quote_method(target_method)}_#{hooks[target_method][type].length}".to_sym
           if scope == :class
@@ -370,7 +354,7 @@ module DataMapper
         end
 
         # Adds method to the stack an redefines the hook invocation method
-        hooks[target_method][type] << { :name => method_sym, :from => self }
+        hooks[target_method][type] << {name: method_sym, from: self}
         define_hook_stack_execution_methods(target_method, scope)
       end
 
@@ -378,21 +362,21 @@ module DataMapper
 
       def args_for(method)
         if method.arity == 0
-          "&block"
+          '&block'
         elsif method.arity > 0
-          "_" << (1 .. method.arity).to_a.join(", _") << ", &block"
+          '_' << (1..method.arity).to_a.join(', _') << ', &block'
         elsif (method.arity + 1) < 0
-          "_" << (1 .. (method.arity).abs - 1).to_a.join(", _") << ", *args, &block"
+          '_' << (1..method.arity.abs - 1).to_a.join(', _') << ', *args, &block'
         else
-          "*args, &block"
+          '*args, &block'
         end
       end
 
       def method_with_scope(name, scope)
         case scope
-          when :class    then method(name)
-          when :instance then instance_method(name)
-          else raise ArgumentError, 'You need to pass :class or :instance as scope'
+        when :class    then method(name)
+        when :instance then instance_method(name)
+        else raise ArgumentError, 'You need to pass :class or :instance as scope'
         end
       end
 
@@ -400,6 +384,5 @@ module DataMapper
         name.to_s.gsub(/\?$/, '_q_').gsub(/!$/, '_b_').gsub(/=$/, '_eq_')
       end
     end
-
   end
 end

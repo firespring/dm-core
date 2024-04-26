@@ -1,16 +1,16 @@
-share_examples_for 'Collection Finder Interface' do
+shared_examples 'Collection Finder Interface' do
   before :all do
-    %w[ @article_model @article @other @articles ].each do |ivar|
+    %w(@article_model @article @other @articles).each do |ivar|
       raise "+#{ivar}+ should be defined in before block" unless instance_variable_defined?(ivar)
       raise "+#{ivar}+ should not be nil in before block" unless instance_variable_get(ivar)
     end
   end
 
   before :all do
-    @no_join = defined?(DataMapper::Adapters::InMemoryAdapter) && @adapter.kind_of?(DataMapper::Adapters::InMemoryAdapter) ||
-               defined?(DataMapper::Adapters::YamlAdapter)     && @adapter.kind_of?(DataMapper::Adapters::YamlAdapter)
+    @no_join = (defined?(DataMapper::Adapters::InMemoryAdapter) && @adapter.is_a?(DataMapper::Adapters::InMemoryAdapter)) ||
+               (defined?(DataMapper::Adapters::YamlAdapter)     && @adapter.is_a?(DataMapper::Adapters::YamlAdapter))
 
-    @many_to_many = @articles.kind_of?(DataMapper::Associations::ManyToMany::Collection)
+    @many_to_many = @articles.is_a?(DataMapper::Associations::ManyToMany::Collection)
 
     @skip = @no_join && @many_to_many
   end
@@ -60,7 +60,7 @@ share_examples_for 'Collection Finder Interface' do
 
   describe '#first' do
     before :all do
-      1.upto(5) { |number| @articles.create(:content => "Article #{number}") }
+      1.upto(5) { |number| @articles.create(content: "Article #{number}") }
 
       @copy = @articles.dup
       @copy.to_a
@@ -142,11 +142,11 @@ share_examples_for 'Collection Finder Interface' do
     end
   end
 
-  [ :get, :get! ].each do |method|
+  %i(get get!).each do |method|
     describe 'with a key to a Resource within a Collection using a limit' do
       before :all do
         rescue_if @skip && method == :get! do
-          @articles = @articles.all(:limit => 1)
+          @articles = @articles.all(limit: 1)
 
           @return = @resource = @articles.send(method, *@article.key)
         end
@@ -164,8 +164,8 @@ share_examples_for 'Collection Finder Interface' do
     describe 'with a key to a Resource within a Collection using an offset' do
       before :all do
         rescue_if @skip && method == :get! do
-          @new = @articles.create(:content => 'New Article')
-          @articles = @articles.all(:offset => 1, :limit => 1)
+          @new = @articles.create(content: 'New Article')
+          @articles = @articles.all(offset: 1, limit: 1)
 
           @return = @resource = @articles.send(method, *@new.key)
         end
@@ -183,7 +183,7 @@ share_examples_for 'Collection Finder Interface' do
 
   describe '#last' do
     before :all do
-      1.upto(5) { |number| @articles.create(:content => "Article #{number}") }
+      1.upto(5) { |number| @articles.create(content: "Article #{number}") }
 
       @copy = @articles.dup
       @copy.to_a

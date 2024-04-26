@@ -1,8 +1,8 @@
-share_examples_for 'An Adapter' do
+shared_examples 'An Adapter' do
 
   def self.adapter_supports?(*methods)
 
-    # FIXME obviously this needs a real fix!
+    # FIXME: obviously this needs a real fix!
     # --------------------------------------
     # Probably, delaying adapter_supports?
     # to be executed after DataMapper.setup
@@ -25,7 +25,7 @@ share_examples_for 'An Adapter' do
   # Hack to detect cases a let(:heffalump_model) is not present
   unless instance_methods.map(&:to_s).include?('heffalump_model')
     # This is the default Heffalump model. You can replace it with your own
-    # (using let/let!) # but # be shure the replacement provides the required
+    # (using let/let!) # but # be sure the replacement provides the required
     # properties.
     let(:heffalump_model) do
       model = Class.new do
@@ -37,7 +37,9 @@ share_examples_for 'An Adapter' do
         property :striped,   DataMapper::Property::Boolean
 
         # This is needed for DataMapper.finalize
-        def self.name; 'Heffalump'; end
+        def self.name
+          'Heffalump'
+        end
       end
 
       DataMapper.finalize
@@ -66,12 +68,12 @@ share_examples_for 'An Adapter' do
 
       it 'should not raise any errors' do
         lambda {
-          heffalump_model.new(:color => 'peach').save.should be(true)
+          heffalump_model.new(color: 'peach').save.should be(true)
         }.should_not raise_error
       end
 
       it 'should set the identity field for the resource' do
-        heffalump = heffalump_model.new(:color => 'peach')
+        heffalump = heffalump_model.new(color: 'peach')
         heffalump.id.should be_nil
         heffalump.save.should be(true)
         heffalump.id.should_not be_nil
@@ -84,7 +86,7 @@ share_examples_for 'An Adapter' do
   if adapter_supports?(:read)
     describe '#read' do
       before :all do
-        @heffalump = heffalump_model.create(:color => 'brownish hue')
+        @heffalump = heffalump_model.create(color: 'brownish hue')
         @heffalump.should be_saved
         @query = heffalump_model.all.query
       end
@@ -95,12 +97,12 @@ share_examples_for 'An Adapter' do
 
       it 'should not raise any errors' do
         lambda {
-          heffalump_model.all()
+          heffalump_model.all
         }.should_not raise_error
       end
 
       it 'should return expected results' do
-        heffalump_model.all.should == [ @heffalump ]
+        heffalump_model.all.should == [@heffalump]
       end
     end
   else
@@ -110,7 +112,7 @@ share_examples_for 'An Adapter' do
   if adapter_supports?(:update)
     describe '#update' do
       before do
-        @heffalump = heffalump_model.create(:color => 'peach', :num_spots => 1, :striped => false)
+        @heffalump = heffalump_model.create(color: 'peach', num_spots: 1, striped: false)
         @heffalump.should be_saved
       end
 
@@ -152,7 +154,7 @@ share_examples_for 'An Adapter' do
   if adapter_supports?(:delete)
     describe '#delete' do
       before do
-        @heffalump = heffalump_model.create(:color => 'forest green')
+        @heffalump = heffalump_model.create(color: 'forest green')
         @heffalump.should be_saved
       end
 
@@ -179,10 +181,10 @@ share_examples_for 'An Adapter' do
   if adapter_supports?(:read, :create)
     describe 'query matching' do
       before :all do
-        @red  = heffalump_model.create(:color => 'red')
-        @two  = heffalump_model.create(:num_spots => 2)
-        @five = heffalump_model.create(:num_spots => 5)
-        [ @red, @two, @five ].each { |resource| resource.should be_saved }
+        @red  = heffalump_model.create(color: 'red')
+        @two  = heffalump_model.create(num_spots: 2)
+        @five = heffalump_model.create(num_spots: 5)
+        [@red, @two, @five].each { |resource| resource.should be_saved }
       end
 
       after :all do
@@ -192,19 +194,19 @@ share_examples_for 'An Adapter' do
       describe 'conditions' do
         describe 'eql' do
           it 'should be able to search for objects included in an inclusive range of values' do
-            heffalump_model.all(:num_spots => 1..5).should include(@five)
+            heffalump_model.all(num_spots: 1..5).should include(@five)
           end
 
           it 'should be able to search for objects included in an exclusive range of values' do
-            heffalump_model.all(:num_spots => 1...6).should include(@five)
+            heffalump_model.all(num_spots: 1...6).should include(@five)
           end
 
           it 'should not be able to search for values not included in an inclusive range of values' do
-            heffalump_model.all(:num_spots => 1..4).should_not include(@five)
+            heffalump_model.all(num_spots: 1..4).should_not include(@five)
           end
 
           it 'should not be able to search for values not included in an exclusive range of values' do
-            heffalump_model.all(:num_spots => 1...5).should_not include(@five)
+            heffalump_model.all(num_spots: 1...5).should_not include(@five)
           end
         end
 
@@ -226,29 +228,29 @@ share_examples_for 'An Adapter' do
           end
 
           it 'should be able to search for object with a nil value using required properties' do
-            heffalump_model.all(:id.not => nil).should == [ @red, @two, @five ]
+            heffalump_model.all(:id.not => nil).should == [@red, @two, @five]
           end
 
           it 'should be able to search for objects not in an empty list (match all)' do
-            heffalump_model.all(:color.not => []).should == [ @red, @two, @five ]
+            heffalump_model.all(:color.not => []).should == [@red, @two, @five]
           end
 
           it 'should be able to search for objects in an empty list and another OR condition (match none on the empty list)' do
             heffalump_model.all(
-              :conditions => DataMapper::Query::Conditions::Operation.new(
+              conditions: DataMapper::Query::Conditions::Operation.new(
                 :or,
                 DataMapper::Query::Conditions::Comparison.new(:in, heffalump_model.properties[:color], []),
                 DataMapper::Query::Conditions::Comparison.new(:in, heffalump_model.properties[:num_spots], [5])
               )
-            ).should == [ @five ]
+            ).should == [@five]
           end
 
           it 'should be able to search for objects not included in an array of values' do
-            heffalump_model.all(:num_spots.not => [ 1, 3, 5, 7 ]).should include(@two)
+            heffalump_model.all(:num_spots.not => [1, 3, 5, 7]).should include(@two)
           end
 
           it 'should be able to search for objects not included in an array of values' do
-            heffalump_model.all(:num_spots.not => [ 1, 3, 5, 7 ]).should_not include(@five)
+            heffalump_model.all(:num_spots.not => [1, 3, 5, 7]).should_not include(@five)
           end
 
           it 'should be able to search for objects not included in an inclusive range of values' do
@@ -280,18 +282,18 @@ share_examples_for 'An Adapter' do
 
         describe 'regexp' do
           before do
-            if (defined?(DataMapper::Adapters::SqliteAdapter) && adapter.kind_of?(DataMapper::Adapters::SqliteAdapter) ||
-                defined?(DataMapper::Adapters::SqlserverAdapter) && adapter.kind_of?(DataMapper::Adapters::SqlserverAdapter))
+            if (defined?(DataMapper::Adapters::SqliteAdapter) && adapter.is_a?(DataMapper::Adapters::SqliteAdapter)) ||
+               (defined?(DataMapper::Adapters::SqlserverAdapter) && adapter.is_a?(DataMapper::Adapters::SqlserverAdapter))
               pending 'delegate regexp matches to same system that the InMemory and YAML adapters use'
             end
           end
 
           it 'should be able to search for objects that match value' do
-            heffalump_model.all(:color => /ed/).should include(@red)
+            heffalump_model.all(color: /ed/).should include(@red)
           end
 
           it 'should not be able to search for objects that do not match the value' do
-            heffalump_model.all(:color => /blak/).should_not include(@red)
+            heffalump_model.all(color: /blak/).should_not include(@red)
           end
 
           it 'should be able to do a negated search for objects that match value' do
@@ -301,7 +303,6 @@ share_examples_for 'An Adapter' do
           it 'should not be able to do a negated search for objects that do not match value' do
             heffalump_model.all(:color.not => /ed/).should_not include(@red)
           end
-
         end
 
         describe 'gt' do
@@ -355,7 +356,7 @@ share_examples_for 'An Adapter' do
 
       describe 'limits' do
         it 'should be able to limit the objects' do
-          heffalump_model.all(:limit => 2).length.should == 2
+          heffalump_model.all(limit: 2).length.should == 2
         end
       end
     end
