@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 require 'ostruct'
 
@@ -496,10 +496,8 @@ describe DataMapper::Query do
 
           it { @return.should be_kind_of(DataMapper::Query) }
 
-          it 'should not set the conditions' do
-            pending do
-              @return.conditions.should be_nil
-            end
+          xit 'should not set the conditions' do
+            @return.conditions.should be_nil
           end
 
           it 'should set the links' do
@@ -519,10 +517,8 @@ describe DataMapper::Query do
 
           it { @return.should be_kind_of(DataMapper::Query) }
 
-          it 'should not set the conditions' do
-            pending do
-              @return.conditions.should be_nil
-            end
+          xit 'should not set the conditions' do
+            @return.conditions.should be_nil
           end
 
           it 'should set the links' do
@@ -542,18 +538,16 @@ describe DataMapper::Query do
 
           it { @return.should be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            pending do
-              @return.conditions.should ==
-                DataMapper::Query::Conditions::Operation.new(
-                  :and,
-                  DataMapper::Query::Conditions::Comparison.new(
-                    :eql,
-                    @model.properties[:name],
-                    'Dan Kubb'
-                  )
+          xit 'should set the conditions' do
+            @return.conditions.should ==
+              DataMapper::Query::Conditions::Operation.new(
+                :and,
+                DataMapper::Query::Conditions::Comparison.new(
+                  :eql,
+                  @model.properties[:name],
+                  'Dan Kubb'
                 )
-            end
+              )
           end
 
           it 'should be valid' do
@@ -569,18 +563,16 @@ describe DataMapper::Query do
 
           it { @return.should be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            pending do
-              @return.conditions.should ==
-                DataMapper::Query::Conditions::Operation.new(
-                  :and,
-                  DataMapper::Query::Conditions::Comparison.new(
-                    :eql,
-                    @model.properties[:name],
-                    'Dan Kubb'
-                  )
+          xit 'should set the conditions' do
+            @return.conditions.should ==
+              DataMapper::Query::Conditions::Operation.new(
+                :and,
+                DataMapper::Query::Conditions::Comparison.new(
+                  :eql,
+                  @model.properties[:name],
+                  'Dan Kubb'
                 )
-            end
+              )
           end
 
           it 'should not be valid' do
@@ -1933,9 +1925,8 @@ describe DataMapper::Query do
           it { should_not equal(@other) }
 
           it 'should factor out the operation matching everything' do
-            pending 'TODO: compress Query#conditions for proper comparison' do
-              should == DataMapper::Query.new(@repository, @model, :name => 'Dan Kubb')
-            end
+            pending 'TODO: compress Query#conditions for proper comparison'
+            should == DataMapper::Query.new(@repository, @model, :name => 'Dan Kubb')
           end
         end
 
@@ -2689,9 +2680,8 @@ describe DataMapper::Query do
         end
 
         it 'should update the offset to be relative to the original offset' do
-          pending "TODO: update Query##{method} handle negative offset" do
-            @return.offset.should == 2
-          end
+          pending "TODO: update Query##{method} handle negative offset"
+          @return.offset.should == 2
         end
 
         it 'should update the limit to 1' do
@@ -2713,9 +2703,8 @@ describe DataMapper::Query do
         end
 
         it 'should update the offset to be relative to the original offset' do
-          pending "TODO: update Query##{method} handle negative offset and length" do
-            @return.offset.should == 2
-          end
+          pending "TODO: update Query##{method} handle negative offset and length"
+          @return.offset.should == 2
         end
 
         it 'should update the limit to 1' do
@@ -2733,7 +2722,7 @@ describe DataMapper::Query do
         end
 
         before do
-          pending_if "TODO: update Query##{method} handle negative range", !defined?(@return)
+          pending "TODO: update Query##{method} handle negative range" unless defined?(@return)
         end
 
         it { @return.should be_kind_of(DataMapper::Query) }
@@ -2880,9 +2869,8 @@ describe DataMapper::Query do
       end
 
       it 'should update the offset to be relative to the original offset' do
-        pending 'TODO: update Query#slice! handle negative offset' do
-          @return.offset.should == 2
-        end
+        pending 'TODO: update Query#slice! handle negative offset'
+        @return.offset.should == 2
       end
 
       it 'should update the limit to 1' do
@@ -2904,9 +2892,8 @@ describe DataMapper::Query do
       end
 
       it 'should update the offset to be relative to the original offset' do
-        pending 'TODO: update Query#slice! handle negative offset and length' do
-          @return.offset.should == 2
-        end
+        pending 'TODO: update Query#slice! handle negative offset and length'
+        @return.offset.should == 2
       end
 
       it 'should update the limit to 1' do
@@ -2924,7 +2911,7 @@ describe DataMapper::Query do
       end
 
       before do
-        pending_if 'TODO: update Query#slice! handle negative range', !defined?(@return)
+        pending 'TODO: update Query#slice! handle negative range' unless defined?(@return)
       end
 
       it { @return.should be_kind_of(DataMapper::Query) }
@@ -3663,10 +3650,8 @@ describe DataMapper::Query do
 
         it { @return.should be_kind_of(DataMapper::Query) }
 
-        it 'should not set the conditions' do
-          pending do
-            @return.conditions.should be_nil
-          end
+        xit 'should not set the conditions' do
+          @return.conditions.should be_nil
         end
 
         it 'should set the links' do

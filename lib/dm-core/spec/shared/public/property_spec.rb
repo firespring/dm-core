@@ -104,7 +104,7 @@ shared_examples 'A public Property' do
     describe '.load_as' do
       it 'should return the load_as' do
         [@type, @subtype].each do |type|
-          type.load_as.should be(@load_as)
+          expect(type.load_as).to be(@load_as)
         end
       end
 
