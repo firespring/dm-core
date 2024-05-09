@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Model::Hook do
   before :all do
@@ -30,8 +30,8 @@ describe DataMapper::Model::Hook do
         @resource.an_instance_method
       end
 
-      it 'should execute before instance method hook' do
-        @hooks.should == [ :before_instance_method ]
+      it 'executes before instance method hook' do
+        expect(@hooks).to eq [:before_instance_method]
       end
     end
 
@@ -44,8 +44,8 @@ describe DataMapper::Model::Hook do
           @resource.save
         end
 
-        it 'should execute before save hook' do
-          @hooks.should == [ :before_save ]
+        it 'executes before save hook' do
+          expect(@hooks).to eq [:before_save]
         end
       end
     end
@@ -59,8 +59,8 @@ describe DataMapper::Model::Hook do
           @resource.save
         end
 
-        it 'should execute before create hook' do
-          @hooks.should == [ :before_create ]
+        it 'executes before create hook' do
+          expect(@hooks).to eq [:before_create]
         end
       end
     end
@@ -75,8 +75,8 @@ describe DataMapper::Model::Hook do
           @resource.update(:value => 2)
         end
 
-        it 'should execute before update hook' do
-          @hooks.should == [ :before_update ]
+        it 'executes before update hook' do
+          expect(@hooks).to eq [:before_update]
         end
       end
     end
@@ -91,8 +91,8 @@ describe DataMapper::Model::Hook do
           @resource.destroy
         end
 
-        it 'should execute before destroy hook' do
-          @hooks.should == [ :before_destroy ]
+        it 'executes before destroy hook' do
+          expect(@hooks).to eq [:before_destroy]
         end
       end
     end
@@ -104,9 +104,9 @@ describe DataMapper::Model::Hook do
           ModelHookSpecs.before(:an_instance_method) { hooks << :inherited_hook }
         end
 
-        it 'should execute inherited hook' do
+        it 'executes inherited hook' do
           ModelHookSpecsSubclass.new.an_instance_method
-          @hooks.should == [ :inherited_hook ]
+          expect(@hooks).to eq [:inherited_hook]
         end
       end
     end
@@ -118,15 +118,15 @@ describe DataMapper::Model::Hook do
           ModelHookSpecsSubclass.before(:an_instance_method) { hooks << :hook }
         end
 
-        it 'should execute hook' do
+        it 'executes hook' do
           ModelHookSpecsSubclass.new.an_instance_method
-          @hooks.should == [ :hook ]
+          expect(@hooks).to eq [:hook]
         end
 
-        it 'should not alter hooks in the parent class' do
-          @hooks.should be_empty
+        it 'does not alter hooks in the parent class' do
+          expect(@hooks).to be_empty
           ModelHookSpecs.new.an_instance_method
-          @hooks.should == []
+          expect(@hooks).to eq []
         end
       end
     end
@@ -141,8 +141,8 @@ describe DataMapper::Model::Hook do
         @resource.an_instance_method
       end
 
-      it 'should execute after instance method hook' do
-        @hooks.should == [ :after_instance_method ]
+      it 'executes after instance method hook' do
+        expect(@hooks).to eq [:after_instance_method]
       end
     end
 
@@ -155,8 +155,8 @@ describe DataMapper::Model::Hook do
           @resource.save
         end
 
-        it 'should execute after save hook' do
-          @hooks.should == [ :after_save ]
+        it 'executes after save hook' do
+          expect(@hooks).to eq [:after_save]
         end
       end
     end
@@ -170,8 +170,8 @@ describe DataMapper::Model::Hook do
           @resource.save
         end
 
-        it 'should execute after create hook' do
-          @hooks.should == [ :after_create ]
+        it 'executes after create hook' do
+          expect(@hooks).to eq [:after_create]
         end
       end
     end
@@ -186,8 +186,8 @@ describe DataMapper::Model::Hook do
           @resource.update(:value => 2)
         end
 
-        it 'should execute after update hook' do
-          @hooks.should == [ :after_update ]
+        it 'executes after update hook' do
+          expect(@hooks).to eq [:after_update]
         end
       end
     end
@@ -202,8 +202,8 @@ describe DataMapper::Model::Hook do
           @resource.destroy
         end
 
-        it 'should execute after destroy hook' do
-          @hooks.should == [ :after_destroy ]
+        it 'executes after destroy hook' do
+          expect(@hooks).to eq [:after_destroy]
         end
       end
     end
@@ -215,9 +215,9 @@ describe DataMapper::Model::Hook do
           ModelHookSpecs.after(:an_instance_method) { hooks << :inherited_hook }
         end
 
-        it 'should execute inherited hook' do
+        it 'executes inherited hook' do
           ModelHookSpecsSubclass.new.an_instance_method
-          @hooks.should == [ :inherited_hook ]
+          expect(@hooks).to eq [:inherited_hook]
         end
       end
     end
@@ -229,18 +229,17 @@ describe DataMapper::Model::Hook do
           ModelHookSpecsSubclass.after(:an_instance_method) { hooks << :hook }
         end
 
-        it 'should execute hook' do
+        it 'executes hook' do
           ModelHookSpecsSubclass.new.an_instance_method
-          @hooks.should == [ :hook ]
+          expect(@hooks).to eq [:hook]
         end
 
-        it 'should not alter hooks in the parent class' do
-          @hooks.should be_empty
+        it 'does not alter hooks in the parent class' do
+          expect(@hooks).to be_empty
           ModelHookSpecs.new.an_instance_method
-          @hooks.should == []
+          expect(@hooks).to eq []
         end
       end
     end
-
   end
 end

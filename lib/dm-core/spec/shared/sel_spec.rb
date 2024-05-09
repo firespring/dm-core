@@ -45,18 +45,18 @@ shared_examples 'A Collection supporting Strategic Eager Loading' do
       @adapter = @original_adapter
     end
 
-    it "should only execute the Adapter#read #{loaded ? 'once' : 'twice'}" do
-      @adapter.counts[:read].should == (loaded ? 1 : 2)
+    it "only executes the Adapter#read #{loaded ? 'once' : 'twice'}" do
+      expect(@adapter.counts[:read]).to eq (loaded ? 1 : 2)
     end
 
-    it 'should return the expected results' do
+    it 'returns the expected results' do
       # if the collection is already loaded, then when it iterates it will
       # not know about the newly added articles and their revisions
       if loaded
-        @results.should == [ [ @article, @revision ] ]
+        expect(@results).to eq [[@article, @revision]]
       else
         pending_if 'TODO: make m:m not kick when delegating to the relationship', @many_to_many do
-          @results.should == [ [ @article, @revision ], [ @new_article, @new_revision ] ]
+          expect(@results).to eq [[@article, @revision], [@new_article, @new_revision]]
         end
       end
     end
@@ -99,13 +99,13 @@ shared_examples 'A Resource supporting Strategic Eager Loading' do
       @adapter = @original_adapter
     end
 
-    it 'should only execute the Adapter#read twice' do
-      @adapter.counts[:read].should == 2
+    it 'only executes the Adapter#read twice' do
+      expect(@adapter.counts[:read]).to eq 2
     end
 
-    it 'should return the expected results' do
+    it 'returns the expected results' do
       # results are ordered alphabetically by the User name
-      @results.should == [ [ @new_user, @referrer ], [ @referrer, nil ], [ @user, @referrer ] ]
+      expect(@results).to eq [[@new_user, @referrer], [@referrer, nil], [@user, @referrer]]
     end
   end
 end

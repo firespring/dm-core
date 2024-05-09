@@ -1,12 +1,12 @@
 shared_examples 'A method that delegates to the superclass #set' do
-  it 'should delegate to the superclass' do
+  it 'Delegates to the superclass' do
     # this is the only way I could think of to test if the
     # superclass method is being called
     DataMapper::Resource::PersistenceState.class_eval do
       alias_method :original_set, :set
       undef_method(:set)
     end
-    method(:subject).should raise_error(NoMethodError)
+    expect { method(:subject) }.to raise_error(NoMethodError)
     DataMapper::Resource::PersistenceState.class_eval do
       alias_method :set, :original_set
       undef_method(:original_set)
@@ -15,14 +15,14 @@ shared_examples 'A method that delegates to the superclass #set' do
 end
 
 shared_examples 'A method that does not delegate to the superclass #set' do
-  it 'should delegate to the superclass' do
+  it 'Delegates to the superclass' do
     # this is the only way I could think of to test if the
     # superclass method is not being called
     DataMapper::Resource::PersistenceState.class_eval do
       alias_method :original_set, :set
       undef_method(:set)
     end
-    method(:subject).should_not raise_error(NoMethodError)
+    expect { method(:subject) }.not_to raise_error(NoMethodError)
     DataMapper::Resource::PersistenceState.class_eval do
       alias_method :set, :original_set
       undef_method(:original_set)
@@ -31,20 +31,20 @@ shared_examples 'A method that does not delegate to the superclass #set' do
 end
 
 shared_examples 'It resets resource state' do
-  it 'should reset the dirty property' do
-    method(:subject).should change(@resource, :name).from('John Doe').to('Dan Kubb')
+  it 'Resets the dirty property' do
+    expect { method(:subject) }.to change(@resource, :name).from('John Doe').to('Dan Kubb')
   end
 
-  it 'should reset the dirty m:1 relationship' do
-    method(:subject).should change(@resource, :parent).from(@resource).to(nil)
+  it 'Resets the dirty m:1 relationship' do
+    expect { method(:subject) }.to change(@resource, :parent).from(@resource).to(nil)
   end
 
-  it 'should reset the dirty 1:m relationship' do
-    method(:subject).should change(@resource, :children).from([ @resource ]).to([])
+  it 'Resets the dirty 1:m relationship' do
+    expect { method(:subject) }.to change(@resource, :children).from([@resource]).to([])
   end
 
-  it 'should clear original attributes' do
-    method(:subject).should change { @resource.original_attributes.dup }.to({})
+  it 'Clear original attributes' do
+    expect { method(:subject) }.to change { @resource.original_attributes.dup }.to({})
   end
 end
 
@@ -57,20 +57,20 @@ shared_examples 'Resource::PersistenceState::Persisted#get' do
         @key = @model.relationships[:parent]
 
         # set the parent relationship
-        @resource.attributes = { @key => @resource }
-        @resource.should be_dirty
-        @resource.save.should be(true)
+        @resource.attributes = {@key => @resource}
+        expect(@resource).to be_dirty
+        expect(@resource.save).to be(true)
 
         attributes = @model.key.zip(@resource.key).to_h
-        @resource  = @model.first(attributes.merge(fields: @model.key))
-        @state     = @state.class.new(@resource)
+        @resource = @model.first(attributes.merge(fields: @model.key))
+        @state = @state.class.new(@resource)
 
         # make sure the subject is not loaded
-        @key.should_not be_loaded(@resource)
+        expect(@key).not_to be_loaded(@resource)
       end
 
-      it 'should lazy load the value' do
-        subject.key.should == @resource.key
+      it 'Lazy loads the value' do
+        expect(subject.key).to eq @resource.key
       end
     end
 
@@ -80,11 +80,11 @@ shared_examples 'Resource::PersistenceState::Persisted#get' do
         @loaded_value ||= 'Dan Kubb'
 
         # make sure the subject is loaded
-        @key.should be_loaded(@resource)
+        expect(@key).to be_loaded(@resource)
       end
 
-      it 'should return value' do
-        should == @loaded_value
+      it 'Returns value' do
+        is_expected.to eq @loaded_value
       end
     end
   end

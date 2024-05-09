@@ -1,11 +1,11 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/ordered_set'
-require 'unit/data_mapper/ordered_set/shared/each_spec'
+require_relative 'shared/each_spec'
 
 describe 'DataMapper::OrderedSet' do
   subject { DataMapper::OrderedSet.new }
 
-  it_should_behave_like 'DataMapper::OrderedSet'
+  it_behaves_like 'DataMapper::OrderedSet'
 end
 
 describe 'DataMapper::OrderedSet#each' do
@@ -15,5 +15,5 @@ describe 'DataMapper::OrderedSet#each' do
   let(:entry)  { 1                                     }
   let(:yields) { []                                    }
 
-  it_should_behave_like 'DataMapper::OrderedSet#each'
+  it_behaves_like 'DataMapper::OrderedSet#each'
 end

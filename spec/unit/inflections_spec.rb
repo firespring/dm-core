@@ -1,16 +1,14 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 require 'dm-core/support/inflector/inflections'
 
 describe DataMapper::Inflector do
-
-  it "should singularize 'status' correctly" do
-    DataMapper::Inflector.singularize('status').should eql 'status'
-    DataMapper::Inflector.singularize('status').should_not eql 'statu'
+  it "singularizes 'status' correctly" do
+    expect(DataMapper::Inflector.singularize('status')).to eql 'status'
+    expect(DataMapper::Inflector.singularize('status')).not_to eql 'statu'
   end
 
-  it "should singularize 'alias' correctly" do
-    DataMapper::Inflector.singularize('alias').should eql 'alias'
-    DataMapper::Inflector.singularize('alias').should_not eql 'alia'
+  it "singularizes 'alias' correctly" do
+    expect(DataMapper::Inflector.singularize('alias')).to eql 'alias'
+    expect(DataMapper::Inflector.singularize('alias')).not_to eql 'alia'
   end
-
 end

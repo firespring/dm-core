@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe 'SEL', 'with STI subclasses' do
   before :all do
@@ -44,10 +44,10 @@ describe 'SEL', 'with STI subclasses' do
       @comment_model.create(:title => 'SEL and STI error', :author => author2)
     end
 
-    it 'should allow STI loading of mixed relationships' do
-      lambda {
+    it 'allows STI loading of mixed relationships' do
+      expect {
         @message_model.all.each { |message| message.author }
-      }.should_not raise_error(ArgumentError)
+      }.not_to raise_error(ArgumentError)
     end
   end
 end

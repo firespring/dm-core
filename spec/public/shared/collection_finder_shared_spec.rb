@@ -1,7 +1,7 @@
 shared_examples 'Collection Finder Interface' do
   before :all do
     %w(@article_model @article @other @articles).each do |ivar|
-      raise "+#{ivar}+ should be defined in before block" unless instance_variable_defined?(ivar)
+      raise "+#{ivar}+ is defined in before block" unless instance_variable_defined?(ivar)
       raise "+#{ivar}+ should not be nil in before block" unless instance_variable_get(ivar)
     end
   end
@@ -32,12 +32,12 @@ shared_examples 'Collection Finder Interface' do
 
       should_not_be_a_kicker
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @resource.should equal(@other)
+      it 'returns expected Resource' do
+        expect(@resource).to equal(@other)
       end
     end
 
@@ -48,12 +48,12 @@ shared_examples 'Collection Finder Interface' do
 
       should_not_be_a_kicker
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @resource.should equal(@other)
+      it 'returns expected Resource' do
+        expect(@resource).to equal(@other)
       end
     end
   end
@@ -74,16 +74,16 @@ shared_examples 'Collection Finder Interface' do
         @return = @resource = @articles.first
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be first Resource in the Collection' do
-        @resource.should equal(@copy.entries.first)
+      it 'is first Resource in the Collection' do
+        expect(@resource).to equal(@copy.entries.first)
       end
 
-      it 'should return the same Resource every time' do
-        @return.should equal(@articles.first)
+      it 'returns the same Resource every time' do
+        expect(@return).to equal(@articles.first)
       end
     end
 
@@ -92,16 +92,16 @@ shared_examples 'Collection Finder Interface' do
         @return = @resource = @articles.unshift(@other).first
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @resource.should equal(@other)
+      it 'returns expected Resource' do
+        expect(@resource).to equal(@other)
       end
 
-      it 'should be first Resource in the Collection' do
-        @resource.should equal(@copy.entries.unshift(@other).first)
+      it 'is first Resource in the Collection' do
+        expect(@resource).to equal(@copy.entries.unshift(@other).first)
       end
     end
 
@@ -110,16 +110,16 @@ shared_examples 'Collection Finder Interface' do
         @return = @resource = @articles.unshift(@other).first({})
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @resource.should equal(@other)
+      it 'returns expected Resource' do
+        expect(@resource).to equal(@other)
       end
 
-      it 'should be first Resource in the Collection' do
-        @resource.should equal(@copy.entries.unshift(@other).first)
+      it 'is first Resource in the Collection' do
+        expect(@resource).to equal(@copy.entries.unshift(@other).first)
       end
     end
 
@@ -128,16 +128,16 @@ shared_examples 'Collection Finder Interface' do
         @return = @resources = @articles.unshift(@other).first(1)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should be the expected Collection' do
-        @resources.should == [ @other ]
+      it 'is the expected Collection' do
+        expect(@resources).to eq [@other]
       end
 
-      it 'should be the first N Resources in the Collection' do
-        @resources.should == @copy.entries.unshift(@other).first(1)
+      it 'is the first N Resources in the Collection' do
+        expect(@resources).to eq @copy.entries.unshift(@other).first(1)
       end
     end
   end
@@ -152,12 +152,12 @@ shared_examples 'Collection Finder Interface' do
         end
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be matching Resource in the Collection' do
-        @resource.should == @article
+      it 'is matching Resource in the Collection' do
+        expect(@resource).to eq @article
       end
     end
 
@@ -171,12 +171,12 @@ shared_examples 'Collection Finder Interface' do
         end
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be matching Resource in the Collection' do
-        @resource.should equal(@new)
+      it 'is matching Resource in the Collection' do
+        expect(@resource).to equal(@new)
       end
     end
   end
@@ -197,16 +197,16 @@ shared_examples 'Collection Finder Interface' do
         @return = @resource = @articles.last
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be last Resource in the Collection' do
-        @resource.should equal(@copy.entries.last)
+      it 'is last Resource in the Collection' do
+        expect(@resource).to equal(@copy.entries.last)
       end
 
-      it 'should return the same Resource every time' do
-        @return.should equal(@articles.last)
+      it 'returns the same Resource every time' do
+        expect(@return).to equal(@articles.last)
       end
     end
 
@@ -215,16 +215,16 @@ shared_examples 'Collection Finder Interface' do
         @return = @resource = @articles.push(@other).last
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @resource.should equal(@other)
+      it 'returns expected Resource' do
+        expect(@resource).to equal(@other)
       end
 
-      it 'should be last Resource in the Collection' do
-        @resource.should equal(@copy.entries.push(@other).last)
+      it 'is last Resource in the Collection' do
+        expect(@resource).to equal(@copy.entries.push(@other).last)
       end
     end
 
@@ -233,16 +233,16 @@ shared_examples 'Collection Finder Interface' do
         @return = @resource = @articles.push(@other).last({})
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @resource.should equal(@other)
+      it 'returns expected Resource' do
+        expect(@resource).to equal(@other)
       end
 
-      it 'should be last Resource in the Collection' do
-        @resource.should equal(@copy.entries.push(@other).last)
+      it 'is last Resource in the Collection' do
+        expect(@resource).to equal(@copy.entries.push(@other).last)
       end
     end
 
@@ -251,16 +251,16 @@ shared_examples 'Collection Finder Interface' do
         @return = @resources = @articles.push(@other).last(1)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should be the expected Collection' do
-        @resources.should == [ @other ]
+      it 'is the expected Collection' do
+        expect(@resources).to eq [@other]
       end
 
-      it 'should be the last N Resources in the Collection' do
-        @resources.should == @copy.entries.push(@other).last(1)
+      it 'is the last N Resources in the Collection' do
+        expect(@resources).to eq @copy.entries.push(@other).last(1)
       end
     end
   end

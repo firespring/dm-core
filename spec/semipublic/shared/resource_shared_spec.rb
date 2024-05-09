@@ -5,37 +5,37 @@ shared_examples 'A semipublic Resource' do
     end
   end
 
-  it { @user.should respond_to(:attribute_dirty?) }
+  it { expect(@user).to respond_to(:attribute_dirty?) }
 
   describe '#attribute_dirty?' do
     describe 'on a non-dirty record' do
-      it { @user.attribute_dirty?(:age).should be(false) }
+      it { expect(@user.attribute_dirty?(:age)).to be(false) }
     end
 
     describe 'on a dirty record' do
       before { @user.age = 100 }
 
-      it { @user.attribute_dirty?(:age).should be(true) }
+      it { expect(@user.attribute_dirty?(:age)).to be(true) }
     end
 
     describe 'on a new record' do
       before { @user = @user_model.new }
 
-      it { @user.attribute_dirty?(:age).should be(false) }
+      it { expect(@user.attribute_dirty?(:age)).to be(false) }
     end
   end
 
-  it { @user.should respond_to(:dirty_attributes) }
+  it { expect(@user).to respond_to(:dirty_attributes) }
 
   describe '#dirty_attributes' do
     describe 'on a saved/clean record' do
-      it { @user.dirty_attributes.should be_empty }
+      it { expect(@user.dirty_attributes).to be_empty }
     end
 
     describe 'on a saved/dirty record' do
       before { @user.age = 100 }
 
-      it { @user.dirty_attributes.should == { @user_model.properties[:age] => 100 } }
+      it { expect(@user.dirty_attributes).to eq({@user_model.properties[:age] => 100}) }
     end
 
     describe 'on an saved/set/unset record' do
@@ -44,7 +44,7 @@ shared_examples 'A semipublic Resource' do
         @user.age = 25
       end
 
-      it { @user.dirty_attributes.should be_empty }
+      it { expect(@user.dirty_attributes).to be_empty }
     end
 
     describe 'on an saved/unchanged record' do
@@ -52,19 +52,19 @@ shared_examples 'A semipublic Resource' do
         @user.age = 25
       end
 
-      it { @user.dirty_attributes.should be_empty }
+      it { expect(@user.dirty_attributes).to be_empty }
     end
 
     describe 'on a new/clean record' do
       before { @user = @user_model.new }
 
-      it { @user.dirty_attributes.should be_empty }
+      it { expect(@user.dirty_attributes).to be_empty }
     end
 
     describe 'on a new/dirty record' do
       before { @user = @user_model.new(:age => 100) }
 
-      it { @user.original_attributes.should == { @user_model.properties[:age] => nil } }
+      it { expect(@user.original_attributes).to eq({@user_model.properties[:age] => nil}) }
     end
 
     describe 'on an new/set/unset record' do
@@ -73,7 +73,7 @@ shared_examples 'A semipublic Resource' do
         @user.age = nil
       end
 
-      it { @user.dirty_attributes.should == { @user_model.properties[:age] => nil } }
+      it { expect(@user.dirty_attributes).to eq({@user_model.properties[:age] => nil}) }
     end
 
     describe 'on an new/unchanged record' do
@@ -81,21 +81,21 @@ shared_examples 'A semipublic Resource' do
         @user = @user_model.new(:age => nil)
       end
 
-      it { @user.dirty_attributes.should == { @user_model.properties[:age] => nil } }
+      it { expect(@user.dirty_attributes).to eq({@user_model.properties[:age] => nil}) }
     end
   end
 
-  it { @user.should respond_to(:original_attributes) }
+  it { expect(@user).to respond_to(:original_attributes) }
 
   describe '#original_attributes' do
     describe 'on a saved/clean record' do
-      it { @user.original_attributes.should be_empty }
+      it { expect(@user.original_attributes).to be_empty }
     end
 
     describe 'on a saved/dirty record' do
       before { @user.age = 100 }
 
-      it { @user.original_attributes.should == { @user_model.properties[:age] => 25 } }
+      it { expect(@user.original_attributes).to eq({@user_model.properties[:age] => 25}) }
     end
 
     describe 'on an saved/set/unset record' do
@@ -104,7 +104,7 @@ shared_examples 'A semipublic Resource' do
         @user.age = 25
       end
 
-      it { @user.original_attributes.should be_empty }
+      it { expect(@user.original_attributes).to be_empty }
     end
 
     describe 'on an saved/unchanged record' do
@@ -112,19 +112,19 @@ shared_examples 'A semipublic Resource' do
         @user.age = 25
       end
 
-      it { @user.original_attributes.should be_empty }
+      it { expect(@user.original_attributes).to be_empty }
     end
 
     describe 'on a new/clean record' do
       before { @user = @user_model.new }
 
-      it { @user.original_attributes.should be_empty }
+      it { expect(@user.original_attributes).to be_empty }
     end
 
     describe 'on a new/dirty record' do
       before { @user = @user_model.new(:age => 100) }
 
-      it { @user.original_attributes.should == { @user_model.properties[:age] => nil } }
+      it { expect(@user.original_attributes).to eq({@user_model.properties[:age] => nil}) }
     end
 
     describe 'on an new/set/unset record' do
@@ -133,7 +133,7 @@ shared_examples 'A semipublic Resource' do
         @user.age = nil
       end
 
-      it { @user.original_attributes.should == { @user_model.properties[:age] => nil } }
+      it { expect(@user.original_attributes).to eq({@user_model.properties[:age] => nil}) }
     end
 
     describe 'on an new/unchanged record' do
@@ -141,11 +141,11 @@ shared_examples 'A semipublic Resource' do
         @user = @user_model.new(:age => nil)
       end
 
-      it { @user.original_attributes.should == { @user_model.properties[:age] => nil } }
+      it { expect(@user.original_attributes).to eq({@user_model.properties[:age] => nil}) }
     end
   end
 
-  it { @user.should respond_to(:repository) }
+  it { expect(@user).to respond_to(:repository) }
 
   describe '#repository' do
     before :all do
@@ -170,30 +170,29 @@ shared_examples 'A semipublic Resource' do
         end
       end
 
-      it 'should return the default repository when nothing is specified' do
+      it 'Returns the default repository when nothing is specified' do
         default_repository = DataMapper.repository(:default)
-        @user_model.create(:name => 'carl').repository.should == default_repository
-        @user_model.new.repository.should                     == default_repository
-        @user_model.get('carl').repository.should             == default_repository
+        expect(@user_model.create(name: 'carl').repository).to eq default_repository
+        expect(@user_model.new.repository).to eq default_repository
+        expect(@user_model.get('carl').repository).to eq default_repository
       end
 
-      it 'should return the default repository for the model' do
-        statistic = Statistic.create(:name => 'visits', :value => 2)
-        statistic.repository.should        == @repository
-        Statistic.new.repository.should    == @repository
-        Statistic.get(statistic.id).repository.should == @repository
+      it 'Returns the default repository for the model' do
+        statistic = Statistic.create(name: 'visits', value: 2)
+        expect(statistic.repository).to eq @repository
+        expect(Statistic.new.repository).to eq @repository
+        expect(Statistic.get(statistic.id).repository).to eq @repository
       end
 
-      it 'should return the repository defined by the current context' do
+      it 'Returns the repository defined by the current context' do
         @repository.scope do
-          @user_model.new.repository.should                     == @repository
-          @user_model.create(:name => 'carl').repository.should == @repository
-          @user_model.get('carl').repository.should             == @repository
+          expect(@user_model.new.repository).to eq @repository
+          expect(@user_model.create(name: 'carl').repository).to eq @repository
+          expect(@user_model.get('carl').repository).to eq @repository
         end
 
-        @repository.scope { @user_model.get('carl') }.repository.should == @repository
+        expect(@repository.scope { @user_model.get('carl') }.repository).to eq @repository
       end
     end
-
   end
 end

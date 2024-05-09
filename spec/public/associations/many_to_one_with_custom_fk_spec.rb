@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 # TODO: combine this into many_to_one_spec.rb
 
@@ -34,16 +34,16 @@ describe 'Many to One Associations when foreign key is a property subclass' do
       @animal = @zoo.animals.create(:name => 'marty')
     end
 
-    it 'should have FK of the same property type as zoo PK' do
-      Animal.properties[:zoo_id].class.should be(Zoo.properties[:id].class)
+    it 'has FK of the same property type as zoo PK' do
+      expect(Animal.properties[:zoo_id].class).to be(Zoo.properties[:id].class)
     end
 
-    it 'should be able to access parent' do
-      @animal.zoo.should == @zoo
+    it 'is able to access parent' do
+      expect(@animal.zoo).to eq @zoo
     end
 
-    it 'should be able to access the children' do
-      @zoo.animals.should == [ @animal ]
+    it 'is able to access the children' do
+      expect(@zoo.animals).to eq [@animal]
     end
   end
 end

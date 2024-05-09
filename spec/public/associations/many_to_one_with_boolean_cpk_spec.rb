@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 # TODO: combine this into many_to_one_spec.rb
 
@@ -29,12 +29,12 @@ describe 'Many to One Associations when foreign key is part of a composite key, 
       @many = ManyModel.create(:integer_key => 1, :boolean_key => false)
     end
 
-    it 'should be able to access parent' do
-      @many.one_model.should == @one
+    it 'is able to access parent' do
+      expect(@many.one_model).to eq @one
     end
 
-    it 'should be able to access the child' do
-      @one.many_models.should == [ @many ]
+    it 'is able to access the child' do
+      expect(@one.many_models).to eq [@many]
     end
   end
 end

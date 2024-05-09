@@ -1,4 +1,5 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
+
 describe DataMapper::Resource::PersistenceState::Immutable do
   before :all do
     class ::Author
@@ -25,7 +26,8 @@ describe DataMapper::Resource::PersistenceState::Immutable do
     @resource  = @model.first(attributes.merge(:fields => [ :name, :parent_id ]))
 
     @state = @resource.persistence_state
-    @state.should be_kind_of(DataMapper::Resource::PersistenceState::Immutable)
+
+    expect(@state).to be_kind_of(DataMapper::Resource::PersistenceState::Immutable)
   end
 
   after do
@@ -36,8 +38,8 @@ describe DataMapper::Resource::PersistenceState::Immutable do
     subject { @state.commit }
 
     supported_by :all do
-      it 'should be a no-op' do
-        should equal(@state)
+      it 'is a no-op' do
+        is_expected.to equal(@state)
       end
     end
   end
@@ -46,8 +48,8 @@ describe DataMapper::Resource::PersistenceState::Immutable do
     subject { @state.delete }
 
     supported_by :all do
-      it 'should raise an exception' do
-        method(:subject).should raise_error(DataMapper::ImmutableError, 'Immutable resource cannot be deleted')
+      it 'raises an exception' do
+        expect { method(:subject) }.to raise_error(DataMapper::ImmutableError, 'Immutable resource cannot be deleted')
       end
     end
   end
@@ -61,8 +63,8 @@ describe DataMapper::Resource::PersistenceState::Immutable do
           @key = @model.properties[:id]
         end
 
-        it 'should raise an exception' do
-          method(:subject).should raise_error(DataMapper::ImmutableError, 'Immutable resource cannot be lazy loaded')
+        it 'raises an exception' do
+          expect { method(:subject) }.to raise_error(DataMapper::ImmutableError, 'Immutable resource cannot be lazy loaded')
         end
       end
 
@@ -71,8 +73,8 @@ describe DataMapper::Resource::PersistenceState::Immutable do
           @key = @model.relationships[:parent]
         end
 
-        it 'should return value' do
-          should == @parent
+        it 'returns value' do
+          is_expected.to eq @parent
         end
       end
 
@@ -81,8 +83,8 @@ describe DataMapper::Resource::PersistenceState::Immutable do
           @key = @model.properties[:name]
         end
 
-        it 'should return value' do
-          should == 'Dan Kubb'
+        it 'returns value' do
+          is_expected.to eq 'Dan Kubb'
         end
       end
     end
@@ -97,8 +99,8 @@ describe DataMapper::Resource::PersistenceState::Immutable do
     subject { @state.set(@key, @value) }
 
     supported_by :all do
-      it 'should raise an exception' do
-        method(:subject).should raise_error(DataMapper::ImmutableError, 'Immutable resource cannot be modified')
+      it 'raises an exception' do
+        expect { method(:subject) }.to raise_error(DataMapper::ImmutableError, 'Immutable resource cannot be modified')
       end
     end
   end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe 'Many to One Associations' do
   before :all do
@@ -77,7 +77,7 @@ describe 'Many to One Associations' do
       @user    = @comment.user
     end
 
-    it_should_behave_like 'A public Resource'
-    it_should_behave_like 'A Resource supporting Strategic Eager Loading'
+    it_behaves_like 'A public Resource'
+    it_behaves_like 'A Resource supporting Strategic Eager Loading'
   end
 end

@@ -48,8 +48,8 @@ shared_examples 'A public Property' do
           Object.send(:remove_const, :ChildSubType)
         end
 
-        it "should not override the child's type setting" do
-          @child_subtype.default.should eql(nil)
+        it "does not override the child's type setting" do
+          expect(@child_subtype.default).to eql(nil)
         end
       end
     end
@@ -61,17 +61,17 @@ shared_examples 'A public Property' do
 
     describe '.accept_options' do
       describe 'when provided :foo, :bar' do
-        it 'should add new options' do
+        it 'adds new options' do
           [@type, @subtype].each do |type|
-            type.accepted_options.include?(:foo).should be(true)
-            type.accepted_options.include?(:bar).should be(true)
+            expect(type.accepted_options.include?(:foo)).to be(true)
+            expect(type.accepted_options.include?(:bar)).to be(true)
           end
         end
 
-        it 'should create predefined option setters' do
+        it 'creates predefined option setters' do
           [@type, @subtype].each do |type|
-            type.should respond_to(:foo)
-            type.should respond_to(:bar)
+            expect(type).to respond_to(:foo)
+            expect(type).to respond_to(:bar)
           end
         end
 
@@ -82,35 +82,35 @@ shared_examples 'A public Property' do
             @property = @type.new(@model, @name, @options)
           end
 
-          it 'should set the pre-defined option values' do
-            @property.options[:foo].should == true
-            @property.options[:bar].should == 1
+          it 'sets the pre-defined option values' do
+            expect(@property.options[:foo]).to eq true
+            expect(@property.options[:bar]).to eq 1
           end
 
-          it 'should ask the superclass for the value if unknown' do
-            @subtype.foo.should == true
-            @subtype.bar.should == 1
+          it 'asks the superclass for the value if unknown' do
+            expect(@subtype.foo).to eq true
+            expect(@subtype.bar).to eq 1
           end
         end
       end
     end
 
     describe '.descendants' do
-      it 'should include the sub-type' do
-        @type.descendants.include?(SubType).should be(true)
+      it 'includes the sub-type' do
+        expect(@type.descendants.include?(SubType)).to be(true)
       end
     end
 
     describe '.load_as' do
-      it 'should return the load_as' do
+      it 'returns the load_as' do
         [@type, @subtype].each do |type|
           expect(type.load_as).to be(@load_as)
         end
       end
 
-      it 'should change the load_as class' do
+      it 'changes the load_as class' do
         @subtype.load_as Object
-        @subtype.load_as.should be(Object)
+        expect(@subtype.load_as).to be(Object)
       end
     end
   end
@@ -123,17 +123,17 @@ shared_examples 'A public Property' do
             @property = @type.new(@model, @name, @options.merge(opt => value))
           end
 
-          it "should return #{value}" do
-            @property.send(method).should be(value)
+          it "returns #{value}" do
+            expect(@property.send(method)).to be(value)
           end
         end
       end
 
       describe "when created with :#{opt} => true and :required => true" do
-        it 'should fail with ArgumentError' do
-          lambda {
-            @property = @type.new(@model, @name, @options.merge(opt => true, :required => true))
-          }.should raise_error(ArgumentError,
+        it 'fails with ArgumentError' do
+          expect {
+            @property = @type.new(@model, @name, @options.merge(opt => true, required: true))
+          }.to raise_error(ArgumentError,
                                'options[:required] cannot be mixed with :allow_nil or :allow_blank')
         end
       end
@@ -149,8 +149,8 @@ shared_examples 'A public Property' do
             @property = @type.new(@model, @name, @options.merge(opt => value))
           end
 
-          it "should return #{value}" do
-            @property.send(method).should be(value)
+          it "returns #{value}" do
+            expect(@property.send(method)).to be(value)
           end
         end
       end
@@ -163,8 +163,8 @@ shared_examples 'A public Property' do
         @property = @type.new(@model, @name, @options.merge(lazy: true, key: false))
       end
 
-      it 'should return true' do
-        @property.lazy?.should be(true)
+      it 'returns true' do
+        expect(@property.lazy?).to be(true)
       end
     end
 
@@ -173,8 +173,8 @@ shared_examples 'A public Property' do
         @property = @type.new(@model, @name, @options.merge(lazy: true, key: true))
       end
 
-      it 'should return false' do
-        @property.lazy?.should be(false)
+      it 'returns false' do
+        expect(@property.lazy?).to be(false)
       end
     end
   end
@@ -187,19 +187,19 @@ shared_examples 'A public Property' do
     context 'when provided the property class' do
       let(:klass) { @type }
 
-      it { should be(true) }
+      it { is_expected.to be(true) }
     end
 
     context 'when provided the property superclass' do
       let(:klass) { @type.superclass }
 
-      it { should be(false) }
+      it { is_expected.to be(false) }
     end
 
     context 'when provided the DataMapper::Property class' do
       let(:klass) { DataMapper::Property }
 
-      it { should be(false) }
+      it { is_expected.to be(false) }
     end
   end
 
@@ -211,19 +211,19 @@ shared_examples 'A public Property' do
     context 'when provided the property class' do
       let(:klass) { @type }
 
-      it { should be(true) }
+      it { is_expected.to be(true) }
     end
 
     context 'when provided the property superclass' do
       let(:klass) { @type.superclass }
 
-      it { should be(true) }
+      it { is_expected.to be(true) }
     end
 
     context 'when provided the DataMapper::Property class' do
       let(:klass) { DataMapper::Property }
 
-      it { should be(true) }
+      it { is_expected.to be(true) }
     end
   end
 end

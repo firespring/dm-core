@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 shared_examples 'it creates a one accessor' do
   describe 'accessor' do
@@ -8,8 +8,8 @@ shared_examples 'it creates a one accessor' do
           @return = @car.__send__(@name)
         end
 
-        it 'should return nil' do
-          @return.should be_nil
+        it 'returns nil' do
+          expect(@return).to be_nil
         end
       end
 
@@ -18,8 +18,8 @@ shared_examples 'it creates a one accessor' do
           @return = @car.__send__(@name, id: 99)
         end
 
-        it 'should return nil' do
-          @return.should be_nil
+        it 'returns nil' do
+          expect(@return).to be_nil
         end
       end
     end
@@ -35,12 +35,12 @@ shared_examples 'it creates a one accessor' do
           @return = @car.__send__(@name)
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return the expected Resource' do
-          @return.should equal(@expected)
+        it 'returns the expected Resource' do
+          expect(@return).to equal(@expected)
         end
       end
 
@@ -48,17 +48,17 @@ shared_examples 'it creates a one accessor' do
         before :all do
           @car.save  # save @car and @expected to set @expected.id
 
-          @expected.id.should_not be_nil
+          expect(@expected.id).not_to be_nil
 
           @return = @car.__send__(@name, id: @expected.id)
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return the expected Resource' do
-          @return.should == @expected
+        it 'returns the expected Resource' do
+          expect(@return).to eq @expected
         end
       end
     end
@@ -75,8 +75,8 @@ shared_examples 'it creates a one accessor' do
         @return = @car.model.get!(*@car.key).__send__(@name)
       end
 
-      it 'should return nil' do
-        @return.should be_nil
+      it 'returns nil' do
+        expect(@return).to be_nil
       end
     end
   end
@@ -91,33 +91,33 @@ shared_examples 'it creates a one mutator' do
         @return = @car.__send__("#{@name}=", @expected)
       end
 
-      it 'should return the expected Resource' do
-        @return.should equal(@expected)
+      it 'returns the expected Resource' do
+        expect(@return).to equal(@expected)
       end
 
-      it 'should set the Resource' do
-        @car.__send__(@name).should equal(@expected)
+      it 'sets the Resource' do
+        expect(@car.__send__(@name)).to equal(@expected)
       end
 
-      it 'should relate associated Resource' do
-        relationship       = Car.relationships[@name]
-        many_to_one        = relationship.is_a?(DataMapper::Associations::ManyToOne::Relationship)
+      it 'relates associated Resource' do
+        relationship = Car.relationships[@name]
+        many_to_one = relationship.is_a?(DataMapper::Associations::ManyToOne::Relationship)
         one_to_one_through = relationship.is_a?(DataMapper::Associations::OneToOne::Relationship) && relationship.respond_to?(:through)
 
-        pending_if many_to_one || one_to_one_through do
-          @expected.car.should == @car
-        end
+        pending if many_to_one || one_to_one_through
+
+        expect(@expected.car).to eq @car
       end
 
-      it 'should persist the Resource' do
-        @car.save.should be(true)
-        @car.model.get!(*@car.key).__send__(@name).should == @expected
+      it 'persists the Resource' do
+        expect(@car.save).to be(true)
+        expect(@car.model.get!(*@car.key).__send__(@name)).to eq @expected
       end
 
-      it 'should persist the associated Resource' do
-        @car.save.should be(true)
-        @expected.should be_saved
-        @expected.model.get!(*@expected.key).car.should == @car
+      it 'persists the associated Resource' do
+        expect(@car.save).to be(true)
+        expect(@expected).to be_saved
+        expect(@expected.model.get!(*@expected.key).car).to eq @car
       end
     end
 
@@ -131,33 +131,32 @@ shared_examples 'it creates a one mutator' do
         @return = @car.__send__("#{@name}=", attributes)
       end
 
-      it 'should return the expected Resource' do
-        @return.should == @expected
+      it 'returns the expected Resource' do
+        expect(@return).to eq @expected
       end
 
-      it 'should set the Resource' do
-        @car.__send__(@name).should equal(@return)
+      it 'sets the Resource' do
+        expect(@car.__send__(@name)).to equal(@return)
       end
 
-      it 'should relate associated Resource' do
         relationship       = Car.relationships[@name]
         many_to_one        = relationship.is_a?(DataMapper::Associations::ManyToOne::Relationship)
+      it 'relates associated Resource' do
         one_to_one_through = relationship.is_a?(DataMapper::Associations::OneToOne::Relationship) && relationship.respond_to?(:through)
 
-        pending_if many_to_one || one_to_one_through do
-          @return.car.should == @car
-        end
+        pending if many_to_one || one_to_one_through
+        expect(@return.car).to eq @car
       end
 
-      it 'should persist the Resource' do
-        @car.save.should be(true)
-        @car.model.get!(*@car.key).__send__(@name).should == @return
+      it 'persists the Resource' do
+        expect(@car.save).to be(true)
+        expect(@car.model.get!(*@car.key).__send__(@name)).to eq @return
       end
 
-      it 'should persist the associated Resource' do
-        @car.save.should be(true)
-        @return.should be_saved
-        @return.model.get!(*@return.key).car.should == @car
+      it 'persists the associated Resource' do
+        expect(@car.save).to be(true)
+        expect(@return).to be_saved
+        expect(@return&.model&.get!(*@return&.key).car).to eq @car
       end
     end
 
@@ -168,17 +167,17 @@ shared_examples 'it creates a one mutator' do
         @return = @car.__send__("#{@name}=", nil)
       end
 
-      it 'should return nil' do
-        @return.should be_nil
+      it 'returns nil' do
+        expect(@return).to be_nil
       end
 
-      it 'should set nil' do
-        @car.__send__(@name).should be_nil
+      it 'sets nil' do
+        expect(@car.__send__(@name)).to be_nil
       end
 
-      it 'should persist as nil' do
-        @car.save.should be(true)
-        @car.model.get!(*@car.key).__send__(@name).should be_nil
+      it 'persists as nil' do
+        expect(@car.save).to be(true)
+        expect(@car.model.get!(*@car.key).__send__(@name)).to be_nil
       end
     end
 
@@ -190,33 +189,32 @@ shared_examples 'it creates a one mutator' do
         @return = @car.__send__("#{@name}=", @expected)
       end
 
-      it 'should return the expected Resource' do
-        @return.should equal(@expected)
+      it 'returns the expected Resource' do
+        expect(@return).to equal(@expected)
       end
 
-      it 'should set the Resource' do
-        @car.__send__(@name).should equal(@expected)
+      it 'sets the Resource' do
+        expect(@car.__send__(@name)).to equal(@expected)
       end
 
-      it 'should relate associated Resource' do
         relationship       = Car.relationships[@name]
         many_to_one        = relationship.is_a?(DataMapper::Associations::ManyToOne::Relationship)
+      it 'relates associated Resource' do
         one_to_one_through = relationship.is_a?(DataMapper::Associations::OneToOne::Relationship) && relationship.respond_to?(:through)
 
-        pending_if 'should create back-reference', many_to_one || one_to_one_through do
-          @expected.car.should == @car
-        end
+        pending 'creates back-reference' if many_to_one || one_to_one_through
+        expect(@expected.car).to eq @car
       end
 
-      it 'should persist the Resource' do
-        @car.save.should be(true)
-        @car.model.get!(*@car.key).__send__(@name).should == @expected
+      it 'persists the Resource' do
+        expect(@car.save).to be(true)
+        expect(@car.model.get!(*@car.key).__send__(@name)).to eq @expected
       end
 
-      it 'should persist the associated Resource' do
-        @car.save.should be(true)
-        @expected.should be_saved
-        @expected.model.get!(*@expected.key).car.should == @car
+      it 'persists the associated Resource' do
+        expect(@car.save).to be(true)
+        expect(@expected).to be_saved
+        expect(@expected.model.get!(*@expected.key).car).to eq @car
       end
     end
   end
@@ -226,16 +224,16 @@ shared_examples 'it creates a many accessor' do
   describe 'accessor' do
     describe 'when there is no child resource and the source is saved' do
       before :all do
-        @car.save.should be(true)
+        expect(@car.save).to be(true)
         @return = @car.__send__(@name)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return an empty Collection' do
-        @return.should be_empty
+      it 'returns an empty Collection' do
+        expect(@return).to be_empty
       end
     end
 
@@ -244,12 +242,12 @@ shared_examples 'it creates a many accessor' do
         @return = @car.__send__(@name)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return an empty Collection' do
-        @return.should be_empty
+      it 'returns an empty Collection' do
+        expect(@return).to be_empty
       end
     end
 
@@ -263,12 +261,12 @@ shared_examples 'it creates a many accessor' do
         @return = @car.__send__(@name)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return expected Resources' do
-        @return.should == [@expected]
+      it 'returns expected Resources' do
+        expect(@return).to eq [@expected]
       end
     end
 
@@ -278,7 +276,7 @@ shared_examples 'it creates a many accessor' do
         @car.save
 
         @expected = @car.__send__(@name).first
-        @expected.should_not be_nil
+        expect(@expected).not_to be_nil
 
         # set the model scope to only return the first record
         @model.default_scope.update(
@@ -288,12 +286,12 @@ shared_examples 'it creates a many accessor' do
         @return = @car.model.get!(*@car.key).__send__(@name)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return expected Resources' do
-        @return.should == [@expected]
+      it 'returns expected Resources' do
+        expect(@return).to eq [@expected]
       end
     end
   end
@@ -308,31 +306,30 @@ shared_examples 'it creates a many mutator' do
         @return = @car.__send__("#{@name}=", @expected)
       end
 
-      it 'should return the expected Collection' do
-        @return.should == @expected
+      it 'returns the expected Collection' do
+        expect(@return).to eq @expected
       end
 
-      it 'should set the Collection' do
-        @car.__send__(@name).should == @expected
-        @car.__send__(@name).zip(@expected) { |value, expected| value.should equal(expected) }
+      it 'sets the Collection' do
+        expect(@car.__send__(@name)).to eq @expected
+        @car.__send__(@name).zip(@expected) { |value, expected| expect(value).to equal(expected) }
       end
 
-      it 'should relate the associated Collection' do
-        pending_if Car.relationships[@name].is_a?(DataMapper::Associations::ManyToMany::Relationship) do
-          @expected.each { |resource| resource.car.should == @car }
-        end
+      it 'relates the associated Collection' do
+        pending if Car.relationships[@name].is_a?(DataMapper::Associations::ManyToMany::Relationship)
+        @expected.each { |resource| expect(resource.car).to eq @car }
       end
 
-      it 'should persist the Collection' do
-        @car.save.should be(true)
-        @car.model.get!(*@car.key).__send__(@name).should == @expected
+      it 'persists the Collection' do
+        expect(@car.save).to be(true)
+        expect(@car.model.get!(*@car.key).__send__(@name)).to eq @expected
       end
 
-      it 'should persist the associated Resource' do
-        @car.save.should be(true)
+      it 'persists the associated Resource' do
+        expect(@car.save).to be(true)
         @expected.each do |resource|
-          resource.should be_saved
-          resource.model.get!(*resource.key).car.should == @car
+          expect(resource).to be_saved
+          expect(resource.model.get!(*resource.key).car).to eq @car
         end
       end
     end
@@ -346,30 +343,29 @@ shared_examples 'it creates a many mutator' do
         @return = @car.__send__("#{@name}=", @hashes)
       end
 
-      it 'should return the expected Collection' do
-        @return.should == @expected
+      it 'returns the expected Collection' do
+        expect(@return).to eq @expected
       end
 
-      it 'should set the Collection' do
-        @car.__send__(@name).should == @return
+      it 'sets the Collection' do
+        expect(@car.__send__(@name)).to eq @return
       end
 
-      it 'should relate the associated Collection' do
-        pending_if Car.relationships[@name].is_a?(DataMapper::Associations::ManyToMany::Relationship) do
-          @return.each { |resource| resource.car.should == @car }
-        end
+      it 'relates the associated Collection' do
+        pending if Car.relationships[@name].is_a?(DataMapper::Associations::ManyToMany::Relationship)
+        @return.each { |resource| expect(resource.car).to eq @car }
       end
 
-      it 'should persist the Collection' do
-        @car.save.should be(true)
-        @car.model.get!(*@car.key).__send__(@name).should == @return
+      it 'persists the Collection' do
+        expect(@car.save).to be(true)
+        expect(@car.model.get!(*@car.key).__send__(@name)).to eq @return
       end
 
-      it 'should persist the associated Resource' do
-        @car.save.should be(true)
+      it 'persists the associated Resource' do
+        expect(@car.save).to be(true)
         @return&.each do |resource|
-          resource.should be_saved
-          resource.model.get!(*resource.key).car.should == @car
+          expect(resource).to be_saved
+          expect(resource.model.get!(*resource.key).car).to eq @car
         end
       end
     end
@@ -381,17 +377,17 @@ shared_examples 'it creates a many mutator' do
         @return = @car.__send__("#{@name}=", [])
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should set an empty Collection' do
-        @car.__send__(@name).should be_empty
+      it 'sets an empty Collection' do
+        expect(@car.__send__(@name)).to be_empty
       end
 
-      it 'should persist as an empty Collection' do
-        @car.save.should be(true)
-        @car.model.get!(*@car.key).__send__(@name).should be_empty
+      it 'persists as an empty Collection' do
+        expect(@car.save).to be(true)
+        expect(@car.model.get!(*@car.key).__send__(@name)).to be_empty
       end
     end
 
@@ -404,31 +400,30 @@ shared_examples 'it creates a many mutator' do
         @return = @car.__send__("#{@name}=", @expected)
       end
 
-      it 'should return the expected Resource' do
-        @return.should == @expected
+      it 'returns the expected Resource' do
+        expect(@return).to eq @expected
       end
 
-      it 'should set the Resource' do
-        @car.__send__(@name).should == @expected
-        @car.__send__(@name).zip(@expected) { |value, expected| value.should equal(expected) }
+      it 'sets the Resource' do
+        expect(@car.__send__(@name)).to eq @expected
+        @car.__send__(@name).zip(@expected) { |value, expected| expect(value).to equal(expected) }
       end
 
-      it 'should relate associated Resource' do
-        pending_if Car.relationships[@name].is_a?(DataMapper::Associations::ManyToMany::Relationship) do
-          @expected.each { |resource| resource.car.should == @car }
-        end
+      it 'relates associated Resource' do
+        pending if Car.relationships[@name].is_a?(DataMapper::Associations::ManyToMany::Relationship)
+        @expected.each { |resource| expect(resource.car).to eq @car }
       end
 
-      it 'should persist the Resource' do
-        @car.save.should be(true)
-        @car.model.get!(*@car.key).__send__(@name).should == @expected
+      it 'persists the Resource' do
+        expect(@car.save).to be(true)
+        expect(@car.model.get!(*@car.key).__send__(@name)).to eq @expected
       end
 
-      it 'should persist the associated Resource' do
-        @car.save.should be(true)
+      it 'persists the associated Resource' do
+        expect(@car.save).to be(true)
         @expected.each do |resource|
-          resource.should be_saved
-          resource.model.get!(*resource.key).car.should == @car
+          expect(resource).to be_saved
+          expect(resource.model.get!(*resource.key).car).to eq @car
         end
       end
     end
@@ -467,7 +462,7 @@ describe DataMapper::Associations do
     1.0/0
   end
 
-  it { Engine.should respond_to(:belongs_to) }
+  it { expect(Engine).to respond_to(:belongs_to) }
 
   describe '#belongs_to' do
     before :all do
@@ -484,13 +479,13 @@ describe DataMapper::Associations do
         @car = Car.new
       end
 
-      it { @car.should respond_to(@name) }
+      it { expect(@car).to respond_to(@name) }
 
-      it_should_behave_like 'it creates a one accessor'
+      it_behaves_like 'it creates a one accessor'
 
-      it { @car.should respond_to("#{@name}=") }
+      it { expect(@car).to respond_to("#{@name}=") }
 
-      it_should_behave_like 'it creates a one mutator'
+      it_behaves_like 'it creates a one mutator'
 
       describe 'with a :key option' do
         before :all do
@@ -498,9 +493,9 @@ describe DataMapper::Associations do
           DataMapper.finalize
         end
 
-        it 'should create a foreign key that is part of the key' do
+        it 'creates a foreign key that is part of the key' do
           @relationship.child_key.each do |property|
-            property.should be_key
+            expect(property).to be_key
           end
         end
       end
@@ -513,15 +508,15 @@ describe DataMapper::Associations do
           DataMapper.finalize
         end
 
-        it 'should create a foreign key that is unique' do
+        it 'creates a foreign key that is unique' do
           @relationship.child_key.each do |property|
-            property.should be_unique
+            expect(property).to be_unique
           end
         end
 
-        it 'should create a foreign key that has a unique index' do
+        it 'creates a foreign key that has a unique index' do
           @relationship.child_key.each do |property|
-            property.unique_index.should equal(unique)
+            expect(property.unique_index).to equal(unique)
           end
         end
       end
@@ -548,12 +543,12 @@ describe DataMapper::Associations do
             @return = engine.car
           end
 
-          it 'should return a Resource' do
-            @return.should be_kind_of(DataMapper::Resource)
+          it 'returns a Resource' do
+            expect(@return).to be_kind_of(DataMapper::Resource)
           end
 
-          it 'should return expected Resource' do
-            @return.should eql(@car)
+          it 'returns expected Resource' do
+            expect(@return).to eql(@car)
           end
         end
 
@@ -564,12 +559,12 @@ describe DataMapper::Associations do
             @resource = @engine.car(id: @car.id)
           end
 
-          it 'should return a Resource' do
-            @resource.should be_kind_of(DataMapper::Resource)
+          it 'returns a Resource' do
+            expect(@resource).to be_kind_of(DataMapper::Resource)
           end
 
-          it 'should return expected Resource' do
-            @resource.should eql(@car)
+          it 'returns expected Resource' do
+            expect(@resource).to eql(@car)
           end
         end
 
@@ -580,8 +575,8 @@ describe DataMapper::Associations do
             @resource = @engine.car(:id.not => @car.id)
           end
 
-          it 'should return nil' do
-            @resource.should be_nil
+          it 'returns nil' do
+            expect(@resource).to be_nil
           end
         end
 
@@ -592,14 +587,14 @@ describe DataMapper::Associations do
             @engine.car = @car
           end
 
-          it 'should set the associated foreign key' do
-            @engine.car_id.should == @car.id
+          it 'sets the associated foreign key' do
+            expect(@engine.car_id).to eq @car.id
           end
 
-          it 'should add the engine object to the car' do
-            pending 'Changing a belongs_to parent should add the object to the correct association' do
-              @car.engines.should include(@engine)
-            end
+          it 'adds the engine object to the car' do
+            pending 'Changing a belongs_to parent adds the object to the correct association'
+
+            expect(@car.engines).to include(@engine)
           end
         end
 
@@ -610,8 +605,8 @@ describe DataMapper::Associations do
             @engine = Engine.new(car_id: @car.id)
           end
 
-          it 'should set the associated resource' do
-            @engine.car.should eql(@car)
+          it 'sets the associated resource' do
+            expect(@engine.car).to eql(@car)
           end
         end
 
@@ -623,14 +618,13 @@ describe DataMapper::Associations do
             @engine.car = @car2
           end
 
-          it 'should also change the foreign key' do
-            @engine.car_id.should == @car2.id
+          it 'also changes the foreign key' do
+            expect(@engine.car_id).to eq @car2.id
           end
 
-          it 'should add the engine to the car' do
-            pending 'Changing a belongs_to parent should add the object to the correct association' do
-              @car2.engines.should include(@engine)
-            end
+          it 'adds the engine to the car' do
+            pending 'Changing a belongs_to parent adds the object to the correct association'
+            expect(@car2.engines).to include(@engine)
           end
         end
 
@@ -642,14 +636,13 @@ describe DataMapper::Associations do
             @engine.car_id = @car2.id
           end
 
-          it 'should also change the foreign key' do
-            @engine.car.should eql(@car2)
+          it 'also changes the foreign key' do
+            expect(@engine.car).to eql(@car2)
           end
 
-          it 'should add the engine to the car' do
-            pending 'a change to the foreign key should also change the related object' do
-              @car2.engines.should include(@engine)
-            end
+          it 'adds the engine to the car' do
+            pending 'a change to the foreign key also changes the related object'
+            expect(@car2.engines).to include(@engine)
           end
         end
       end
@@ -661,8 +654,8 @@ describe DataMapper::Associations do
         DataMapper.finalize
       end
 
-      it 'should set the relationship target model' do
-        Engine.relationships[:vehicle].target_model.should == Car
+      it 'sets the relationship target model' do
+        expect(Engine.relationships[:vehicle].target_model).to eq Car
       end
     end
 
@@ -672,8 +665,8 @@ describe DataMapper::Associations do
         DataMapper.finalize
       end
 
-      it 'should set the relationship target model' do
-        Engine.relationships[:vehicle].target_model.should == Car
+      it 'sets the relationship target model' do
+        expect(Engine.relationships[:vehicle].target_model).to eq Car
       end
     end
 
@@ -683,8 +676,8 @@ describe DataMapper::Associations do
         DataMapper.finalize
       end
 
-      it 'should set the relationship child key' do
-        Engine.relationships[:vehicle].child_key.map(&:name).should == [:bike_id]
+      it 'sets the relationship child key' do
+        expect(Engine.relationships[:vehicle].child_key.map(&:name)).to eq [:bike_id]
       end
     end
 
@@ -694,8 +687,8 @@ describe DataMapper::Associations do
         DataMapper.finalize
       end
 
-      it 'should set the relationship child key' do
-        Engine.relationships[:vehicle].child_key.map(&:name).should == [:bike_id]
+      it 'sets the relationship child key' do
+        expect(Engine.relationships[:vehicle].child_key.map(&:name)).to eq [:bike_id]
       end
     end
 
@@ -705,8 +698,8 @@ describe DataMapper::Associations do
         DataMapper.finalize
       end
 
-      it 'should set the relationship parent key' do
-        Engine.relationships[:vehicle].parent_key.map(&:name).should == [:name]
+      it 'sets the relationship parent key' do
+        expect(Engine.relationships[:vehicle].parent_key.map(&:name)).to eq [:name]
       end
     end
 
@@ -716,13 +709,13 @@ describe DataMapper::Associations do
         DataMapper.finalize
       end
 
-      it 'should set the relationship parent key' do
-        Engine.relationships[:vehicle].parent_key.map(&:name).should == [:name]
+      it 'sets the relationship parent key' do
+        expect(Engine.relationships[:vehicle].parent_key.map(&:name)).to eq [:name]
       end
     end
   end
 
-  it { Car.should respond_to(:has) }
+  it { expect(Car).to respond_to(:has) }
 
   describe '#has' do
     describe '1' do
@@ -740,13 +733,13 @@ describe DataMapper::Associations do
           @car = Car.new
         end
 
-        it { @car.should respond_to(@name) }
+        it { expect(@car).to respond_to(@name) }
 
-        it_should_behave_like 'it creates a one accessor'
+        it_behaves_like 'it creates a one accessor'
 
-        it { @car.should respond_to("#{@name}=") }
+        it { expect(@car).to respond_to("#{@name}=") }
 
-        it_should_behave_like 'it creates a one mutator'
+        it_behaves_like 'it creates a one mutator'
       end
     end
 
@@ -774,13 +767,13 @@ describe DataMapper::Associations do
           pending if @no_join
         end
 
-        it { @car.should respond_to(@name) }
+        it { expect(@car).to respond_to(@name) }
 
-        it_should_behave_like 'it creates a one accessor'
+        it_behaves_like 'it creates a one accessor'
 
-        it { @car.should respond_to("#{@name}=") }
+        it { expect(@car).to respond_to("#{@name}=") }
 
-        it_should_behave_like 'it creates a one mutator'
+        it_behaves_like 'it creates a one mutator'
       end
     end
 
@@ -799,13 +792,13 @@ describe DataMapper::Associations do
           @car = Car.new
         end
 
-        it { @car.should respond_to(@name) }
+        it { expect(@car).to respond_to(@name) }
 
-        it_should_behave_like 'it creates a many accessor'
+        it_behaves_like 'it creates a many accessor'
 
-        it { @car.should respond_to("#{@name}=") }
+        it { expect(@car).to respond_to("#{@name}=") }
 
-        it_should_behave_like 'it creates a many mutator'
+        it_behaves_like 'it creates a many mutator'
       end
     end
 
@@ -833,13 +826,13 @@ describe DataMapper::Associations do
           pending if @no_join
         end
 
-        it { @car.should respond_to(@name) }
+        it { expect(@car).to respond_to(@name) }
 
-        it_should_behave_like 'it creates a many accessor'
+        it_behaves_like 'it creates a many accessor'
 
-        it { @car.should respond_to("#{@name}=") }
+        it { expect(@car).to respond_to("#{@name}=") }
 
-        it_should_behave_like 'it creates a many mutator'
+        it_behaves_like 'it creates a many mutator'
       end
     end
 
@@ -849,8 +842,8 @@ describe DataMapper::Associations do
         DataMapper.finalize
       end
 
-      it 'should set the relationship target model' do
-        Car.relationships[:engine].target_model.should == Engine
+      it 'sets the relationship target model' do
+        expect(Car.relationships[:engine].target_model).to eq Engine
       end
     end
 
@@ -860,17 +853,17 @@ describe DataMapper::Associations do
         DataMapper.finalize
       end
 
-      it 'should set the relationship target model' do
-        Car.relationships[:engine].target_model.should == Engine
+      it 'sets the relationship target model' do
+        expect(Car.relationships[:engine].target_model).to eq Engine
       end
     end
 
-    it 'should raise an exception if the cardinality is not understood' do
-      lambda { Car.has(n..n, :doors) }.should raise_error(ArgumentError)
+    it 'raises an exception if the cardinality is not understood' do
+      expect { Car.has(n..n, :doors) }.to raise_error(ArgumentError)
     end
 
-    it 'should raise an exception if the minimum constraint is larger than the maximum' do
-      lambda { Car.has(2..1, :doors) }.should raise_error(ArgumentError)
+    it 'raises an exception if the minimum constraint is larger than the maximum' do
+      expect { Car.has(2..1, :doors) }.to raise_error(ArgumentError)
     end
   end
 
@@ -882,8 +875,8 @@ describe DataMapper::Associations do
       end
 
       supported_by :all do
-        it 'should have a child key prefix the same as the inverse relationship' do
-          @engine_relationship.child_key.map(&:name).should == [:sports_car_id]
+        it 'has a child key prefix the same as the inverse relationship' do
+          expect(@engine_relationship.child_key.map(&:name)).to eq [:sports_car_id]
         end
       end
     end
@@ -895,8 +888,8 @@ describe DataMapper::Associations do
       end
 
       supported_by :all do
-        it 'should have a child key prefix inferred from the source model name' do
-          @engine_relationship.child_key.map(&:name).should == [:car_id]
+        it 'has a child key prefix inferred from the source model name' do
+          expect(@engine_relationship.child_key.map(&:name)).to eq [:car_id]
         end
       end
     end
@@ -917,12 +910,12 @@ describe DataMapper::Associations do
             @engine_relationship = ElectricCar.relationships(@repository.name)[:engine]
           end
 
-          it 'should have a source model equal to the ancestor' do
-            @engine_relationship.source_model.should equal(Car)
+          it 'has a source model equal to the ancestor' do
+            expect(@engine_relationship.source_model).to equal(Car)
           end
 
-          it 'should have a child key prefix the same as the inverse relationship' do
-            @engine_relationship.child_key.map(&:name).should == [:sports_car_id]
+          it 'has a child key prefix the same as the inverse relationship' do
+            expect(@engine_relationship.child_key.map(&:name)).to eq [:sports_car_id]
           end
         end
       end
@@ -942,12 +935,12 @@ describe DataMapper::Associations do
             @engine_relationship = ElectricCar.relationships(@repository.name)[:engine]
           end
 
-          it 'should have a source model equal to the ancestor' do
-            @engine_relationship.source_model.should equal(Car)
+          it 'has a source model equal to the ancestor' do
+            expect(@engine_relationship.source_model).to equal(Car)
           end
 
-          it 'should have a child key prefix inferred from the source model name' do
-            @engine_relationship.child_key.map(&:name).should == [:car_id]
+          it 'has a child key prefix inferred from the source model name' do
+            expect(@engine_relationship.child_key.map(&:name)).to eq [:car_id]
           end
         end
       end
@@ -969,12 +962,12 @@ describe DataMapper::Associations do
             @engine_relationship = ElectricCar.relationships(@repository.name)[:engine]
           end
 
-          it 'should have a source model equal to the descendant' do
-            @engine_relationship.source_model.should equal(ElectricCar)
+          it 'has a source model equal to the descendant' do
+            expect(@engine_relationship.source_model).to equal(ElectricCar)
           end
 
-          it 'should have a child key prefix the same as the inverse relationship' do
-            @engine_relationship.child_key.map(&:name).should == [:sports_car_id]
+          it 'has a child key prefix the same as the inverse relationship' do
+            expect(@engine_relationship.child_key.map(&:name)).to eq [:sports_car_id]
           end
         end
       end
@@ -994,12 +987,12 @@ describe DataMapper::Associations do
             @engine_relationship = ElectricCar.relationships(@repository.name)[:engine]
           end
 
-          it 'should have a source model equal to the descendant' do
-            @engine_relationship.source_model.should equal(ElectricCar)
+          it 'has a source model equal to the descendant' do
+            expect(@engine_relationship.source_model).to equal(ElectricCar)
           end
 
-          it 'should have a child key prefix inferred from the source model name' do
-            @engine_relationship.child_key.map(&:name).should == [:electric_car_id]
+          it 'has a child key prefix inferred from the source model name' do
+            expect(@engine_relationship.child_key.map(&:name)).to eq [:electric_car_id]
           end
         end
       end
@@ -1035,11 +1028,11 @@ describe DataMapper::Associations do
         @employee = @company.employees.create(name: 'Wil E. Coyote')
       end
 
-      it 'should save the child as a parent' do
-        lambda {
+      it 'saves the child as a parent' do
+        expect {
           @company.owner = @employee
-          @company.save.should be(true)
-        }.should_not raise_error
+          expect(@company.save).to be(true)
+        }.not_to raise_error
       end
     end
   end

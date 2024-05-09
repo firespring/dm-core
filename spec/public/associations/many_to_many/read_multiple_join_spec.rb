@@ -60,9 +60,9 @@ require_relative '../../../spec_helper'
       pending if @skip
     end
 
-    it 'should return all the created entries' do
-      @user.items.to_a.should eq Item.all.to_a
-      @sale.items.to_a.should eq Item.all.to_a
+    it 'returns all the created entries' do
+      expect(@user.items.to_a).to eq Item.all.to_a
+      expect(@sale.items.to_a).to eq Item.all.to_a
     end
   end
 end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe 'One to One Associations' do
   before :all do
@@ -76,8 +76,8 @@ describe 'One to One Associations' do
       @user    = @comment.user
     end
 
-    it_should_behave_like 'A public Resource'
-    it_should_behave_like 'A Resource supporting Strategic Eager Loading'
+    it_behaves_like 'A public Resource'
+    it_behaves_like 'A Resource supporting Strategic Eager Loading'
   end
 end
 
@@ -168,9 +168,9 @@ describe 'One to One Through Associations' do
       @user    = @comment.user
     end
 
-    it_should_behave_like 'A public Resource'
+    it_behaves_like 'A public Resource'
 
     # TODO: make this pass
-    #it_should_behave_like 'A Resource supporting Strategic Eager Loading'
+    # it_behaves_like 'A Resource supporting Strategic Eager Loading'
   end
 end

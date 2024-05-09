@@ -1,4 +1,5 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
+
 describe DataMapper::Resource::PersistenceState::Dirty do
   before :all do
     class ::Author
@@ -25,7 +26,7 @@ describe DataMapper::Resource::PersistenceState::Dirty do
     @resource.attributes = { :name => 'John Doe' }
 
     @state = @resource.persistence_state
-    @state.should be_kind_of(DataMapper::Resource::PersistenceState::Dirty)
+    expect(@state).to be_kind_of(DataMapper::Resource::PersistenceState::Dirty)
   end
 
   after do
@@ -43,26 +44,26 @@ describe DataMapper::Resource::PersistenceState::Dirty do
           @new_id = @resource.id = @resource.id.succ
         end
 
-        it 'should return a Clean state' do
-          should eql(DataMapper::Resource::PersistenceState::Clean.new(@resource))
+        it 'returns a Clean state' do
+          is_expected.to eql(DataMapper::Resource::PersistenceState::Clean.new(@resource))
         end
 
-        it 'should set the child key if the parent key changes' do
+        it 'sets the child key if the parent key changes' do
           original_id = @parent.id
-          @parent.update(:id => 42).should be(true)
-          method(:subject).should change(@resource, :parent_id).from(original_id).to(42)
+          expect { @parent.update(id: 42) }.to be(true)
+          expect { method(:subject) }.to change(@resource, :parent_id).from(original_id).to(42)
         end
 
-        it 'should update the resource' do
+        it 'updates the resource' do
           subject
-          @model.get!(*@resource.key).should == @resource
+          expect { @model.get!(*@resource.key) }.to eq @resource
         end
 
-        it 'should update the resource to the identity map if the key changed' do
+        it 'updates the resource to the identity map if the key changed' do
           identity_map = @resource.repository.identity_map(@model)
-          identity_map.should == { @resource.key => @resource }
+          expect(identity_map).to eq({ @resource.key => @resource })
           subject
-          identity_map.should == { [ @new_id ] => @resource }
+          expect(identity_map).to eq({[@new_id] => @resource})
         end
       end
 
@@ -71,16 +72,16 @@ describe DataMapper::Resource::PersistenceState::Dirty do
           @resource.coding = 'invalid'
         end
 
-        it 'should raise InvalidValueError' do
+        it 'raises InvalidValueError' do
           expect { subject }.to(raise_error(DataMapper::Property::InvalidValueError) do |error|
-            error.property.should == Author.coding
+            expect(error.property).to eq Author.coding
           end)
         end
 
-        it 'should not change the identity map' do
+        it 'does not change the identity map' do
           identity_map = @resource.repository.identity_map(@model).dup
           expect { subject }.to raise_error
-          identity_map.should == @resource.repository.identity_map(@model)
+          expect(identity_map).to eq @resource.repository.identity_map(@model)
         end
       end
     end
@@ -94,10 +95,10 @@ describe DataMapper::Resource::PersistenceState::Dirty do
         @resource.children = [ @resource.parent = @resource ]
       end
 
-      it_should_behave_like 'It resets resource state'
+      it_behaves_like 'It resets resource state'
 
-      it 'should return a Deleted state' do
-        should eql(DataMapper::Resource::PersistenceState::Deleted.new(@resource))
+      it 'returns a Deleted state' do
+        is_expected.to eql(DataMapper::Resource::PersistenceState::Deleted.new(@resource))
       end
     end
   end
@@ -107,7 +108,7 @@ describe DataMapper::Resource::PersistenceState::Dirty do
       @loaded_value = 'John Doe'
     end
 
-    it_should_behave_like 'Resource::PersistenceState::Persisted#get'
+    it_behaves_like 'Resource::PersistenceState::Persisted#get'
   end
 
   describe '#rollback' do
@@ -118,10 +119,10 @@ describe DataMapper::Resource::PersistenceState::Dirty do
         @resource.children = [ @resource.parent = @resource ]
       end
 
-      it_should_behave_like 'It resets resource state'
+      it_behaves_like 'It resets resource state'
 
-      it 'should return a Clean state' do
-        should eql(DataMapper::Resource::PersistenceState::Clean.new(@resource))
+      it 'returns a Clean state' do
+        is_expected.to eql(DataMapper::Resource::PersistenceState::Clean.new(@resource))
       end
     end
   end
@@ -136,13 +137,13 @@ describe DataMapper::Resource::PersistenceState::Dirty do
           @value = @key.get!(@resource)
         end
 
-        it_should_behave_like 'A method that delegates to the superclass #set'
+        it_behaves_like 'A method that delegates to the superclass #set'
 
-        it 'should return a Dirty state' do
-          should equal(@state)
+        it 'returns a Dirty state' do
+          is_expected.to equal(@state)
         end
 
-        its(:original_attributes) { should == { @model.properties[:name] => 'Dan Kubb' } }
+        its(:original_attributes) { is_expected.to eq({@model.properties[:name] => 'Dan Kubb'}) }
       end
 
       describe 'with attributes that make the resource clean' do
@@ -151,10 +152,10 @@ describe DataMapper::Resource::PersistenceState::Dirty do
           @value = 'Dan Kubb'
         end
 
-        it_should_behave_like 'A method that delegates to the superclass #set'
+        it_behaves_like 'A method that delegates to the superclass #set'
 
-        it 'should return a Clean state' do
-          should eql(DataMapper::Resource::PersistenceState::Clean.new(@resource))
+        it 'returns a Clean state' do
+          is_expected.to eql(DataMapper::Resource::PersistenceState::Clean.new(@resource))
         end
       end
     end

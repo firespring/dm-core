@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 # run the specs once with a loaded collection and once not
 [ false, true ].each do |loaded|
@@ -60,10 +60,10 @@ require 'spec_helper'
         @articles.entries if loaded
       end
 
-      it_should_behave_like 'A public Collection'
-      it_should_behave_like 'A Collection supporting Strategic Eager Loading'
-      it_should_behave_like 'Finder Interface'
-      it_should_behave_like 'Collection Finder Interface'
+      it_behaves_like 'A public Collection'
+      it_behaves_like 'A Collection supporting Strategic Eager Loading'
+      it_behaves_like 'Finder Interface'
+      it_behaves_like 'Collection Finder Interface'
     end
   end
 end

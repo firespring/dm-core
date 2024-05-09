@@ -1,16 +1,16 @@
 require_relative '../../spec_helper'
 
 shared_examples 'a correct property declaration' do
-  it 'should define a name accessor' do
-    @model.should_not be_method_defined(@property_name)
+  it 'defines a name accessor' do
+    expect(@model).not_to be_method_defined(@property_name)
     subject
-    @model.should be_method_defined(@property_name)
+    expect(@model).to be_method_defined(@property_name)
   end
 
-  it 'should define a name= mutator' do
-    @model.should_not be_method_defined(:"#{@property_name}=")
+  it 'defines a name= mutator' do
+    expect(@model).not_to be_method_defined(:"#{@property_name}=")
     subject
-    @model.should be_method_defined(:"#{@property_name}=")
+    expect(@model).to be_method_defined(:"#{@property_name}=")
   end
 end
 
@@ -43,7 +43,7 @@ describe DataMapper::Model::Property do
         ::UserDefault.property(:name, String)
       end
 
-      it_should_behave_like 'a correct property declaration'
+      it_behaves_like 'a correct property declaration'
     end
 
     context 'using alternate repository' do
@@ -64,25 +64,28 @@ describe DataMapper::Model::Property do
         ::UserAlternate.property(:alt_name, String)
       end
 
-      it_should_behave_like 'a correct property declaration'
+      it_behaves_like 'a correct property declaration'
     end
 
-    it 'should raise an exception if the method exists' do
-      lambda {
+    it 'raises an exception if the method exists' do
+      expect {
         ModelPropertySpecs.property(:key, String)
-      }.should raise_error(ArgumentError, '+name+ was :key, which cannot be used as a property name since it collides with an existing method or a query option')
+      }.to raise_error(ArgumentError,
+                           '+name+ was :key, which cannot be used as a property name since it collides with an existing method or a query option')
     end
 
-    it 'should raise an exception if the property is boolean and method with question mark already exists' do
-      lambda {
+    it 'raises an exception if the property is boolean and method with question mark already exists' do
+      expect {
         ModelPropertySpecs.property(:destroyed, DataMapper::Property::Boolean)
-      }.should raise_error(ArgumentError, '+name+ was :destroyed, which cannot be used as a property name since it collides with an existing method or a query option')
+      }.to raise_error(ArgumentError,
+                           '+name+ was :destroyed, which cannot be used as a property name since it collides with an existing method or a query option')
     end
 
-    it 'should raise an exception if the name is the same as one of the query options' do
-      lambda {
+    it 'raises an exception if the name is the same as one of the query options' do
+      expect {
         ModelPropertySpecs.property(:order, String)
-      }.should raise_error(ArgumentError, '+name+ was :order, which cannot be used as a property name since it collides with an existing method or a query option')
+      }.to raise_error(ArgumentError,
+                           '+name+ was :order, which cannot be used as a property name since it collides with an existing method or a query option')
     end
   end
 end

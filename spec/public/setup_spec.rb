@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe DataMapper do
   describe '.setup' do
@@ -13,12 +13,12 @@ describe DataMapper do
         DataMapper::Repository.adapters.delete(@return.name)
       end
 
-      it 'should return an Adapter' do
-        @return.should be_kind_of(DataMapper::Adapters::AbstractAdapter)
+      it 'returns an Adapter' do
+        expect(@return).to be_kind_of(DataMapper::Adapters::AbstractAdapter)
       end
 
-      it 'should set up the repository' do
-        DataMapper.repository(:setup_test).adapter.should equal(@return)
+      it 'sets up the repository' do
+        expect(DataMapper.repository(:setup_test).adapter).to equal(@return)
       end
 
       {
@@ -30,22 +30,22 @@ describe DataMapper do
         :path     => '/path',
         :fragment => 'fragment'
       }.each do |key, val|
-        it "should extract the #{key.inspect} option from the uri" do
-          @options[key].should == val
+        it "extracts the #{key.inspect} option from the uri" do
+          expect(@options[key]).to eq val
         end
       end
 
-      it 'should alias the scheme of the uri as the adapter' do
-        @options[:scheme].should == @options[:adapter]
+      it 'aliases the scheme of the uri as the adapter' do
+        expect(@options[:scheme]).to eq @options[:adapter]
       end
 
-      it 'should leave the query param intact' do
-        @options[:query].should == 'foo=bar&baz=foo'
+      it 'leaves the query param intact' do
+        expect(@options[:query]).to eq 'foo=bar&baz=foo'
       end
 
-      it 'should extract the query param as top-level options' do
-        @options[:foo].should == 'bar'
-        @options[:baz].should == 'foo'
+      it 'extracts the query param as top-level options' do
+        expect(@options[:foo]).to eq 'bar'
+        expect(@options[:baz]).to eq 'foo'
       end
     end
 
@@ -60,29 +60,29 @@ describe DataMapper do
         DataMapper::Repository.adapters.delete(@return.name)
       end
 
-      it 'should return an Adapter' do
-        @return.should be_kind_of(DataMapper::Adapters::AbstractAdapter)
+      it 'returns an Adapter' do
+        expect(@return).to be_kind_of(DataMapper::Adapters::AbstractAdapter)
       end
 
-      it 'should set up the repository' do
-        DataMapper.repository(:setup_test).adapter.should equal(@return)
+      it 'sets up the repository' do
+        expect(DataMapper.repository(:setup_test).adapter).to equal(@return)
       end
 
       {
         :adapter => :in_memory,
         :foo     => 'bar'
       }.each do |key, val|
-        it "should set the #{key.inspect} option" do
-          @options[key].should == val
+        it "Sets the #{key.inspect} option" do
+          expect(@options[key]).to eq val
         end
       end
     end
 
     describe 'using invalid options' do
-      it 'should raise an exception' do
-        lambda {
+      it 'Raises an exception' do
+        expect {
           DataMapper.setup(:setup_test, :invalid)
-        }.should raise_error(ArgumentError, '+options+ should be Hash or Addressable::URI or String, but was Symbol')
+        }.to raise_error(ArgumentError, '+options+ should be Hash or Addressable::URI or String, but was Symbol')
       end
     end
 
@@ -97,20 +97,20 @@ describe DataMapper do
         DataMapper::Repository.adapters.delete(@return.name)
       end
 
-      it 'should return an Adapter' do
-        @return.should be_kind_of(DataMapper::Adapters::AbstractAdapter)
+      it 'Returns an Adapter' do
+        expect(@return).to be_kind_of(DataMapper::Adapters::AbstractAdapter)
       end
 
-      it 'should set up the repository' do
-        DataMapper.repository(:setup_test).adapter.should equal(@return)
+      it 'Sets up the repository' do
+        expect(DataMapper.repository(:setup_test).adapter).to equal(@return)
       end
 
-      it 'should use the adapter given' do
-        @return.should == @adapter
+      it 'Uses the adapter given' do
+        expect(@return).to eq @adapter
       end
 
-      it 'should use the name given to the adapter' do
-        @return.name.should == @adapter.name
+      it 'Uses the name given to the adapter' do
+        expect(@return.name).to eq @adapter.name
       end
     end
 
@@ -127,16 +127,16 @@ describe DataMapper do
             DataMapper::Repository.adapters.delete(@return.name)
           end
 
-          it 'should return an Adapter' do
-            @return.should be_kind_of(DataMapper::Adapters::AbstractAdapter)
+          it 'Returns an Adapter' do
+            expect(@return).to be_kind_of(DataMapper::Adapters::AbstractAdapter)
           end
 
-          it 'should set up the repository' do
-            DataMapper.repository(:setup_test).adapter.should equal(@return)
+          it 'Sets up the repository' do
+            expect(DataMapper.repository(:setup_test).adapter).to equal(@return)
           end
 
-          it "should set the #{new_key.inspect} option" do
-            @options[new_key].should == @adapter.options[original_key]
+          it "Sets the #{new_key.inspect} option" do
+            expect(@options[new_key]).to eq @adapter.options[original_key]
           end
         end
       end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 require 'dm-core/support/ext/object'
 
 describe DataMapper::Ext::Object do
@@ -21,8 +21,8 @@ describe DataMapper::Ext::Object do
 
   describe ".full_const_get" do
     it 'returns constant by FQ name in receiver namespace' do
-      DataMapper::Ext::Object.full_const_get("Oi").should == Oi
-      DataMapper::Ext::Object.full_const_get("Foo::Bar").should == Foo::Bar
+      expect(DataMapper::Ext::Object.full_const_get('Oi')).to eq Oi
+      expect(DataMapper::Ext::Object.full_const_get('Foo::Bar')).to eq Foo::Bar
     end
   end
 
@@ -30,8 +30,8 @@ describe DataMapper::Ext::Object do
     it 'sets constant value by FQ name in receiver namespace' do
       DataMapper::Ext::Object.full_const_set("HactiveSupport::MCU", HactiveSupport::MemoizeConsideredUseless)
 
-      DataMapper::Ext::Object.full_const_get("HactiveSupport::MCU").should == HactiveSupport::MemoizeConsideredUseless
-      DataMapper::Ext::Object.full_const_get(HactiveSupport, "MCU").should == HactiveSupport::MemoizeConsideredUseless
+      expect(DataMapper::Ext::Object.full_const_get('HactiveSupport::MCU')).to eq HactiveSupport::MemoizeConsideredUseless
+      expect(DataMapper::Ext::Object.full_const_get(HactiveSupport, 'MCU')).to eq HactiveSupport::MemoizeConsideredUseless
     end
   end
 

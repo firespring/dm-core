@@ -21,8 +21,8 @@ shared_examples 'A public Resource' do
     pending if @skip
   end
 
-  [ :==, :=== ].each do |method|
-    it { @user.should respond_to(method) }
+  %i(== ===).each do |method|
+    it { expect(@user).to respond_to(method) }
 
     describe "##{method}" do
       describe 'when comparing to the same resource' do
@@ -31,8 +31,8 @@ shared_examples 'A public Resource' do
           @return = @user.__send__(method, @other)
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
       end
 
@@ -42,8 +42,8 @@ shared_examples 'A public Resource' do
           @return = @user.__send__(method, @other)
         end
 
-        it 'should return false' do
-          @return.should be(false)
+        it 'returns false' do
+          expect(@return).to be(false)
         end
       end
 
@@ -55,8 +55,8 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
       end
 
@@ -68,8 +68,8 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
       end
 
@@ -82,8 +82,8 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should return false' do
-          @return.should be(false)
+        it 'returns false' do
+          expect(@return).to be(false)
         end
       end
 
@@ -95,8 +95,8 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
       end
 
@@ -116,15 +116,15 @@ shared_examples 'A public Resource' do
             end
           end
 
-          it 'should return false' do
-            @return.should be(false)
+          it 'returns false' do
+            expect(@return).to be(false)
           end
         end
       end
     end
   end
 
-  it { @user.should respond_to(:<=>) }
+  it { expect(@user).to respond_to(:<=>) }
 
   describe '#<=>' do
     describe 'when the default order properties are equal with another resource' do
@@ -135,8 +135,8 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return 0' do
-        @return.should == 0
+      it 'returns 0' do
+        expect(@return).to eq 0
       end
     end
 
@@ -148,8 +148,8 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return 1' do
-        @return.should == 1
+      it 'returns 1' do
+        expect(@return).to eq 1
       end
     end
 
@@ -161,37 +161,35 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return -1' do
-        @return.should == -1
+      it 'returns -1' do
+        expect(@return).to eq -1
       end
     end
 
     describe 'when comparing an unrelated type of Object' do
-      it 'should raise an exception' do
-        lambda { @user <=> @comment_model.new }.should raise_error(ArgumentError, "Cannot compare a #{@comment_model} instance with a #{@user_model} instance")
+      it 'raises an exception' do
+        expect {
+          @user <=> @comment_model.new
+        }.to raise_error(ArgumentError, "Cannot compare a #{@comment_model} instance with a #{@user_model} instance")
       end
     end
   end
 
-  it { @user.should respond_to(:attribute_get) }
+  it { expect(@user).to respond_to(:attribute_get) }
 
   describe '#attribute_get' do
-
-    it { @user.attribute_get(:name).should == 'dbussink' }
-
+    it { expect(@user.attribute_get(:name)).to eq 'dbussink' }
   end
 
-  it { @user.should respond_to(:attribute_set) }
+  it { expect(@user).to respond_to(:attribute_set) }
 
   describe '#attribute_set' do
-
     before { @user.attribute_set(:name, 'dkubb') }
 
-    it { @user.name.should == 'dkubb' }
-
+    it { expect(@user.name).to eq 'dkubb' }
   end
 
-  it { @user.should respond_to(:attributes) }
+  it { expect(@user).to respond_to(:attributes) }
 
   describe '#attributes' do
     describe 'with a new resource' do
@@ -201,8 +199,8 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return the expected values' do
-        @user.attributes.should == {}
+      it 'returns the expected values' do
+        expect(@user.attributes).to eq({})
       end
     end
 
@@ -214,20 +212,19 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return the expected values' do
-        @user.attributes.should == {:name => 'dbussink'}
+      it 'returns the expected values' do
+        expect(@user.attributes).to eq({name: 'dbussink'})
       end
     end
 
     describe 'with a saved resource' do
-      it 'should return the expected values' do
-        DataMapper::Ext::Hash.only(@user.attributes, :name, :description, :age).should ==
-          { :name => 'dbussink', :description => 'Test', :age => 25 }
+      it 'returns the expected values' do
+        expect(DataMapper::Ext::Hash.only(@user.attributes, :name, :description, :age)).to eq({name: 'dbussink', description: 'Test', age: 25})
       end
     end
   end
 
-  it { @user.should respond_to(:attributes=) }
+  it { expect(@user).to respond_to(:attributes=) }
 
   describe '#attributes=' do
     describe 'when a public mutator is specified' do
@@ -237,26 +234,26 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should set the value' do
-        @user.name.should eql('dkubb')
+      it 'sets the value' do
+        expect(@user.name).to eql('dkubb')
       end
 
-      it 'should typecast and set the value' do
-        @user.age.should eql(42)
+      it 'typecasts and sets the value' do
+        expect(@use.age).to eql(42)
       end
     end
 
     describe 'when a non-public mutator is specified' do
-      it 'should raise an exception' do
-        lambda {
-          @user.attributes = { :admin => true }
-        }.should raise_error(ArgumentError, "The attribute \'admin\' is not accessible in #{@user_model}")
+      it 'raises an exception' do
+        expect {
+          @user.attributes = {admin: true}
+        }.to raise_error(ArgumentError, "The attribute \'admin\' is not accessible in #{@user_model}")
       end
     end
   end
 
-  [ :destroy, :destroy! ].each do |method|
-    it { @user.should respond_to(:destroy) }
+  %i(destroy destroy!).each do |method|
+    it { expect(@user).to respond_to(:destroy) }
 
     describe "##{method}" do
       describe 'on a single resource' do
@@ -266,104 +263,104 @@ shared_examples 'A public Resource' do
           @return = @resource.__send__(method)
         end
 
-        it 'should successfully remove a resource' do
-          @return.should be(true)
+        it 'successfully removes a resource' do
+          expect(@return).to be(true)
         end
 
-        it 'should mark the destroyed resource as readonly' do
-          @resource.should be_readonly
+        it 'marks the destroyed resource as readonly' do
+          expect(@resource).to be_readonly
         end
 
-        it "should return true when calling #{method} on a destroyed resource" do
-          @resource.__send__(method).should be(true)
+        it "returns true when calling #{method} on a destroyed resource" do
+          expect(@resource.__send__(method)).to be(true)
         end
 
-        it 'should remove resource from persistent storage' do
-          @user_model.get(*@resource.key).should be_nil
+        it 'removes resource from persistent storage' do
+          expect(@user_model.get(*@resource.key)).to be_nil
         end
       end
 
       describe 'with has relationship resources' do
-        it 'should raise an exception'
+        it 'raises an exception'
       end
     end
   end
 
-  it { @user.should respond_to(:dirty?) }
+  it { expect(@user).to respond_to(:dirty?) }
 
   describe '#dirty?' do
     describe 'on a record, with dirty attributes' do
       before { @user.age = 100 }
 
-      it { @user.should be_dirty }
+      it { expect(@user).to be_dirty }
     end
 
     describe 'on a record, with no dirty attributes, and dirty parents' do
       before :all do
         rescue_if @skip do
-          @user.should_not be_dirty
+          expect(@user).not_to be_dirty
 
           parent = @user.parent = @user_model.new(:name => 'Parent')
-          parent.should be_dirty
+          expect(parent).to be_dirty
         end
       end
 
-      it { @user.should be_dirty }
+      it { expect(@user).to be_dirty }
     end
 
     describe 'on a record, with no dirty attributes, and dirty children' do
       before :all do
         rescue_if @skip do
-          @user.should_not be_dirty
+          expect(@user).not_to be_dirty
 
           child = @user.children.new(:name => 'Child')
-          child.should be_dirty
+          expect(child).to be_dirty
         end
       end
 
-      it { @user.should be_dirty }
+      it { expect(@user).to be_dirty }
     end
 
     describe 'on a record, with no dirty attributes, and dirty siblings' do
       before :all do
         rescue_if @skip do
-          @user.should_not be_dirty
+          expect(@user).not_to be_dirty
 
           parent = @user_model.create(:name => 'Parent', :comment => @comment)
-          parent.should_not be_dirty
+          expect(parent).not_to be_dirty
 
           @user.update(:parent => parent)
-          @user.should_not be_dirty
+          expect(@user).not_to be_dirty
 
           sibling = parent.children.new(:name => 'Sibling')
-          sibling.should be_dirty
-          parent.should be_dirty
+          expect(sibling).to be_dirty
+          expect(parent).to be_dirty
         end
       end
 
-      it { @user.should_not be_dirty }
+      it { expect(@user).not_to be_dirty }
     end
 
     describe 'on a saved record, with no dirty attributes' do
-      it { @user.should_not be_dirty }
+      it { expect(@user).not_to be_dirty }
     end
 
     describe 'on a new record, with no dirty attributes, no default attributes, and no identity field' do
       before { @user = @user_model.new }
 
-      it { @user.should_not be_dirty }
+      it { expect(@user).not_to be_dirty }
     end
 
     describe 'on a new record, with no dirty attributes, no default attributes, and an identity field' do
       before { @comment = @comment_model.new }
 
-      it { @comment.should be_dirty }
+      it { expect(@comment).to be_dirty }
     end
 
     describe 'on a new record, with no dirty attributes, default attributes, and no identity field' do
       before { @default = Default.new }
 
-      it { @default.should be_dirty }
+      it { expect(@default).to be_dirty }
     end
 
     describe 'on a record with itself as a parent (circular dependency)' do
@@ -373,10 +370,10 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should not raise an exception' do
-        lambda {
-          @user.dirty?.should be(true)
-        }.should_not raise_error(SystemStackError)
+      it 'does not raise an exception' do
+        expect {
+          expect(@user.dirty?).to be(true)
+        }.not_to raise_error(SystemStackError)
       end
     end
 
@@ -387,10 +384,10 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should not raise an exception' do
-        lambda {
-          @user.dirty?.should be(true)
-        }.should_not raise_error(SystemStackError)
+      it 'does not raise an exception' do
+        except {
+          expect(@user.dirty?).to be(true)
+        }.not_to raise_error(SystemStackError)
       end
     end
 
@@ -398,19 +395,19 @@ shared_examples 'A public Resource' do
       before :all do
         rescue_if @skip do
           @user.children = [ @user.parent = @user_model.new(:name => 'Parent', :comment => @comment) ]
-          @user.save.should be(true)
+          expect(@user.save).to be(true)
         end
       end
 
-      it 'should not raise an exception' do
-        lambda {
-          @user.dirty?.should be(true)
-        }.should_not raise_error(SystemStackError)
+      it 'does not raise an exception' do
+        expect {
+          expect(@user.dirty?).to be(true)
+        }.not_to raise_error(SystemStackError)
       end
     end
   end
 
-  it { @user.should respond_to(:eql?) }
+  it { expect(@user).to respond_to(:eql?) }
 
   describe '#eql?' do
     describe 'when comparing to the same resource' do
@@ -419,8 +416,8 @@ shared_examples 'A public Resource' do
         @return = @user.eql?(@other)
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
 
@@ -430,8 +427,8 @@ shared_examples 'A public Resource' do
         @return = @user.eql?(@other)
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -443,8 +440,8 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -454,8 +451,8 @@ shared_examples 'A public Resource' do
         @return = @user.eql?(@other)
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -467,8 +464,8 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
 
@@ -481,8 +478,8 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -494,8 +491,8 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
 
@@ -515,17 +512,16 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should return false' do
-          @return.should be(false)
+        it 'returns false' do
+          expect(@return).to be(false)
         end
       end
     end
   end
 
-  it { @user.should respond_to(:inspect) }
+  it { expect(@user).to respond_to(:inspect) }
 
   describe '#inspect' do
-
     before :all do
       rescue_if @skip do
         @user = @user_model.get(*@user.key)
@@ -533,20 +529,18 @@ shared_examples 'A public Resource' do
       end
     end
 
-    it { @inspected.should match(/^#<#{@user_model}/) }
+    it { expect(@inspected).to match(/^#<#{@user_model}/) }
 
-    it { @inspected.should match(/name="dbussink"/) }
+    it { expect(@inspected).to match(/name="dbussink"/) }
 
-    it { @inspected.should match(/age=25/) }
+    it { expect(@inspected).to match(/age=25/) }
 
-    it { @inspected.should match(/description=<not loaded>/) }
-
+    it { expect(@inspected).to match(/description=<not loaded>/) }
   end
 
-  it { @user.should respond_to(:key) }
+  it { expect(@user).to respond_to(:key) }
 
   describe '#key' do
-
     before :all do
       rescue_if @skip do
         @key = @user.key
@@ -554,37 +548,30 @@ shared_examples 'A public Resource' do
       end
     end
 
-    it { @key.should be_kind_of(Array) }
+    it { expect(@key).to be_kind_of(Array) }
 
-    it 'should always return the key value persisted in the back end' do
-      @key.first.should eql("dbussink")
+    it 'always returns the key value persisted in the back end' do
+      expect(@key.first).to eql('dbussink')
     end
 
-    it { @user.key.should eql(@key) }
-
+    it { expect(@user.key).to eql(@key) }
   end
 
-  it { @user.should respond_to(:new?) }
+  it { expect(@user).to respond_to(:new?) }
 
   describe '#new?' do
-
     describe 'on an existing record' do
-
-      it { @user.should_not be_new }
-
+      it { expect(@user).not_to be_new }
     end
 
     describe 'on a new record' do
-
       before { @user = @user_model.new }
 
-      it { @user.should be_new }
-
+      it { expect(@user).to be_new }
     end
-
   end
 
-  it { @user.should respond_to(:reload) }
+  it { expect(@user).to respond_to(:reload) }
 
   describe '#reload' do
     before do
@@ -601,14 +588,14 @@ shared_examples 'A public Resource' do
         @user.attributes = { :description => 'Changed' }
       end
 
-      it { should be_kind_of(DataMapper::Resource) }
+      it { is_expected.to be_kind_of(DataMapper::Resource) }
 
-      it { should equal(@user) }
+      it { is_expected.to equal(@user) }
 
-      it { should be_clean }
+      it { is_expected.to be_clean }
 
       it 'reset the changed attributes' do
-        method(:subject).should change(@user, :description).from('Changed').to('Test')
+        expect(method(:subject)).to change(@user, :description).from('Changed').to('Test')
       end
     end
 
@@ -617,14 +604,14 @@ shared_examples 'A public Resource' do
         @user.attributes = { :name => 'dkubb' }
       end
 
-      it { should be_kind_of(DataMapper::Resource) }
+      it { is_expected.to be_kind_of(DataMapper::Resource) }
 
-      it { should equal(@user) }
+      it { is_expected.to equal(@user) }
 
-      it { should be_clean }
+      it { is_expected.to be_clean }
 
-      it 'reset the changed attributes' do
-        method(:subject).should change(@user, :name).from('dkubb').to('dbussink')
+      it 'resets the changed attributes' do
+        expect(method(:subject)).to change(@user, :name).from('dkubb').to('dbussink')
       end
     end
 
@@ -635,38 +622,38 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it { should be_kind_of(DataMapper::Resource) }
+      it { is_expected.to be_kind_of(DataMapper::Resource) }
 
-      it { should equal(@user) }
+      it { is_expected.to equal(@user) }
 
-      it { should be_clean }
+      it { is_expected.to be_clean }
 
-      it 'should reload the resource from the data store' do
-        method(:subject).should change(@user, :description).from('Test').to('Changed')
+      it 'reloads the resource from the data store' do
+        expect(method(:subject)).to change(@user, :description).from('Test').to('Changed')
       end
     end
 
     describe 'on an anonymous resource' do
       before do
         rescue_if @skip do
-          @user = @user.model.first(:fields => [ :description ])
-          @user.description.should == 'Test'
+          @user = @user.model.first(fields: [:description])
+          expect(@user.description).to eq 'Test'
         end
       end
 
-      it { should be_kind_of(DataMapper::Resource) }
+      it { is_expected.to be_kind_of(DataMapper::Resource) }
 
-      it { should equal(@user) }
+      it { is_expected.to equal(@user) }
 
-      it { should be_clean }
+      it { is_expected.to be_clean }
 
-      it 'should not reload any attributes' do
-        method(:subject).should_not change(@user, :attributes)
+      it 'does not reload any attributes' do
+        expect(method(:subject)).not_to change(@user, :attributes)
       end
     end
   end
 
-  it { @user.should respond_to(:readonly?) }
+  it { expect(@user).to respond_to(:readonly?) }
 
   describe '#readonly?' do
     describe 'on a new resource' do
@@ -676,32 +663,32 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return false' do
-        @user.readonly?.should be(false)
+      it 'returns false' do
+        expect(@user.readonly?).to be(false)
       end
     end
 
     describe 'on a saved resource' do
       before :all do
         rescue_if @skip do
-          @user.should be_saved
+          expect(@user).to be_saved
         end
       end
 
-      it 'should return false' do
-        @user.readonly?.should be(false)
+      it 'returns false' do
+        expect(@user.readonly?).to be(false)
       end
     end
 
     describe 'on a destroyed resource' do
       before :all do
         rescue_if @skip do
-          @user.destroy.should be(true)
+          expect(@user.destroy).to be(true)
         end
       end
 
-      it 'should return true' do
-        @user.readonly?.should be(true)
+      it 'returns true' do
+        expect(@user.readonly?).to be(true)
       end
     end
 
@@ -713,14 +700,14 @@ shared_examples 'A public Resource' do
         end
       end
 
-      it 'should return true' do
-        @user.readonly?.should be(true)
+      it 'returns true' do
+        expect(@user.readonly?).to be(true)
       end
     end
   end
 
-  [ :save, :save! ].each do |method|
-    it { @user.should respond_to(method) }
+  %i(save save!).each do |method|
+    it { expect(@user).to respond_to(method) }
 
     describe "##{method}" do
       before :all do
@@ -740,12 +727,12 @@ shared_examples 'A public Resource' do
           @return = @user.__send__(method)
         end
 
-        it 'should return false' do
-          @return.should be(false)
+        it 'returns false' do
+          expect(@return).to be(false)
         end
 
-        it 'should call save hook expected number of times' do
-          @user.save_hook_call_count.should be_nil
+        it 'calls save hook expected number of times' do
+          expect(@user.save_hook_call_count).to be_nil
         end
       end
 
@@ -756,12 +743,12 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should return true even when resource is not dirty' do
-          @return.should be(true)
+        it 'returns true even when resource is not dirty' do
+          expect(@return).to be(true)
         end
 
-        it 'should call save hook expected number of times' do
-          @user.save_hook_call_count.should be_nil
+        it 'calls save hook expected number of times' do
+          expect(@user.save_hook_call_count).to be_nil
         end
       end
 
@@ -773,29 +760,29 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should save a resource succesfully when dirty' do
-          @return.should be(true)
+        it 'saves a resource succesfully when dirty' do
+          expect(@return).to be(true)
         end
 
-        it 'should actually store the changes to persistent storage' do
-          @user.attributes.should == @user.reload.attributes
+        it 'actually stores the changes to persistent storage' do
+          expect(@user.attributes).to eq @user.reload.attributes
         end
 
-        it 'should call save hook expected number of times' do
-          @user.save_hook_call_count.should == (method == :save ? 1 : nil)
+        it 'calls save hook expected number of times' do
+          expect(@user.save_hook_call_count).to eq((method == :save) ? 1 : nil)
         end
       end
 
       describe 'on a new, invalid resource' do
         before :all do
-          @user = @user_model.new(:name => nil)
-          expect { @user.__send__(method) }.to(raise_error(DataMapper::Property::InvalidValueError) do |error|
-            error.property.should == @user_model.properties[:name]
-          end)
+          @user = @user_model.new(name: nil)
+          expect { @user.__send__(method) }.to raise_error(DataMapper::Property::InvalidValueError) do |error|
+            expect(error.property).to eq @user_model.properties[:name]
+          end
         end
 
-        it 'should call save hook expected number of times' do
-          @user.save_hook_call_count.should == (method == :save ? 1 : nil)
+        it 'calls save hook expected number of times' do
+          expect(@user.save_hook_call_count).to eq((method == :save) ? 1 : nil)
         end
       end
 
@@ -806,14 +793,14 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should not save an invalid resource' do
+        it 'does not save an invalid resource' do
           expect { @user.__send__(method) }.to(raise_error(DataMapper::Property::InvalidValueError) do |error|
-            error.property.should == @user_model.properties[:name]
+            expect(error.property).to eq @user_model.properties[:name]
           end)
         end
 
-        it 'should call save hook expected number of times' do
-          @user.save_hook_call_count.should == (method == :save ? 1 : nil)
+        it 'calls save hook expected number of times' do
+          expect(@user.save_hook_call_count).to eq((method == :save) ? 1 : nil)
         end
       end
 
@@ -827,40 +814,40 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should save resource' do
-          pending_if !@user.respond_to?(:comments) do
-            @return.should be(true)
-          end
+        it 'saves resource' do
+          pending unless@user.respond_to?(:comments)
+
+          expect(@return).to be(true)
         end
 
-        it 'should save the first resource created through new' do
-          pending_if !@user.respond_to?(:comments) do
-            @first_comment.new?.should be(false)
-          end
+        it 'saves the first resource created through new' do
+          pending unless @user.respond_to?(:comments)
+
+          expect(@first_comment.new?).to be(false)
         end
 
-        it 'should save the correct foreign key for the first resource' do
-          pending_if !@user.respond_to?(:comments) do
-            @first_comment.user.should eql(@user)
-          end
+        it 'saves the correct foreign key for the first resource' do
+          pending unless @user.respond_to?(:comments)
+
+          expect(@first_comment.user).to eql(@user)
         end
 
-        it 'should save the second resource created through the constructor' do
-          pending "Changing a belongs_to parent should add the resource to the correct association" do
-            @second_comment.new?.should be(false)
-          end
+        it 'saves the second resource created through the constructor' do
+          pending 'Changing a belongs_to parent adds the resource to the correct association'
+
+          expect(@second_comment.new?).to be(false)
         end
 
-        it 'should save the correct foreign key for the second resource' do
-          pending_if !@user.respond_to?(:comments) do
-            @second_comment.user.should eql(@user)
-          end
+        it 'saves the correct foreign key for the second resource' do
+          pending unless @user.respond_to?(:comments)
+
+          expect(@second_comment.user).to eql(@user)
         end
 
-        it 'should create 2 extra resources in persistent storage' do
-          pending "Changing a belongs_to parent should add the resource to the correct association" do
-            @user.comments.size.should == @initial_comments + 2
-          end
+        it 'created 2 extra resources in persistent storage' do
+          pending 'Changing a belongs_to parent adds the resource to the correct association'
+
+          expect(@user.comments.size).to eq @initial_comments + 2
         end
       end
 
@@ -878,26 +865,26 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should return true' do
-          pending_if !@user.respond_to?(:comments) do
-            @return.should be(true)
-          end
+        it 'returns true' do
+          pending unless @user.respond_to?(:comments)
+
+          expect(@return).to be(true)
         end
 
-        it 'should not be dirty' do
-          @user.should_not be_dirty
+        it 'is not dirty' do
+          expect(@user).not_to be_dirty
         end
 
-        it 'should have saved the first child resource' do
-          pending_if !@user.respond_to?(:comments) do
-            @first_comment.model.get(*@first_comment.key).body.should == 'It still has rough edges'
-          end
+        it 'has saved the first child resource' do
+          pending unless @user.respond_to?(:comments)
+
+          expect(@first_comment.model.get(*@first_comment.key).body).to eq 'It still has rough edges'
         end
 
-        it 'should not have saved the second child resource' do
-          pending_if !@user.respond_to?(:comments) do
-            @second_comment.model.get(*@second_comment.key).body.should == 'is it really?'
-          end
+        it 'has not saved the second child resource' do
+          pending unless @user.respond_to?(:comments)
+
+          expect(@second_comment.model.get(*@second_comment.key).body).to eq 'is it really?'
         end
       end
 
@@ -907,10 +894,10 @@ shared_examples 'A public Resource' do
           @first_comment.user = @user_model.new(:name => 'dkubb')
         end
 
-        it 'should not raise an exception when saving the resource' do
-          pending do
-            lambda { @first_comment.send(method).should be(false) }.should_not raise_error
-          end
+        it 'does not raise an exception when saving the resource' do
+          pending
+
+          expect { expect(@first_comment.send(method)).to be(false) }.not_to raise_error
         end
       end
 
@@ -926,16 +913,16 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should succesfully save the resource' do
-          @return.should be(true)
+        it 'successfully saves the resource' do
+          expect(@return).to be(true)
         end
 
-        it 'should not have a dirty dependency' do
-          @user.should_not be_dirty
+        it 'does not have a dirty dependency' do
+          expect(@user).not_to be_dirty
         end
 
-        it 'should succesfully save the dependency' do
-          @user.name.should == @user_model.get(*@user.key).name
+        it 'successfully saves the dependency' do
+          expect(@user.name).to eq @user_model.get(*@user.key).name
         end
       end
 
@@ -949,28 +936,28 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should not be dirty' do
-          pending_if !@article.respond_to?(:paragraphs) do
-            @article.should_not be_dirty
-          end
+        it 'is not dirty' do
+          pending unless @article.respond_to?(:paragraphs)
+
+          expect(@article).not_to be_dirty
         end
 
-        it 'should not be dirty' do
-          pending_if !@article.respond_to?(:paragraphs) do
-            @paragraph.should_not be_dirty
-          end
+        it 'is not dirty' do
+          pending unless @article.respond_to?(:paragraphs)
+
+          expect(@paragraph).not_to be_dirty
         end
 
-        it 'should set the related resource' do
-          pending_if !@article.respond_to?(:paragraphs) do
-            @paragraph.article.should == @article
-          end
+        it 'sets the related resource' do
+          pending unless @article.respond_to?(:paragraphs)
+
+          expect(@paragraph.article).to eq @article
         end
 
-        it 'should set the foreign key properly' do
-          pending_if !@article.respond_to?(:paragraphs) do
-            @paragraph.article_id.should == @article.id
-          end
+        it 'sets the foreign key properly' do
+          pending unless @article.respond_to?(:paragraphs)
+
+          expect(@paragraph.article_id).to eq @article.id
         end
       end
 
@@ -983,20 +970,20 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should save a resource succesfully when dirty' do
-          @return.should be(true)
+        it 'saves a resource successfully when dirty' do
+          expect(@return).to be(true)
         end
 
-        it 'should actually store the changes to persistent storage' do
-          @user.name.should == @user.reload.name
+        it 'actually stores the changes to persistent storage' do
+          expect(@user.name).to eq @user.reload.name
         end
 
-        it 'should update the identity map' do
-          @user.repository.identity_map(@user_model).should have_key(%w[ dkubb ])
+        it 'updates the identity map' do
+          expect(@user.repository.identity_map(@user_model)).to have_key(%w(dkubb))
         end
 
-        it 'should remove the old entry from the identity map' do
-          @user.repository.identity_map(@user_model).should_not have_key(@original_key)
+        it 'removes the old entry from the identity map' do
+          expect(@user.repository.identity_map(@user_model)).not_to have_key(@original_key)
         end
       end
 
@@ -1009,32 +996,32 @@ shared_examples 'A public Resource' do
           @response = @child.__send__(method)
         end
 
-        it 'should return true' do
-          @response.should be(true)
+        it 'returns true' do
+          expect(@response).to be(true)
         end
 
-        it 'should save the child' do
-          @child.should be_saved
+        it 'saves the child' do
+          expect(@child).to be_saved
         end
 
-        it 'should save the parent' do
-          @parent.should be_saved
+        it 'saves the parent' do
+          expect(@parent).to be_saved
         end
 
-        it 'should save the grandparent' do
-          @grandparent.should be_saved
+        it 'saves the grandparent' do
+          expect(@grandparent).to be_saved
         end
 
-        it 'should relate the child to the parent' do
-          @child.model.get(*@child.key).referrer.should == @parent
+        it 'relates the child to the parent' do
+          expect(@child.model.get(*@child.key).referrer).to eq @parent
         end
 
-        it 'should relate the parent to the grandparent' do
-          @parent.model.get(*@parent.key).referrer.should == @grandparent
+        it 'relates the parent to the grandparent' do
+          expect(@parent.model.get(*@parent.key).referrer).to eq @grandparent
         end
 
-        it 'should relate the grandparent to nothing' do
-          @grandparent.model.get(*@grandparent.key).referrer.should be_nil
+        it 'relates the grandparent to nothing' do
+          expect(@grandparent.model.get(*@grandparent.key).referrer).to be_nil
         end
       end
 
@@ -1045,10 +1032,10 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             @user.__send__(method)
-          }.should raise_error(DataMapper::PersistenceError, "#{@user.model}##{method} cannot be called on a destroyed resource")
+          }.to raise_error(DataMapper::PersistenceError, "#{@user.model}##{method} cannot be called on a destroyed resource")
         end
       end
 
@@ -1059,10 +1046,10 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should not raise an exception' do
-          lambda {
-            @user.__send__(method).should be(true)
-          }.should_not raise_error(SystemStackError)
+        it 'does not raise an exception' do
+          expect {
+            expect(@user.__send__(method)).to be(true)
+          }.not_to raise_error(SystemStackError)
         end
       end
 
@@ -1073,10 +1060,10 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should not raise an exception' do
-          lambda {
-            @user.__send__(method).should be(true)
-          }.should_not raise_error(SystemStackError)
+        it 'does not raise an exception' do
+          expect {
+            expect(@user.__send__(method)).to be(true)
+          }.not_to raise_error(SystemStackError)
         end
       end
 
@@ -1087,37 +1074,34 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should not raise an exception' do
-          lambda {
-            @user.__send__(method).should be(true)
-          }.should_not raise_error(SystemStackError)
+        it 'does not raise an exception' do
+          expect {
+            expect(@user.__send__(method)).to be(true)
+          }.not_to raise_error(SystemStackError)
         end
       end
     end
   end
 
-  it { @user.should respond_to(:saved?) }
+  it { expect(@user).to respond_to(:saved?) }
 
   describe '#saved?' do
 
     describe 'on an existing record' do
-
-      it { @user.should be_saved }
-
+      it { expect(@user).to be_saved }
     end
 
     describe 'on a new record' do
 
       before { @user = @user_model.new }
 
-      it { @user.should_not be_saved }
-
+      it { expect(@user).not_to be_saved }
     end
 
   end
 
-  [ :update, :update! ].each do |method|
-    it { @user.should respond_to(method) }
+  %i(update update!).each do |method|
+    it { expect(@user).to respond_to(method) }
 
     describe "##{method}" do
       describe 'with attributes' do
@@ -1128,17 +1112,17 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
 
-        it 'should update attributes of Resource' do
-          @attributes.each { |key, value| @user.__send__(key).should == value }
+        it 'updates attributes of Resource' do
+          @attributes.each { |key, value| expect(@user.__send__(key)).to eq value }
         end
 
-        it 'should persist the changes' do
+        it 'persists the changes' do
           resource = @user_model.get(*@user.key)
-          @attributes.each { |key, value| resource.__send__(key).should == value }
+          @attributes.each { |key, value| expect(resource.__send__(key)).to eq value }
         end
       end
 
@@ -1150,29 +1134,30 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
 
-        it 'should update attributes of Resource' do
-          @attributes.each { |key, value| @user.__send__(key).should == value }
+        it 'updates attributes of Resource' do
+          @attributes.each { |key, value| expect(@user.__send__(key)).to eq value }
         end
 
-        it 'should persist the changes' do
+        it 'persists the changes' do
           resource = @user_model.get(*@user.key)
-          @attributes.each { |key, value| resource.__send__(key).should == value }
+          @attributes.each { |key, value| expect(resource.__send__(key)).to eq value }
         end
       end
 
       describe 'with attributes where a value is nil for a property that does not allow nil' do
         before do
-          expect { @user.__send__(method, :name => nil) }.to(raise_error(DataMapper::Property::InvalidValueError) do |error|
-            error.property.should == @user_model.properties[:name]
-          end)
+          expect { @user.__send__(method, name: nil) }
+            .to raise_error(DataMapper::Property::InvalidValueError) do |error|
+              expect(error.property).to eq @user_model.properties[:name]
+            end
         end
 
-        it 'should not persist the changes' do
-          @user.reload.name.should_not be_nil
+        it 'does not persist the changes' do
+          expect(@user.reload.name).not_to be_nil
         end
       end
 
@@ -1184,10 +1169,10 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should raise an exception' do
-          lambda {
-            @user.__send__(method, :admin => true)
-          }.should raise_error(DataMapper::UpdateConflictError, "#{@user.model}##{method} cannot be called on a new resource")
+        it 'raises an exception' do
+          expect {
+            @user.__send__(method, admin: true)
+          }.to raise_error(DataMapper::UpdateConflictError, "#{@user.model}##{method} cannot be called on a new resource")
         end
       end
 
@@ -1198,10 +1183,10 @@ shared_examples 'A public Resource' do
           end
         end
 
-        it 'should raise an exception' do
-          lambda {
-            @user.__send__(method, :admin => true)
-          }.should raise_error(DataMapper::UpdateConflictError, "#{@user.model}##{method} cannot be called on a dirty resource")
+        it 'raises an exception' do
+          expect {
+            @user.__send__(method, admin: true)
+          }.to raise_error(DataMapper::UpdateConflictError, "#{@user.model}##{method} cannot be called on a dirty resource")
         end
       end
     end
@@ -1219,18 +1204,18 @@ shared_examples 'A public Resource' do
       end
     end
 
-    it 'should not overwrite dirty attribute' do
-      @user.age.should == 33
+    it 'does not overwrite dirty attribute' do
+      expect(@user.age).to eq 33
     end
 
-    it 'should not overwrite dirty lazy attribute' do
-      @user.summary.should == 'Programmer'
+    it 'does not overwrite dirty lazy attribute' do
+      expect(@user.summary).to eq 'Programmer'
     end
 
-    it 'should not overwrite dirty key' do
-      pending do
-        @user.name.should == 'dkubb'
-      end
+    it 'does not overwrite dirty key' do
+      pending
+
+      expect(@user.name).to eq 'dkubb'
     end
   end
 end

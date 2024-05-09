@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/subject_set'
-require 'unit/data_mapper/subject_set/shared/named_spec'
+require_relative 'shared/named_spec'
 
 describe 'DataMapper::SubjectSet#named?' do
   before :all do
@@ -22,12 +22,12 @@ describe 'DataMapper::SubjectSet#named?' do
   context 'when no entry with the given name is present' do
     let(:set) { DataMapper::SubjectSet.new([]) }
 
-    it_should_behave_like 'DataMapper::SubjectSet#named? when no entry with the given name is present'
+    it_behaves_like 'DataMapper::SubjectSet#named? when no entry with the given name is present'
   end
 
   context 'when an entry with the given name is present' do
     let(:set) { DataMapper::SubjectSet.new([ entry ]) }
 
-    it_should_behave_like 'DataMapper::SubjectSet#named? when an entry with the given name is present'
+    it_behaves_like 'DataMapper::SubjectSet#named? when an entry with the given name is present'
   end
 end
