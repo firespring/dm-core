@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Boolean do
   before :all do
@@ -9,7 +9,7 @@ describe DataMapper::Property::Boolean do
     @invalid_value = 1
   end
 
-  it_should_behave_like 'A semipublic Property'
+  it_behaves_like 'A semipublic Property'
 
   describe '#valid?' do
     [ true, false ].each do |value|

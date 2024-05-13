@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Decimal do
   before :all do
@@ -10,7 +10,7 @@ describe DataMapper::Property::Decimal do
     @invalid_value = true
   end
 
-  it_should_behave_like 'A semipublic Property'
+  it_behaves_like 'A semipublic Property'
 
   describe '#typecast_to_primitive' do
     it 'returns same value if a decimal' do

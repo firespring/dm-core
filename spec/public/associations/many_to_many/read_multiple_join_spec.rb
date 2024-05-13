@@ -1,8 +1,9 @@
+require_relative '../../../spec_helper'
+
 describe 'Many to Many Associations read across multiple join associations' do
   before :all do
     class ::User
       include DataMapper::Resource
-require_relative '../../../spec_helper'
 
       property :id, Serial
 

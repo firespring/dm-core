@@ -1,4 +1,5 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
+
 module OperationMatchers
   class HaveValidParent
     def matches?(target)
@@ -491,7 +492,7 @@ end
 describe DataMapper::Query::Conditions::AndOperation do
   include OperationMatchers
 
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractOperation'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractOperation'
 
   before do
     @operation = @and_operation

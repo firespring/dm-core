@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Discriminator do
   before :all do
@@ -15,5 +15,5 @@ describe DataMapper::Property::Discriminator do
     @invalid_value = 1
   end
 
-  it_should_behave_like 'A semipublic Property'
+  it_behaves_like 'A semipublic Property'
 end

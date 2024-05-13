@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Class do
   before :all do
@@ -15,7 +15,7 @@ describe DataMapper::Property::Class do
     @invalid_value = 1
   end
 
-  it_should_behave_like 'A semipublic Property'
+  it_behaves_like 'A semipublic Property'
 
   describe '#typecast_to_primitive' do
     it 'returns same value if a class' do

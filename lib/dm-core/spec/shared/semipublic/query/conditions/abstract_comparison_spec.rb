@@ -1,3 +1,4 @@
+shared_examples 'DataMapper::Query::Conditions::AbstractComparison' do
   before :all do
     module ::Blog
       class Article
@@ -13,7 +14,6 @@
 
     DataMapper.finalize
 
-shared_examples 'DataMapper::Query::Conditions::AbstractComparison' do
     @model = Blog::Article
   end
 

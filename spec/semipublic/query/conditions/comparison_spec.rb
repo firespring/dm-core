@@ -1,4 +1,5 @@
 require_relative '../../../spec_helper'
+
 describe DataMapper::Query::Conditions::Comparison do
   before :all do
     module ::Blog
@@ -47,7 +48,7 @@ describe DataMapper::Query::Conditions::Comparison do
 end
 
 describe DataMapper::Query::Conditions::EqualToComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -349,7 +350,7 @@ describe DataMapper::Query::Conditions::EqualToComparison do
 end
 
 describe DataMapper::Query::Conditions::InclusionComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -969,7 +970,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
 end
 
 describe DataMapper::Query::Conditions::RegexpComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:title]
@@ -1051,7 +1052,7 @@ describe DataMapper::Query::Conditions::RegexpComparison do
 end
 
 describe DataMapper::Query::Conditions::LikeComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:title]
@@ -1133,7 +1134,7 @@ describe DataMapper::Query::Conditions::LikeComparison do
 end
 
 describe DataMapper::Query::Conditions::GreaterThanComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -1225,7 +1226,7 @@ describe DataMapper::Query::Conditions::GreaterThanComparison do
 end
 
 describe DataMapper::Query::Conditions::LessThanComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -1317,7 +1318,7 @@ describe DataMapper::Query::Conditions::LessThanComparison do
 end
 
 describe DataMapper::Query::Conditions::GreaterThanOrEqualToComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -1409,7 +1410,7 @@ describe DataMapper::Query::Conditions::GreaterThanOrEqualToComparison do
 end
 
 describe DataMapper::Query::Conditions::LessThanOrEqualToComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]

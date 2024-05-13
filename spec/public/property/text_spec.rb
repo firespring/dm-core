@@ -31,11 +31,10 @@ describe DataMapper::Property::Text do
         end
       end
 
-        it 'allows a migration' do
-          expect {
-            @model.auto_migrate!
-          }.not_to raise_error(DataObjects::SyntaxError)
-        end
+      it 'allows a migration' do
+        expect {
+          @model.auto_migrate!
+        }.not_to raise_error(DataObjects::SyntaxError)
       end
     end
   end if defined?(DataObjects::SyntaxError)
@@ -53,11 +52,10 @@ describe DataMapper::Property::Text do
         end
       end
 
-        it 'allows a migration' do
-          expect {
-            @model.auto_migrate!
-          }.not_to raise_error(DataObjects::SyntaxError)
-        end
+      it 'allows a migration' do
+        expect {
+          @model.auto_migrate!
+        }.not_to raise_error(DataObjects::SyntaxError)
       end
     end
   end if defined?(DataObjects::SyntaxError)

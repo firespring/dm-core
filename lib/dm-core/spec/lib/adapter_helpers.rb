@@ -22,7 +22,7 @@ module DataMapper
             before :all do
               # store these in instance vars for the shared adapter specs
               @adapter    = DataMapper::Spec.adapter(kind)
-              @repository = DataMapper.repository(@adapter.name)
+              @repository = DataMapper.repository(@adapter&.name)
 
               @repository&.scope { DataMapper.finalize }
 
