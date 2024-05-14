@@ -50,7 +50,7 @@ describe DataMapper::Query do
     }
   end
 
-  it { DataMapper::Query.should respond_to(:new) }
+  it { expect(DataMapper::Query).to respond_to(:new) }
 
   describe '.new' do
     describe 'with a repository' do
@@ -59,18 +59,18 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the repository' do
-          @return.repository.should == @repository
+        it 'sets the repository' do
+          expect(@return.repository).to eq @repository
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new('invalid', @model, @options)
-          }.should raise_error(ArgumentError, '+repository+ should be DataMapper::Repository, but was String')
+          }.to raise_error(ArgumentError, '+repository+ should be DataMapper::Repository, but was String')
         end
       end
     end
@@ -81,18 +81,18 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the model' do
-          @return.model.should == @model
+        it 'sets the model' do
+          expect(@return.model).to eq @model
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, 'invalid', @options)
-          }.should raise_error(ArgumentError, '+model+ should be DataMapper::Model, but was String')
+          }.to raise_error(ArgumentError, '+model+ should be DataMapper::Model, but was String')
         end
       end
     end
@@ -103,10 +103,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the fields' do
-          @return.fields.should == @model.properties.values_at(*@fields)
+        it 'sets the fields' do
+          expect(@return.fields).to eq @model.properties.values_at(*@fields)
         end
       end
 
@@ -117,10 +117,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the fields' do
-          @return.fields.should == @model.properties.values_at('name')
+        it 'sets the fields' do
+          expect(@return.fields).to eq @model.properties.values_at('name')
         end
       end
 
@@ -131,10 +131,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the fields' do
-          @return.fields.should == @model.properties.values_at(:name)
+        it 'sets the fields' do
+          expect(@return.fields).to eq @model.properties.values_at(:name)
         end
       end
 
@@ -147,10 +147,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, Contact, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the fields' do
-          @return.fields.should == User.properties.values_at(:name)
+        it 'sets the fields' do
+          expect(@return.fields).to eq User.properties.values_at(:name)
         end
       end
 
@@ -159,34 +159,34 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.except(:fields).freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set fields to the model default properties' do
-          @return.fields.should == @model.properties.defaults
+        it 'sets fields to the model default properties' do
+          expect(@return.fields).to eq @model.properties.defaults
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:fields => :name))
-          }.should raise_error(StandardError)
+          }.to raise_error(StandardError)
         end
       end
 
       describe 'that is an Array containing an unknown Symbol' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:fields => [ :unknown ]))
-          }.should raise_error(ArgumentError, "+options[:fields]+ entry :unknown does not map to a property in #{@model}")
+          }.to raise_error(ArgumentError, "+options[:fields]+ entry :unknown does not map to a property in #{@model}")
         end
       end
 
       describe 'that is an Array containing an unknown String' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:fields => [ 'unknown' ]))
-          }.should raise_error(ArgumentError, "+options[:fields]+ entry \"unknown\" does not map to a property in #{@model}")
+          }.to raise_error(ArgumentError, "+options[:fields]+ entry \"unknown\" does not map to a property in #{@model}")
         end
       end
     end
@@ -197,10 +197,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the links' do
-          @return.links.should == @model.relationships.values_at(*@links)
+        it 'sets the links' do
+          expect(@return.links).to eq @model.relationships.values_at(*@links)
         end
       end
 
@@ -211,10 +211,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the links' do
-          @return.links.should == @model.relationships.values_at('referrer')
+        it 'sets the links' do
+          expect(@return.links).to eq @model.relationships.values_at('referrer')
         end
       end
 
@@ -225,10 +225,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the links' do
-          @return.links.should == @model.relationships.values_at(:referrer)
+        it 'sets the links' do
+          expect(@return.links).to eq @model.relationships.values_at(:referrer)
         end
       end
 
@@ -237,42 +237,42 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.except(:links).freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set links to an empty Array' do
-          @return.links.should == []
+        it 'sets links to an empty Array' do
+          expect(@return.links).to eq []
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:links => :referral))
-          }.should raise_error(StandardError)
+          }.to raise_error(StandardError)
         end
       end
 
       describe 'that is an empty Array' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:links => []))
-          }.should raise_error(ArgumentError, '+options[:links]+ should not be empty')
+          }.to raise_error(ArgumentError, '+options[:links]+ should not be empty')
         end
       end
 
       describe 'that is an Array containing an unknown Symbol' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:links => [ :unknown ]))
-          }.should raise_error(ArgumentError, "+options[:links]+ entry :unknown does not map to a relationship in #{@model}")
+          }.to raise_error(ArgumentError, "+options[:links]+ entry :unknown does not map to a relationship in #{@model}")
         end
       end
 
       describe 'that is an Array containing an unknown String' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:links => [ 'unknown' ]))
-          }.should raise_error(ArgumentError, "+options[:links]+ entry \"unknown\" does not map to a relationship in #{@model}")
+          }.to raise_error(ArgumentError, "+options[:links]+ entry \"unknown\" does not map to a relationship in #{@model}")
         end
       end
     end
@@ -285,10 +285,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            @return.conditions.should ==
+          it 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -299,8 +299,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -309,10 +309,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            @return.conditions.should ==
+          it 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -323,8 +323,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -334,10 +334,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            @return.conditions.should ==
+          it 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -348,8 +348,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -363,10 +363,10 @@ describe DataMapper::Query do
               @return = DataMapper::Query.new(@repository, @model, @options.freeze)
             end
 
-            it { @return.should be_kind_of(DataMapper::Query) }
+            it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-            it 'should set the conditions' do
-              @return.conditions.should ==
+            it 'sets the conditions' do
+              expect(@return.conditions).to eq
                 DataMapper::Query::Conditions::Operation.new(
                   :and,
                   DataMapper::Query::Conditions::Comparison.new(
@@ -377,8 +377,8 @@ describe DataMapper::Query do
                 )
             end
 
-            it 'should be valid' do
-              @return.should be_valid
+            it 'is valid' do
+              expect(@return).to be_valid
             end
           end
 
@@ -391,10 +391,10 @@ describe DataMapper::Query do
               @return = DataMapper::Query.new(@repository, @model, @options.freeze)
             end
 
-            it { @return.should be_kind_of(DataMapper::Query) }
+            it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-            it 'should set the conditions' do
-              @return.conditions.should ==
+            it 'sets the conditions' do
+              expect(@return.conditions).to eq
                 DataMapper::Query::Conditions::Operation.new(
                   :and,
                   DataMapper::Query::Conditions::Comparison.new(
@@ -405,8 +405,8 @@ describe DataMapper::Query do
                 )
             end
 
-            it 'should be valid' do
-              @return.should be_valid
+            it 'is valid' do
+              expect(@return).to be_valid
             end
           end
 
@@ -417,10 +417,10 @@ describe DataMapper::Query do
               @return = DataMapper::Query.new(@repository, @model, @options.freeze)
             end
 
-            it { @return.should be_kind_of(DataMapper::Query) }
+            it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-            it 'should set the conditions' do
-              @return.conditions.should ==
+            it 'sets the conditions' do
+              expect(@return.conditions).to eq
                 DataMapper::Query::Conditions::Operation.new(
                   :and,
                   DataMapper::Query::Conditions::Comparison.new(
@@ -431,8 +431,8 @@ describe DataMapper::Query do
                 )
             end
 
-            it 'should be valid' do
-              @return.should be_valid
+            it 'is valid' do
+              expect(@return).to be_valid
             end
           end
 
@@ -443,10 +443,10 @@ describe DataMapper::Query do
               @return = DataMapper::Query.new(@repository, @model, @options.freeze)
             end
 
-            it { @return.should be_kind_of(DataMapper::Query) }
+            it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-            it 'should set the conditions' do
-              @return.conditions.should ==
+            it 'sets the conditions' do
+              expect(@return.conditions).to eq
                 DataMapper::Query::Conditions::Operation.new(
                   :and,
                   DataMapper::Query::Conditions::Comparison.new(
@@ -457,8 +457,8 @@ describe DataMapper::Query do
                 )
             end
 
-            it 'should be invalid' do
-              @return.should_not be_valid
+            it 'is invalid' do
+              expect(@return).not_to be_valid
             end
           end
         end
@@ -469,10 +469,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            @return.conditions.should ==
+          it 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -483,8 +483,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -494,18 +494,18 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          xit 'should not set the conditions' do
-            @return.conditions.should be_nil
+          xit 'does not set the conditions' do
+            expect(@return.conditions).to be_nil
           end
 
-          it 'should set the links' do
-            @return.links.should == [ @model.relationships[:referrals], @model.relationships[:referrer] ]
+          it 'sets the links' do
+            expect(@return.links).to eq [ @model.relationships[:referrals], @model.relationships[:referrer] ]
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -515,18 +515,18 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          xit 'should not set the conditions' do
-            @return.conditions.should be_nil
+          xit 'does not set the conditions' do
+            expect(@return.conditions).to be_nil
           end
 
-          it 'should set the links' do
-            @return.links.should == [ @model.relationships[:referrals], @model.relationships[:referrer] ]
+          it 'sets the links' do
+            expect(@return.links).to eq [ @model.relationships[:referrals], @model.relationships[:referrer] ]
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -536,10 +536,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          xit 'should set the conditions' do
-            @return.conditions.should ==
+          xit 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -550,8 +550,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -561,10 +561,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          xit 'should set the conditions' do
-            @return.conditions.should ==
+          xit 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -575,8 +575,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should not be valid' do
-            @return.should_not be_valid
+          it 'is not valid' do
+            expect(@return).not_to be_valid
           end
         end
 
@@ -586,10 +586,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            @return.conditions.should ==
+          it 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -600,8 +600,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -611,10 +611,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            @return.conditions.should ==
+          it 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -625,8 +625,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -636,10 +636,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            @return.conditions.should ==
+          it 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -650,8 +650,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
 
@@ -661,10 +661,10 @@ describe DataMapper::Query do
             @return = DataMapper::Query.new(@repository, @model, @options.freeze)
           end
 
-          it { @return.should be_kind_of(DataMapper::Query) }
+          it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-          it 'should set the conditions' do
-            @return.conditions.should ==
+          it 'sets the conditions' do
+            expect(@return.conditions).to eq
               DataMapper::Query::Conditions::Operation.new(
                 :and,
                 DataMapper::Query::Conditions::Comparison.new(
@@ -675,8 +675,8 @@ describe DataMapper::Query do
               )
           end
 
-          it 'should be valid' do
-            @return.should be_valid
+          it 'is valid' do
+            expect(@return).to be_valid
           end
         end
       end
@@ -688,14 +688,14 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the conditions' do
-          @return.conditions.should == DataMapper::Query::Conditions::Operation.new(:and, [ 'name = ?', [ 'Dan Kubb' ] ])
+        it 'sets the conditions' do
+          expect(@return.conditions).to eq DataMapper::Query::Conditions::Operation.new(:and, [ 'name = ?', [ 'Dan Kubb' ] ])
         end
 
-        it 'should be valid' do
-          @return.should be_valid
+        it 'is valid' do
+          expect(@return).to be_valid
         end
       end
 
@@ -704,54 +704,54 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.except(:conditions).freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set conditions to nil by default' do
-          @return.conditions.should be_nil
+        it 'sets conditions to nil by default' do
+          expect(@return.conditions).to be_nil
         end
 
-        it 'should be valid' do
-          @return.should be_valid
+        it 'is valid' do
+          expect(@return).to be_valid
         end
       end
 
       describe 'that is an empty Array' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:conditions => []))
-          }.should raise_error(ArgumentError, '+options[:conditions]+ should not be empty')
+          }.to raise_error(ArgumentError, '+options[:conditions]+ should not be empty')
         end
       end
 
       describe 'that is an Array with a blank statement' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:conditions => [ ' ' ]))
-          }.should raise_error(ArgumentError, '+options[:conditions]+ should have a statement for the first entry')
+          }.to raise_error(ArgumentError, '+options[:conditions]+ should have a statement for the first entry')
         end
       end
 
       describe 'that is a Hash with a Symbol key that is not for a Property in the model' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:conditions => { :unknown => 1 }))
-          }.should raise_error(ArgumentError, "condition :unknown does not map to a property or relationship in #{@model}")
+          }.to raise_error(ArgumentError, "condition :unknown does not map to a property or relationship in #{@model}")
         end
       end
 
       describe 'that is a Hash with a String key that is not for a Property in the model' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:conditions => { 'unknown' => 1 }))
-          }.should raise_error(ArgumentError, "condition \"unknown\" does not map to a property or relationship in #{@model}")
+          }.to raise_error(ArgumentError, "condition \"unknown\" does not map to a property or relationship in #{@model}")
         end
       end
 
       describe 'that is a Hash with a String key that is a Path and not for a Relationship in the model' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:conditions => { 'unknown.id' => 1 }))
-          }.should raise_error(ArgumentError, "condition \"unknown.id\" does not map to a property or relationship in #{@model}")
+          }.to raise_error(ArgumentError, "condition \"unknown.id\" does not map to a property or relationship in #{@model}")
         end
       end
     end
@@ -762,10 +762,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the offset' do
-          @return.offset.should == @offset
+        it 'sets the offset' do
+          expect(@return.offset).to eq @offset
         end
       end
 
@@ -774,34 +774,34 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.except(:offset).freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set offset to 0' do
-          @return.offset.should == 0
+        it 'sets offset to 0' do
+          expect(@return.offset).to eq 0
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:offset => '0'))
-          }.should raise_error(StandardError)
+          }.to raise_error(StandardError)
         end
       end
 
       describe 'that is less than 0' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:offset => -1))
-          }.should raise_error(ArgumentError, '+options[:offset]+ must be greater than or equal to 0, but was -1')
+          }.to raise_error(ArgumentError, '+options[:offset]+ must be greater than or equal to 0, but was -1')
         end
       end
 
       describe 'that is greater than 0 and a nil limit' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.except(:limit).update(:offset => 1))
-          }.should raise_error(ArgumentError, '+options[:offset]+ cannot be greater than 0 if limit is not specified')
+          }.to raise_error(ArgumentError, '+options[:offset]+ cannot be greater than 0 if limit is not specified')
         end
       end
     end
@@ -812,10 +812,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the limit' do
-          @return.limit.should == @limit
+        it 'sets the limit' do
+          expect(@return.limit).to eq @limit
         end
       end
 
@@ -824,26 +824,26 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.except(:limit).freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set limit to nil' do
-          @return.limit.should be_nil
+        it 'sets limit to nil' do
+          expect(@return.limit).to be_nil
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:limit => '1'))
-          }.should raise_error(StandardError)
+          }.to raise_error(StandardError)
         end
       end
 
       describe 'that is less than 0' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:limit => -1))
-          }.should raise_error(ArgumentError, '+options[:limit]+ must be greater than or equal to 0, but was -1')
+          }.to raise_error(ArgumentError, '+options[:limit]+ must be greater than or equal to 0, but was -1')
         end
       end
     end
@@ -855,10 +855,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
         end
       end
 
@@ -868,10 +868,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
         end
       end
 
@@ -881,10 +881,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
         end
       end
 
@@ -895,8 +895,8 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.update(:order => [ @direction ]))
         end
 
-        it 'should set the order, since it may map to a joined model' do
-          @return.order.should == [ @direction ]
+        it 'sets the order, since it may map to a joined model' do
+          expect(@return.order).to eq [ @direction ]
         end
       end
 
@@ -906,8 +906,8 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.update(:order => [ @property ]))
         end
 
-        it 'should set the order, since it may map to a joined model' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@property) ]
+        it 'sets the order, since it may map to a joined model' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@property) ]
         end
       end
 
@@ -917,8 +917,8 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.update(:order => [ @property ]))
         end
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
         end
       end
 
@@ -927,10 +927,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
         end
       end
 
@@ -941,10 +941,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
         end
       end
 
@@ -955,10 +955,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
         end
       end
 
@@ -971,10 +971,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, Contact, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(User.properties[:name]) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(User.properties[:name]) ]
         end
       end
 
@@ -985,10 +985,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name], :asc) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name], :asc) ]
         end
       end
 
@@ -999,10 +999,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name], :asc) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name], :asc) ]
         end
       end
 
@@ -1015,10 +1015,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, Contact, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the order' do
-          @return.order.should == [ DataMapper::Query::Direction.new(User.properties[:name], :asc) ]
+        it 'sets the order' do
+          expect(@return.order).to eq [ DataMapper::Query::Direction.new(User.properties[:name], :asc) ]
         end
       end
 
@@ -1027,42 +1027,42 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.except(:order).freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set order to the model default order' do
-          @return.order.should == @model.default_order(@repository.name)
+        it 'sets order to the model default order' do
+          expect(@return.order).to eq @model.default_order(@repository.name)
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:order => 'unknown'))
-          }.should raise_error(ArgumentError, "+options[:order]+ entry \"unknown\" does not map to a property in #{@model}")
+          }.to raise_error(ArgumentError, "+options[:order]+ entry \"unknown\" does not map to a property in #{@model}")
         end
       end
 
       describe 'that is an Array containing an unknown String' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:order => [ 'unknown' ]))
-          }.should raise_error(ArgumentError, "+options[:order]+ entry \"unknown\" does not map to a property in #{@model}")
+          }.to raise_error(ArgumentError, "+options[:order]+ entry \"unknown\" does not map to a property in #{@model}")
         end
       end
 
       describe 'that contains a Symbol that is not for a Property in the model' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:order => [ :unknown ]))
-          }.should raise_error(ArgumentError, "+options[:order]+ entry :unknown does not map to a property in #{@model}")
+          }.to raise_error(ArgumentError, "+options[:order]+ entry :unknown does not map to a property in #{@model}")
         end
       end
 
       describe 'that contains a String that is not for a Property in the model' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:order => [ 'unknown' ]))
-          }.should raise_error(ArgumentError, "+options[:order]+ entry \"unknown\" does not map to a property in #{@model}")
+          }.to raise_error(ArgumentError, "+options[:order]+ entry \"unknown\" does not map to a property in #{@model}")
         end
       end
     end
@@ -1073,10 +1073,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the unique? flag' do
-          @return.unique?.should == @unique
+        it 'sets the unique? flag' do
+          expect(@return.unique?).to eq @unique
         end
       end
 
@@ -1085,18 +1085,18 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.except(:unique, :links).freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the query to not be unique' do
-          @return.should_not be_unique
+        it 'sets the query to not be unique' do
+          expect(@return).not_to be_unique
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:unique => nil))
-          }.should raise_error(ArgumentError, '+options[:unique]+ should be true or false, but was nil')
+          }.to raise_error(ArgumentError, '+options[:unique]+ should be true or false, but was nil')
         end
       end
     end
@@ -1107,10 +1107,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the add_reversed? flag' do
-          @return.add_reversed?.should == @add_reversed
+        it 'sets the add_reversed? flag' do
+          expect(@return.add_reversed?).to eq @add_reversed
         end
       end
 
@@ -1119,19 +1119,19 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.except(:add_reversed).freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the query to not add in reverse order' do
+        it 'sets the query to not add in reverse order' do
           # TODO: think about renaming the flag to not sound 'clumsy'
-          @return.should_not be_add_reversed
+          expect(@return).not_to be_add_reversed
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:add_reversed => nil))
-          }.should raise_error(ArgumentError, '+options[:add_reversed]+ should be true or false, but was nil')
+          }.to raise_error(ArgumentError, '+options[:add_reversed]+ should be true or false, but was nil')
         end
       end
     end
@@ -1142,10 +1142,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the reload? flag' do
-          @return.reload?.should == @reload
+        it 'sets the reload? flag' do
+          expect(@return.reload?).to eq @reload
         end
       end
 
@@ -1154,18 +1154,18 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.except(:reload).freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the query to not reload' do
-          @return.should_not be_reload
+        it 'sets the query to not reload' do
+          expect(@return).not_to be_reload
         end
       end
 
       describe 'that is invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, @options.update(:reload => nil))
-          }.should raise_error(ArgumentError, '+options[:reload]+ should be true or false, but was nil')
+          }.to raise_error(ArgumentError, '+options[:reload]+ should be true or false, but was nil')
         end
       end
     end
@@ -1178,10 +1178,10 @@ describe DataMapper::Query do
           @return = DataMapper::Query.new(@repository, @model, @options.freeze)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should set the conditions' do
-          @return.conditions.should ==
+        it 'sets the conditions' do
+          expect(@return.conditions).to eq
             DataMapper::Query::Conditions::Operation.new(
               :and,
               DataMapper::Query::Conditions::Comparison.new(
@@ -1194,10 +1194,10 @@ describe DataMapper::Query do
       end
 
       describe 'that are invalid' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             DataMapper::Query.new(@repository, @model, 'invalid')
-          }.should raise_error(StandardError)
+          }.to raise_error(StandardError)
         end
       end
     end
@@ -1207,10 +1207,10 @@ describe DataMapper::Query do
         @return = DataMapper::Query.new(@repository, @model)
       end
 
-      it { @return.should be_kind_of(DataMapper::Query) }
+      it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-      it 'should set options to an empty Hash' do
-        @return.options.should == {}
+      it 'sets options to an empty Hash' do
+        expect(@return.options).to eq {}
       end
     end
   end
@@ -1262,7 +1262,7 @@ describe DataMapper::Query do
 
   subject { @query }
 
-  it { should respond_to(:==) }
+  it { is_expected.to respond_to(:==) }
 
   describe '#==' do
     describe 'when other is equal' do
@@ -1270,7 +1270,7 @@ describe DataMapper::Query do
         @return = @query == @query
       end
 
-      it { @return.should be(true) }
+      it { expect(@return).to be(true) }
     end
 
     describe 'when other is equivalent' do
@@ -1278,7 +1278,7 @@ describe DataMapper::Query do
         @return = @query == @query.dup
       end
 
-      it { @return.should be(true) }
+      it { expect(@return).to be(true) }
     end
 
     DataMapper::Query::OPTIONS.each do |name|
@@ -1287,7 +1287,7 @@ describe DataMapper::Query do
           @return = @query == @query.merge(name => @other_options[name])
         end
 
-        it { @return.should be(false) }
+        it { expect(@return).to be(false) }
       end
     end
 
@@ -1310,7 +1310,7 @@ describe DataMapper::Query do
         @return = @query == @other
       end
 
-      it { @return.should be(false) }
+      it { expect(@return).to be(false) }
     end
 
     describe 'when other is a different type of object that can be compared, and is not equivalent' do
@@ -1332,7 +1332,7 @@ describe DataMapper::Query do
         @return = @query == @other
       end
 
-      it { @return.should be(false) }
+      it { expect(@return).to be(false) }
     end
 
     describe 'when other is a different type of object that cannot be compared' do
@@ -1340,11 +1340,11 @@ describe DataMapper::Query do
         @return = @query == 'invalid'
       end
 
-      it { @return.should be(false) }
+      it { expect(@return).to be(false) }
     end
   end
 
-  it { should respond_to(:conditions) }
+  it { is_expected.to respond_to(:conditions) }
 
   describe '#conditions' do
     before :all do
@@ -1353,10 +1353,10 @@ describe DataMapper::Query do
       @return = @query.conditions
     end
 
-    it { @return.should be_kind_of(DataMapper::Query::Conditions::AndOperation) }
+    it { expect(@return).to be_kind_of(DataMapper::Query::Conditions::AndOperation) }
 
-    it 'should return expected value' do
-      @return.should ==
+    it 'returns expected value' do
+      expect(@return).to eq
         DataMapper::Query::Conditions::Operation.new(
           :and,
           DataMapper::Query::Conditions::Comparison.new(
@@ -1369,7 +1369,7 @@ describe DataMapper::Query do
   end
 
   [ :difference, :- ].each do |method|
-    it { should respond_to(method) }
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       supported_by :all do
@@ -1403,14 +1403,14 @@ describe DataMapper::Query do
             @expected = DataMapper::Query::Conditions::Comparison.new(:eql, @model.properties[:name], 'Dan Kubb')
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should factor out the operation matching everything' do
-            subject.conditions.should == @expected
+          it 'factors out the operation matching everything' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1424,14 +1424,14 @@ describe DataMapper::Query do
             )
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should factor out the operation matching everything, and negate the other' do
-            subject.conditions.should == @expected
+          it 'factors out the operation matching everything, and negate the other' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1448,12 +1448,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together, and negate the other' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together, and negate the other' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1470,12 +1470,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together, and negate the other' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together, and negate the other' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1492,12 +1492,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together, and negate the other' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together, and negate the other' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1514,12 +1514,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together, and negate the other' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together, and negate the other' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1540,12 +1540,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together, and negate the other query' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together, and negate the other query' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1566,12 +1566,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together, and negate the other query' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together, and negate the other query' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1582,7 +1582,7 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model, property.name => 'Dan Kubb')
             @other = DataMapper::Query.new(@repository, @model, property.name => 'John Doe')
 
-            @query.conditions.should_not == @other.conditions
+            expect(@query.conditions).not_to eq @other.conditions
 
             @expected = DataMapper::Query::Conditions::Operation.new(:and,
               DataMapper::Query::Conditions::Comparison.new(:eql, property, 'Dan Kubb'),
@@ -1592,14 +1592,14 @@ describe DataMapper::Query do
             )
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should AND the conditions together, and negate the other query' do
-            subject.conditions.should == @expected
+          it "AND's the conditions together, and negate the other query" do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1610,19 +1610,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :fields => [ @property ])
 
-            @query.fields.should_not == @other.fields
+            expect(@query.fields).not_to eq @other.fields
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should == DataMapper::Query::Conditions::Operation.new(:and) }
+          it { expect(subject.conditions).to eq DataMapper::Query::Conditions::Operation.new(:and) }
 
-          it 'should use the other fields' do
-            subject.fields.should == [ @property ]
+          it 'uses the other fields' do
+            expect(subject.fields).to eq [ @property ]
           end
         end
 
@@ -1633,19 +1633,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :order => [ DataMapper::Query::Direction.new(@property, :desc) ])
 
-            @query.order.should_not == @other.order
+            expect(@query.order).not_to eq @other.order
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should == DataMapper::Query::Conditions::Operation.new(:and) }
+          it { expect(subject.conditions).to eq DataMapper::Query::Conditions::Operation.new(:and) }
 
-          it 'should use the other order' do
-            subject.order.should == [ DataMapper::Query::Direction.new(@property, :desc) ]
+          it 'uses the other order' do
+            expect(subject.order).to eq [ DataMapper::Query::Direction.new(@property, :desc) ]
           end
         end
 
@@ -1654,19 +1654,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :unique => true)
 
-            @query.unique?.should_not == @other.unique?
+            expect(@query.unique?).not_to eq @other.unique?
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should == DataMapper::Query::Conditions::Operation.new(:and) }
+          it { expect(subject.conditions).to eq DataMapper::Query::Conditions::Operation.new(:and) }
 
-          it 'should use the other unique' do
-            subject.unique?.should == true
+          it 'uses the other unique' do
+            expect(subject.unique?).to eq true
           end
         end
 
@@ -1675,19 +1675,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :add_reversed => true)
 
-            @query.add_reversed?.should_not == @other.add_reversed?
+            expect(@query.add_reversed?).not_to eq @other.add_reversed?
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should == DataMapper::Query::Conditions::Operation.new(:and) }
+          it { expect(subject.conditions).to eq DataMapper::Query::Conditions::Operation.new(:and) }
 
-          it 'should use the other add_reversed' do
-            subject.add_reversed?.should == true
+          it 'uses the other add_reversed' do
+            expect(subject.add_reversed?).to eq true
           end
         end
 
@@ -1696,56 +1696,56 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :reload => true)
 
-            @query.reload?.should_not == @other.reload?
+            expect(@query.reload?).not_to eq @other.reload?
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should == DataMapper::Query::Conditions::Operation.new(:and) }
+          it { expect(subject.conditions).to eq DataMapper::Query::Conditions::Operation.new(:and) }
 
-          it 'should use the other reload' do
-            subject.reload?.should == true
+          it 'uses the other reload' do
+            expect(subject.reload?).to eq true
           end
         end
 
         describe 'with different models' do
           before { @other = DataMapper::Query.new(@repository, Other) }
 
-          it { method(:subject).should raise_error(ArgumentError) }
+          it { expect { method(:subject) }.to raise_error(ArgumentError) }
         end
       end
     end
   end
 
-  it { should respond_to(:dup) }
+  it { is_expected.to respond_to(:dup) }
 
   describe '#dup' do
     before :all do
       @new = @query.dup
     end
 
-    it 'should return a Query' do
-      @new.should be_kind_of(DataMapper::Query)
+    it 'returns a Query' do
+      expect(@new).to be_kind_of(DataMapper::Query)
     end
 
-    it 'should not equal query' do
-      @new.should_not equal(@query)
+    it 'does not equal query' do
+      expect(@new).not_to equal(@query)
     end
 
-    it 'should eql query' do
-      @new.should eql(@query)
+    it "eql's query" do
+      expect(@new).to eql(@query)
     end
 
-    it 'should == query' do
-      @new.should == @query
+    it "=='s query" do
+      expect(@new).to eq @query
     end
   end
 
-  it { should respond_to(:eql?) }
+  it { is_expected.to respond_to(:eql?) }
 
   describe '#eql?' do
     describe 'when other is equal' do
@@ -1753,7 +1753,7 @@ describe DataMapper::Query do
         @return = @query.eql?(@query)
       end
 
-      it { @return.should be(true) }
+      it { expect(@return).to be(true) }
     end
 
     describe 'when other is eql' do
@@ -1761,7 +1761,7 @@ describe DataMapper::Query do
         @return = @query.eql?(@query.dup)
       end
 
-      it { @return.should be(true) }
+      it { expect(@return).to be(true) }
     end
 
     DataMapper::Query::OPTIONS.each do |name|
@@ -1770,7 +1770,7 @@ describe DataMapper::Query do
           @return = @query.eql?(@query.merge(name => @other_options[name]))
         end
 
-        it { @return.should be(false) }
+        it { expect(@return).to be(false) }
       end
     end
 
@@ -1793,25 +1793,25 @@ describe DataMapper::Query do
         @return = @query.eql?(@other)
       end
 
-      it { @return.should be(false) }
+      it { expect(@return).to be(false) }
     end
   end
 
-  it { should respond_to(:fields) }
+  it { is_expected.to respond_to(:fields) }
 
   describe '#fields' do
     before :all do
       @return = @query.fields
     end
 
-    it { @return.should be_kind_of(Array) }
+    it { expect(@return).to be_kind_of(Array) }
 
-    it 'should return expected value' do
-      @return.should == [ @model.properties[:name], @model.properties[:citizenship], @model.properties[:referrer_name] ]
+    it 'returns expected value' do
+      expect(@return).to eq [ @model.properties[:name], @model.properties[:citizenship], @model.properties[:referrer_name] ]
     end
   end
 
-  it { should respond_to(:filter_records) }
+  it { is_expected.to respond_to(:filter_records) }
 
   describe '#filter_records' do
     supported_by :all do
@@ -1827,29 +1827,29 @@ describe DataMapper::Query do
         @return = @query.filter_records(@records)
       end
 
-      it 'should return Enumerable' do
-        @return.should be_kind_of(Enumerable)
+      it 'returns Enumerable' do
+        expect(@return).to be_kind_of(Enumerable)
       end
 
-      it 'should not be the records provided' do
-        @return.should_not equal(@records)
+      it 'are not the records provided' do
+        expect(@return).not_to equal(@records)
       end
 
-      it 'should return expected values' do
-        @return.should == [ @dan, @john ]
+      it 'returns expected values' do
+        expect(@return).to eq [ @dan, @john ]
       end
     end
   end
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     before :all do
       @return = @query.inspect
     end
 
-    it 'should return expected value' do
-      @return.should == DataMapper::Ext::String.compress_lines(<<-INSPECT)
+    it 'returns expected value' do
+      expect(@return).to eq DataMapper::Ext::String.compress_lines(<<-INSPECT)
         #<DataMapper::Query
           @repository=:default
           @model=User
@@ -1866,7 +1866,7 @@ describe DataMapper::Query do
   end
 
   [ :intersection, :& ].each do |method|
-    it { should respond_to(method) }
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       supported_by :all do
@@ -1903,13 +1903,13 @@ describe DataMapper::Query do
         describe 'with equivalent query' do
           before { @other = @query.dup }
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { should == @query }
+          it { is_expected.to == @query }
         end
 
         describe 'with other matching everything' do
@@ -1918,15 +1918,15 @@ describe DataMapper::Query do
             @other = DataMapper::Query.new(@repository, @model)
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should factor out the operation matching everything' do
+          it 'factors out the operation matching everything' do
             pending 'TODO: compress Query#conditions for proper comparison'
-            should == DataMapper::Query.new(@repository, @model, :name => 'Dan Kubb')
+            is_expected.to eq DataMapper::Query.new(@repository, @model, :name => 'Dan Kubb')
           end
         end
 
@@ -1937,16 +1937,16 @@ describe DataMapper::Query do
             @another = DataMapper::Query.new(@repository, @model, :citizenship => 'US')
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { should_not equal(@another) }
+          it { is_expected.not_to equal(@another) }
 
-          it 'should factor out the operation matching everything' do
-            should == DataMapper::Query.new(@repository, @model, :name => 'Dan Kubb', :citizenship => 'US')
+          it 'factors out the operation matching everything' do
+            is_expected.to eq DataMapper::Query.new(@repository, @model, :name => 'Dan Kubb', :citizenship => 'US')
           end
         end
 
@@ -1961,12 +1961,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -1981,12 +1981,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -2001,12 +2001,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -2021,12 +2021,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -2045,12 +2045,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -2069,12 +2069,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and AND them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and AND them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -2085,7 +2085,7 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model, property.name => 'Dan Kubb')
             @other = DataMapper::Query.new(@repository, @model, property.name => 'John Doe')
 
-            @query.conditions.should_not == @other.conditions
+            expect(@query.conditions).not_to eq @other.conditions
 
             @expected = DataMapper::Query::Conditions::Operation.new(:and,
               DataMapper::Query::Conditions::Comparison.new(:eql, property, 'Dan Kubb'),
@@ -2093,14 +2093,14 @@ describe DataMapper::Query do
             )
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should AND the conditions together' do
-            subject.conditions.should == @expected
+          it "AND's the conditions together" do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -2111,19 +2111,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :fields => [ @property ])
 
-            @query.fields.should_not == @other.fields
+            expect(@query.fields).not_to eq @other.fields
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should be_nil }
+          it { expect(subject.conditions).to be_nil }
 
-          it 'should use the other fields' do
-            subject.fields.should == [ @property ]
+          it 'uses the other fields' do
+            expect(subject.fields).to eq [ @property ]
           end
         end
 
@@ -2134,19 +2134,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :order => [ DataMapper::Query::Direction.new(@property, :desc) ])
 
-            @query.order.should_not == @other.order
+            expect(@query.order).not_to eq @other.order
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should be_nil }
+          it { expect(subject.conditions).to be_nil }
 
-          it 'should use the other order' do
-            subject.order.should == [ DataMapper::Query::Direction.new(@property, :desc) ]
+          it 'uses the other order' do
+            expect(subject.order).to eq [ DataMapper::Query::Direction.new(@property, :desc) ]
           end
         end
 
@@ -2155,19 +2155,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :unique => true)
 
-            @query.unique?.should_not == @other.unique?
+            expect(@query.unique?).not_to eq @other.unique?
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should be_nil }
+          it { expect(subject.conditions).to be_nil }
 
-          it 'should use the other unique' do
-            subject.unique?.should == true
+          it 'uses the other unique' do
+            expect(subject.unique?).to eq true
           end
         end
 
@@ -2176,19 +2176,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :add_reversed => true)
 
-            @query.add_reversed?.should_not == @other.add_reversed?
+            expect(@query.add_reversed?).not_to eq @other.add_reversed?
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should be_nil }
+          it { expect(subject.conditions).to be_nil }
 
-          it 'should use the other add_reversed' do
-            subject.add_reversed?.should == true
+          it 'uses the other add_reversed' do
+            expect(subject.add_reversed?).to eq true
           end
         end
 
@@ -2197,44 +2197,44 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :reload => true)
 
-            @query.reload?.should_not == @other.reload?
+            expect(@query.reload?).not_to eq @other.reload?
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should use the other reload' do
-            subject.reload?.should == true
+          it 'uses the other reload' do
+            expect(subject.reload?).to eq true
           end
         end
 
         describe 'with different models' do
           before { @other = DataMapper::Query.new(@repository, Other) }
 
-          it { method(:subject).should raise_error(ArgumentError) }
+          it { expect { method(:subject) }.to raise_error(ArgumentError) }
         end
       end
     end
   end
 
-  it { should respond_to(:limit) }
+  it { is_expected.to respond_to(:limit) }
 
   describe '#limit' do
     before :all do
       @return = @query.limit
     end
 
-    it { @return.should be_kind_of(Integer) }
+    it { expect(@return).to be_kind_of(Integer) }
 
-    it 'should return expected value' do
-      @return.should == 3
+    it 'returns expected value' do
+      expect(@return).to eq 3
     end
   end
 
-  it { should respond_to(:limit_records) }
+  it { is_expected.to respond_to(:limit_records) }
 
   describe '#limit_records' do
     supported_by :all do
@@ -2250,33 +2250,33 @@ describe DataMapper::Query do
         @return = @query.limit_records(@records)
       end
 
-      it 'should return Enumerable' do
-        @return.should be_kind_of(Enumerable)
+      it 'returns Enumerable' do
+        expect(@return).to be_kind_of(Enumerable)
       end
 
-      it 'should not be the records provided' do
-        @return.should_not equal(@records)
+      it 'are not the records provided' do
+        expect(@return).not_to equal(@records)
       end
 
-      it 'should return expected values' do
-        @return.should == [ @sam ]
+      it 'returns expected values' do
+        expect(@return).to eq [ @sam ]
       end
     end
   end
 
-  it { should respond_to(:links) }
+  it { is_expected.to respond_to(:links) }
 
   describe '#links' do
     before :all do
       @return = @query.links
     end
 
-    it { @return.should be_kind_of(Array) }
+    it { expect(@return).to be_kind_of(Array) }
 
-    it { @return.should be_empty }
+    it { expect(@return).to be_empty }
   end
 
-  it { should respond_to(:match_records) }
+  it { is_expected.to respond_to(:match_records) }
 
   describe '#match_records' do
     supported_by :all do
@@ -2292,21 +2292,21 @@ describe DataMapper::Query do
         @return = @query.match_records(@records)
       end
 
-      it 'should return Enumerable' do
-        @return.should be_kind_of(Enumerable)
+      it 'returns Enumerable' do
+        expect(@return).to be_kind_of(Enumerable)
       end
 
-      it 'should not be the records provided' do
-        @return.should_not equal(@records)
+      it 'are not the records provided' do
+        expect(@return).not_to equal(@records)
       end
 
-      it 'should return expected values' do
-        @return.should == [ @john, @dan ]
+      it 'returns expected values' do
+        expect(@return).to eq [ @john, @dan ]
       end
     end
   end
 
-  it { should respond_to(:merge) }
+  it { is_expected.to respond_to(:merge) }
 
   describe '#merge' do
     describe 'with a Hash' do
@@ -2315,7 +2315,7 @@ describe DataMapper::Query do
       end
 
       it 'does not affect the receiver' do
-        @query.options[:limit].should == 3
+        expect(@query.options[:limit]).to eq 3
       end
     end
 
@@ -2326,54 +2326,54 @@ describe DataMapper::Query do
       end
 
       it 'does not affect the receiver' do
-        @query.options[:limit].should == 3
+        expect(@query.options[:limit]).to eq 3
       end
     end
   end
 
-  it { should respond_to(:model) }
+  it { is_expected.to respond_to(:model) }
 
   describe '#model' do
     before :all do
       @return = @query.model
     end
 
-    it { @return.should be_kind_of(Class) }
+    it { expect(@return).to be_kind_of(Class) }
 
-    it 'should return expected value' do
-      @return.should == @model
+    it 'returns expected value' do
+      expect(@return).to eq @model
     end
   end
 
-  it { should respond_to(:offset) }
+  it { is_expected.to respond_to(:offset) }
 
   describe '#offset' do
     before :all do
       @return = @query.offset
     end
 
-    it { @return.should be_kind_of(Integer) }
+    it { expect(@return).to be_kind_of(Integer) }
 
-    it 'should return expected value' do
-      @return.should == 0
+    it 'returns expected value' do
+      expect(@return).to eq 0
     end
   end
 
-  it { should respond_to(:order) }
+  it { is_expected.to respond_to(:order) }
 
   describe '#order' do
     before :all do
       @return = @query.order
     end
 
-    it { @return.should be_kind_of(Array) }
+    it { expect(@return).to be_kind_of(Array) }
 
-    it 'should return expected value' do
-      @return.should == [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
+    it 'returns expected value' do
+      expect(@return).to eq [ DataMapper::Query::Direction.new(@model.properties[:name]) ]
     end
   end
 
-  it { should respond_to(:raw?) }
+  it { is_expected.to respond_to(:raw?) }
 
   describe '#raw?' do
     describe 'when the query contains raw conditions' do
@@ -2381,15 +2381,15 @@ describe DataMapper::Query do
         @query.update(:conditions => [ 'name = ?', 'Dan Kubb' ])
       end
 
-      it { should be_raw }
+      it { is_expected.to be_raw }
     end
 
     describe 'when the query does not contain raw conditions' do
-      it { should_not be_raw }
+      it { is_expected.not_to be_raw }
     end
   end
 
-  it { should respond_to(:relative) }
+  it { is_expected.to respond_to(:relative) }
 
   describe '#relative' do
     describe 'with a Hash' do
@@ -2398,14 +2398,14 @@ describe DataMapper::Query do
           @return = @query.relative({})
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@query)
+        it 'is not return self' do
+          expect(@return).not_to equal(@query)
         end
 
-        it 'should return a copy' do
-          @return.should be_eql(@query)
+        it 'returns a copy' do
+          expect(@return).to be_eql(@query)
         end
       end
 
@@ -2414,46 +2414,46 @@ describe DataMapper::Query do
           @return = @query.relative(@other_options)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the fields' do
-          @return.fields.should == @other_options[:fields]
+        it 'updates the fields' do
+          expect(@return.fields).to eq @other_options[:fields]
         end
 
-        it 'should update the links' do
-          @return.links.should == @other_options[:links]
+        it 'updates the links' do
+          expect(@return.links).to eq @other_options[:links]
         end
 
-        it 'should update the conditions' do
-          @return.conditions.should == DataMapper::Query::Conditions::Operation.new(:and, [ 'name = ?', [ 'Dan Kubb' ] ])
+        it 'updates the conditions' do
+          expect(@return.conditions).to eq DataMapper::Query::Conditions::Operation.new(:and, [ 'name = ?', [ 'Dan Kubb' ] ])
         end
 
-        it 'should update the offset' do
-          @return.offset.should == @other_options[:offset]
+        it 'updates the offset' do
+          expect(@return.offset).to eq @other_options[:offset]
         end
 
-        it 'should update the limit' do
-          @return.limit.should == @other_options[:limit]
+        it 'updates the limit' do
+          expect(@return.limit).to eq @other_options[:limit]
         end
 
-        it 'should update the order' do
-          @return.order.should == @other_options[:order]
+        it 'updates the order' do
+          expect(@return.order).to eq @other_options[:order]
         end
 
-        it 'should update the unique' do
-          @return.unique?.should == @other_options[:unique]
+        it 'updates the unique' do
+          expect(@return.unique?).to eq @other_options[:unique]
         end
 
-        it 'should update the add_reversed' do
-          @return.add_reversed?.should == @other_options[:add_reversed]
+        it 'updates the add_reversed' do
+          expect(@return.add_reversed?).to eq @other_options[:add_reversed]
         end
 
-        it 'should update the reload' do
-          @return.reload?.should == @other_options[:reload]
+        it 'updates the reload' do
+          expect(@return.reload?).to eq @other_options[:reload]
         end
       end
 
@@ -2464,14 +2464,14 @@ describe DataMapper::Query do
           @return = @query.relative(@options)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the conditions' do
-          @return.conditions.should ==
+        it 'updates the conditions' do
+          expect(@return.conditions).to eq
             DataMapper::Query::Conditions::Operation.new(
               :and,
               DataMapper::Query::Conditions::Comparison.new(
@@ -2490,14 +2490,14 @@ describe DataMapper::Query do
           @return = @query.relative(:offset => 1)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the offset to be relative to the original offset' do
-          @return.offset.should == 2
+        it 'updates the offset to be relative to the original offset' do
+          expect(@return.offset).to eq 2
         end
       end
 
@@ -2508,96 +2508,96 @@ describe DataMapper::Query do
           @return = @query.relative(:limit => 1)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the limit' do
-          @return.limit.should == 1
+        it 'updates the limit' do
+          expect(@return.limit).to eq 1
         end
       end
     end
   end
 
-  it { should respond_to(:reload?) }
+  it { is_expected.to respond_to(:reload?) }
 
   describe '#reload?' do
-    describe 'when the query should reload' do
+    describe 'when the query reloads' do
       before :all do
         @query.update(:reload => true)
       end
 
-      it { should be_reload }
+      it { is_expected.to be_reload }
     end
 
-    describe 'when the query should not reload' do
-      it { should_not be_reload }
+    describe 'when the query does not reload' do
+      it { is_expected.not_to be_reload }
     end
   end
 
-  it { should respond_to(:repository) }
+  it { is_expected.to respond_to(:repository) }
 
   describe '#repository' do
     before :all do
       @return = @query.repository
     end
 
-    it { @return.should be_kind_of(DataMapper::Repository) }
+    it { expect(@return).to be_kind_of(DataMapper::Repository) }
 
-    it 'should return expected value' do
-      @return.should == @repository
+    it 'returns expected value' do
+      expect(@return).to eq @repository
     end
   end
 
-  it { should respond_to(:reverse) }
+  it { is_expected.to respond_to(:reverse) }
 
   describe '#reverse' do
     before :all do
       @return = @query.reverse
     end
 
-    it { @return.should be_kind_of(DataMapper::Query) }
+    it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-    it 'should copy the Query' do
-      @return.should_not equal(@original)
+    it 'copies the Query' do
+      expect(@return).not_to equal(@original)
     end
 
     # TODO: push this into dup spec
-    it 'should not reference original order' do
-      @return.order.should_not equal(@original.order)
+    it 'does not reference original order' do
+      expect(@return.order).not_to equal(@original.order)
     end
 
-    it 'should have a reversed order' do
-      @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name], :desc) ]
+    it 'has a reversed order' do
+      expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name], :desc) ]
     end
 
     [ :repository, :model, :fields, :links, :conditions, :offset, :limit, :unique?, :add_reversed?, :reload? ].each do |attribute|
-      it "should have an equivalent #{attribute}" do
-        @return.send(attribute).should == @original.send(attribute)
+      it "has an equivalent #{attribute}" do
+        expect(@return.send(attribute)).to eq @original.send(attribute)
       end
     end
   end
 
-  it { should respond_to(:reverse!) }
+  it { is_expected.to respond_to(:reverse!) }
 
   describe '#reverse!' do
     before :all do
       @return = @query.reverse!
     end
 
-    it { @return.should be_kind_of(DataMapper::Query) }
+    it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-    it { @return.should equal(@original) }
+    it { expect(@return).to equal(@original) }
 
-    it 'should have a reversed order' do
-      @return.order.should == [ DataMapper::Query::Direction.new(@model.properties[:name], :desc) ]
+    it 'has a reversed order' do
+      expect(@return.order).to eq [ DataMapper::Query::Direction.new(@model.properties[:name], :desc) ]
     end
   end
 
   [ :slice, :[] ].each do |method|
-    it { should respond_to(method) }
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       describe 'with a positive offset' do
@@ -2607,18 +2607,18 @@ describe DataMapper::Query do
           @return = @query.send(method, 1)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the offset to be relative to the original offset' do
-          @return.offset.should == 2
+        it 'updates the offset to be relative to the original offset' do
+          expect(@return.offset).to eq 2
         end
 
-        it 'should update the limit to 1' do
-          @return.limit.should == 1
+        it 'updates the limit to 1' do
+          expect(@return.limit).to eq 1
         end
       end
 
@@ -2629,18 +2629,18 @@ describe DataMapper::Query do
           @return = @query.send(method, 1, 1)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the offset to be relative to the original offset' do
-          @return.offset.should == 2
+        it 'updates the offset to be relative to the original offset' do
+          expect(@return.offset).to eq 2
         end
 
-        it 'should update the limit' do
-          @return.limit.should == 1
+        it 'updates the limit' do
+          expect(@return.limit).to eq 1
         end
       end
 
@@ -2651,18 +2651,18 @@ describe DataMapper::Query do
           @return = @query.send(method, 1..2)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the offset to be relative to the original offset' do
-          @return.offset.should == 2
+        it 'updates the offset to be relative to the original offset' do
+          expect(@return.offset).to eq 2
         end
 
-        it 'should update the limit' do
-          @return.limit.should == 2
+        it 'updates the limit' do
+          expect(@return.limit).to eq 2
         end
       end
 
@@ -2673,19 +2673,19 @@ describe DataMapper::Query do
           @return = @query.send(method, -1)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the offset to be relative to the original offset' do
+        it 'updates the offset to be relative to the original offset' do
           pending "TODO: update Query##{method} handle negative offset"
-          @return.offset.should == 2
+          expect(@return.offset).to eq 2
         end
 
-        it 'should update the limit to 1' do
-          @return.limit.should == 1
+        it 'updates the limit to 1' do
+          expect(@return.limit).to eq 1
         end
       end
 
@@ -2696,19 +2696,19 @@ describe DataMapper::Query do
           @return = @query.send(method, -1, 1)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the offset to be relative to the original offset' do
+        it 'updates the offset to be relative to the original offset' do
           pending "TODO: update Query##{method} handle negative offset and length"
-          @return.offset.should == 2
+          expect(@return.offset).to eq 2
         end
 
-        it 'should update the limit to 1' do
-          @return.limit.should == 1
+        it 'updates the limit to 1' do
+          expect(@return.limit).to eq 1
         end
       end
 
@@ -2725,18 +2725,18 @@ describe DataMapper::Query do
           pending "TODO: update Query##{method} handle negative range" unless defined?(@return)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it 'should not return self' do
-          @return.should_not equal(@original)
+        it 'does not return self' do
+          expect(@return).not_to equal(@original)
         end
 
-        it 'should update the offset to be relative to the original offset' do
-          @return.offset.should == 2
+        it 'updates the offset to be relative to the original offset' do
+          expect(@return.offset).to eq 2
         end
 
-        it 'should update the limit to 1' do
-          @return.limit.should == 2
+        it 'updates the limit to 1' do
+          expect(@return.limit).to eq 2
         end
       end
 
@@ -2745,10 +2745,10 @@ describe DataMapper::Query do
           @query = @query.update(:offset => 1, :limit => 3)
         end
 
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             @query.send(method, 12)
-          }.should raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
+          }.to raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
         end
       end
 
@@ -2757,10 +2757,8 @@ describe DataMapper::Query do
           @query = @query.update(:offset => 1, :limit => 3)
         end
 
-        it 'should raise an exception' do
-          lambda {
-            @query.send(method, 12, 1)
-          }.should raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
+        it 'raises an exception' do
+          expect { @query.send(method, 12, 1) }.to raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
         end
       end
 
@@ -2769,24 +2767,24 @@ describe DataMapper::Query do
           @query = @query.update(:offset => 1, :limit => 3)
         end
 
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             @query.send(method, 12..12)
-          }.should raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
+          }.to raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
         end
       end
 
       describe 'with invalid arguments' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             @query.send(method, 'invalid')
-          }.should raise_error(ArgumentError, 'arguments may be 1 or 2 Integers, or 1 Range object, was: ["invalid"]')
+          }.to raise_error(ArgumentError, 'arguments may be 1 or 2 Integers, or 1 Range object, was: ["invalid"]')
         end
       end
     end
   end
 
-  it { should respond_to(:slice!) }
+  it { is_expected.to respond_to(:slice!) }
 
   describe '#slice!' do
     describe 'with a positive offset' do
@@ -2796,18 +2794,18 @@ describe DataMapper::Query do
         @return = @query.slice!(1)
       end
 
-      it { @return.should be_kind_of(DataMapper::Query) }
+      it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-      it 'should return self' do
-        @return.should equal(@original)
+      it 'returns self' do
+        expect(@return).to equal(@original)
       end
 
-      it 'should update the offset to be relative to the original offset' do
-        @return.offset.should == 2
+      it 'updates the offset to be relative to the original offset' do
+        expect(@return.offset).to eq 2
       end
 
-      it 'should update the limit to 1' do
-        @return.limit.should == 1
+      it 'updates the limit to 1' do
+        expect(@return.limit).to eq 1
       end
     end
 
@@ -2818,18 +2816,18 @@ describe DataMapper::Query do
         @return = @query.slice!(1, 1)
       end
 
-      it { @return.should be_kind_of(DataMapper::Query) }
+      it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-      it 'should return self' do
-        @return.should equal(@original)
+      it 'returns self' do
+        expect(@return).to equal(@original)
       end
 
-      it 'should update the offset to be relative to the original offset' do
-        @return.offset.should == 2
+      it 'updates the offset to be relative to the original offset' do
+        expect(@return.offset).to eq 2
       end
 
-      it 'should update the limit' do
-        @return.limit.should == 1
+      it 'updates the limit' do
+        expect(@return.limit).to eq 1
       end
     end
 
@@ -2840,18 +2838,18 @@ describe DataMapper::Query do
         @return = @query.slice!(1..2)
       end
 
-      it { @return.should be_kind_of(DataMapper::Query) }
+      it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-      it 'should return self' do
-        @return.should equal(@original)
+      it 'returns self' do
+        expect(@return).to equal(@original)
       end
 
-      it 'should update the offset to be relative to the original offset' do
-        @return.offset.should == 2
+      it 'updates the offset to be relative to the original offset' do
+        expect(@return.offset).to eq 2
       end
 
-      it 'should update the limit' do
-        @return.limit.should == 2
+      it 'updates the limit' do
+        expect(@return.limit).to eq 2
       end
     end
 
@@ -2862,19 +2860,19 @@ describe DataMapper::Query do
         @return = @query.slice!(-1)
       end
 
-      it { @return.should be_kind_of(DataMapper::Query) }
+      it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-      it 'should return self' do
-        @return.should equal(@original)
+      it 'returns self' do
+        expect(@return).to equal(@original)
       end
 
-      it 'should update the offset to be relative to the original offset' do
+      it 'updates the offset to be relative to the original offset' do
         pending 'TODO: update Query#slice! handle negative offset'
-        @return.offset.should == 2
+        expect(@return.offset).to eq 2
       end
 
-      it 'should update the limit to 1' do
-        @return.limit.should == 1
+      it 'updates the limit to 1' do
+        expect(@return.limit).to eq 1
       end
     end
 
@@ -2885,19 +2883,19 @@ describe DataMapper::Query do
         @return = @query.slice!(-1, 1)
       end
 
-      it { @return.should be_kind_of(DataMapper::Query) }
+      it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-      it 'should return self' do
-        @return.should equal(@original)
+      it 'returns self' do
+        expect(@return).to equal(@original)
       end
 
-      it 'should update the offset to be relative to the original offset' do
+      it 'updates the offset to be relative to the original offset' do
         pending 'TODO: update Query#slice! handle negative offset and length'
-        @return.offset.should == 2
+        expect(@return.offset).to eq 2
       end
 
-      it 'should update the limit to 1' do
-        @return.limit.should == 1
+      it 'updates the limit to 1' do
+        expect(@return.limit).to eq 1
       end
     end
 
@@ -2914,18 +2912,18 @@ describe DataMapper::Query do
         pending 'TODO: update Query#slice! handle negative range' unless defined?(@return)
       end
 
-      it { @return.should be_kind_of(DataMapper::Query) }
+      it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-      it 'should return self' do
-        @return.should equal(@original)
+      it 'returns self' do
+        expect(@return).to equal(@original)
       end
 
-      it 'should update the offset to be relative to the original offset' do
-        @return.offset.should == 2
+      it 'updates the offset to be relative to the original offset' do
+        expect(@return.offset).to eq 2
       end
 
-      it 'should update the limit to 1' do
-        @return.limit.should == 2
+      it 'updates the limit to 1' do
+        expect(@return.limit).to eq 2
       end
     end
 
@@ -2934,10 +2932,10 @@ describe DataMapper::Query do
         @query = @query.update(:offset => 1, :limit => 3)
       end
 
-      it 'should raise an exception' do
-        lambda {
+      it 'raises an exception' do
+        expect {
           @query.slice!(12)
-        }.should raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
+        }.to raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
       end
     end
 
@@ -2946,10 +2944,10 @@ describe DataMapper::Query do
         @query = @query.update(:offset => 1, :limit => 3)
       end
 
-      it 'should raise an exception' do
-        lambda {
+      it 'raises an exception' do
+        expect {
           @query.slice!(12, 1)
-        }.should raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
+        }.to raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
       end
     end
 
@@ -2958,23 +2956,23 @@ describe DataMapper::Query do
         @query = @query.update(:offset => 1, :limit => 3)
       end
 
-      it 'should raise an exception' do
-        lambda {
+      it 'raises an exception' do
+        expect {
           @query.slice!(12..12)
-        }.should raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
+        }.to raise_error(RangeError, 'offset 12 and limit 1 are outside allowed range')
       end
     end
 
     describe 'with invalid arguments' do
-      it 'should raise an exception' do
-        lambda {
+      it 'raises an exception' do
+        expect {
           @query.slice!('invalid')
-        }.should raise_error(ArgumentError, 'arguments may be 1 or 2 Integers, or 1 Range object, was: ["invalid"]')
+        }.to raise_error(ArgumentError, 'arguments may be 1 or 2 Integers, or 1 Range object, was: ["invalid"]')
       end
     end
   end
 
-  it { should respond_to(:sort_records) }
+  it { is_expected.to respond_to(:sort_records) }
 
   describe '#sort_records' do
     supported_by :all do
@@ -2990,22 +2988,22 @@ describe DataMapper::Query do
         @return = @query.sort_records(@records)
       end
 
-      it 'should return Enumerable' do
-        @return.should be_kind_of(Enumerable)
+      it 'returns Enumerable' do
+        expect(@return).to be_kind_of(Enumerable)
       end
 
-      it 'should not be the records provided' do
-        @return.should_not equal(@records)
+      it 'are not the records provided' do
+        expect(@return).not_to equal(@records)
       end
 
-      it 'should return expected values' do
-        @return.should == [ @dan, @john, @sam ]
+      it 'returns expected values' do
+        expect(@return).to eq [ @dan, @john, @sam ]
       end
     end
   end
 
   [ :union, :|, :+ ].each do |method|
-    it { should respond_to(method) }
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       supported_by :all do
@@ -3034,13 +3032,13 @@ describe DataMapper::Query do
         describe 'with equivalent query' do
           before { @other = @query.dup }
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { should == @query }
+          it { is_expected.to == @query }
         end
 
         describe 'with other matching everything' do
@@ -3049,14 +3047,14 @@ describe DataMapper::Query do
             @other = DataMapper::Query.new(@repository, @model)
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should match everything' do
-            should == DataMapper::Query.new(@repository, @model)
+          it 'matches everything' do
+            is_expected.to == DataMapper::Query.new(@repository, @model)
           end
         end
 
@@ -3066,14 +3064,14 @@ describe DataMapper::Query do
             @other = DataMapper::Query.new(@repository, @model, :name => 'Dan Kubb')
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should match everything' do
-            should == DataMapper::Query.new(@repository, @model)
+          it 'matches everything' do
+            is_expected.to == DataMapper::Query.new(@repository, @model)
           end
         end
 
@@ -3088,12 +3086,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and OR them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and OR them together' do
+            expect(subject.conditions).to eq= @expected
           end
         end
 
@@ -3108,12 +3106,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and OR them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and OR them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -3128,12 +3126,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and OR them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and OR them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -3148,12 +3146,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and OR them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and OR them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -3172,12 +3170,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and OR them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and OR them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -3196,12 +3194,12 @@ describe DataMapper::Query do
             )
           end
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should put each query into a subquery and OR them together' do
-            subject.conditions.should == @expected
+          it 'puts each query into a subquery and OR them together' do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -3212,7 +3210,7 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model, property.name => 'Dan Kubb')
             @other = DataMapper::Query.new(@repository, @model, property.name => 'John Doe')
 
-            @query.conditions.should_not == @other.conditions
+            expect(@query.conditions).not_to eq @other.conditions
 
             @expected = DataMapper::Query::Conditions::Operation.new(:or,
               DataMapper::Query::Conditions::Comparison.new(:eql, property, 'Dan Kubb'),
@@ -3220,14 +3218,14 @@ describe DataMapper::Query do
             )
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it 'should OR the conditions together' do
-            subject.conditions.should == @expected
+          it "OR's the conditions together" do
+            expect(subject.conditions).to eq @expected
           end
         end
 
@@ -3238,19 +3236,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :fields => [ @property ])
 
-            @query.fields.should_not == @other.fields
+            expect(@query.fields).not_to eq @other.fields
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should be_nil }
+          it { expect(subject.conditions).to be_nil }
 
-          it 'should use the other fields' do
-            subject.fields.should == [ @property ]
+          it 'uses the other fields' do
+            expect(subject.fields).to eq [ @property ]
           end
         end
 
@@ -3261,19 +3259,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :order => [ DataMapper::Query::Direction.new(@property, :desc) ])
 
-            @query.order.should_not == @other.order
+            expect(@query.order).not_to eq @other.order
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should be_nil }
+          it { expect(subject.conditions).to be_nil }
 
-          it 'should use the other order' do
-            subject.order.should == [ DataMapper::Query::Direction.new(@property, :desc) ]
+          it 'uses the other order' do
+            expect(subject.order).to eq [ DataMapper::Query::Direction.new(@property, :desc) ]
           end
         end
 
@@ -3282,19 +3280,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :unique => true)
 
-            @query.unique?.should_not == @other.unique?
+            expect(@query.unique?).not_to eq @other.unique?
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should be_nil }
+          it { expect(subject.conditions).to be_nil }
 
-          it 'should use the other unique' do
-            subject.unique?.should == true
+          it 'uses the other unique' do
+            expect(subject.unique?).to eq true
           end
         end
 
@@ -3303,19 +3301,19 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :add_reversed => true)
 
-            @query.add_reversed?.should_not == @other.add_reversed?
+            expect(@query.add_reversed?).not_to eq @other.add_reversed?
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should be_nil }
+          it { expect(subject.conditions).to be_nil }
 
-          it 'should use the other add_reversed' do
-            subject.add_reversed?.should == true
+          it 'uses the other add_reversed' do
+            expect(subject.add_reversed?).to eq true
           end
         end
 
@@ -3324,32 +3322,32 @@ describe DataMapper::Query do
             @query = DataMapper::Query.new(@repository, @model)
             @other = DataMapper::Query.new(@repository, @model, :reload => true)
 
-            @query.reload?.should_not == @other.reload?
+            expect(@query.reload?).not_to eq @other.reload?
           end
 
-          it { should be_kind_of(DataMapper::Query) }
+          it { is_expected.to be_kind_of(DataMapper::Query) }
 
-          it { should_not equal(@query) }
+          it { is_expected.not_to equal(@query) }
 
-          it { should_not equal(@other) }
+          it { is_expected.not_to equal(@other) }
 
-          it { subject.conditions.should be_nil }
+          it { expect(subject.conditions).to be_nil }
 
-          it 'should use the other reload' do
-            subject.reload?.should == true
+          it 'uses the other reload' do
+            expect(subject.reload?).to eq true
           end
         end
 
         describe 'with different models' do
           before { @other = DataMapper::Query.new(@repository, Other) }
 
-          it { method(:subject).should raise_error(ArgumentError) }
+          it { expect { method(:subject) }.to raise_error(ArgumentError) }
         end
       end
     end
   end
 
-  it { should respond_to(:unique?) }
+  it { is_expected.to respond_to(:unique?) }
 
   describe '#unique?' do
     describe 'when the query is unique' do
@@ -3357,33 +3355,33 @@ describe DataMapper::Query do
         @query.update(:unique => true)
       end
 
-      it { should be_unique }
+      it { is_expected.to be_unique }
     end
 
     describe 'when the query is not unique' do
-      it { should_not be_unique }
+      it { is_expected.not_to be_unique }
     end
 
     describe 'when links are provided, but unique is not specified' do
       before :all do
-        @query.should_not be_unique
+        expect(@query).not_to be_unique
         @query.update(:links => [ :referrer ])
       end
 
-      it { should be_unique }
+      it { is_expected.to be_unique }
     end
 
     describe 'when links are provided, but unique is false' do
       before :all do
-        @query.should_not be_unique
+        expect(@query).not_to be_unique
         @query.update(:links => [ :referrer ], :unique => false)
       end
 
-      it { should_not be_unique }
+      it { is_expected.not_to be_unique }
     end
   end
 
-  it { should respond_to(:update) }
+  it { is_expected.to respond_to(:update) }
 
   describe '#update' do
     describe 'with a Query' do
@@ -3394,9 +3392,9 @@ describe DataMapper::Query do
           @return = @query.update(@other)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it { @return.should equal(@original) }
+        it { expect(@return).to equal(@original) }
       end
 
       describe 'that has conditions set' do
@@ -3416,7 +3414,7 @@ describe DataMapper::Query do
           @conditions = @query_one.merge(@query_two).conditions
         end
 
-        it { @conditions.should == DataMapper::Query::Conditions::Operation.new(:and, @and_operation, @or_operation) }
+        it { expect(@conditions).to eq DataMapper::Query::Conditions::Operation.new(:and, @and_operation, @or_operation) }
       end
 
       describe 'that is for an ancestor model' do
@@ -3431,16 +3429,16 @@ describe DataMapper::Query do
           @return = @query.update(@other)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it { @return.should equal(@original) }
+        it { expect(@return).to equal(@original) }
       end
 
       describe 'using a different repository' do
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             @query.update(DataMapper::Query.new(DataMapper::Repository.new(:other), User))
-          }.should raise_error(ArgumentError, '+other+ DataMapper::Query must be for the default repository, not other')
+          }.to raise_error(ArgumentError, '+other+ DataMapper::Query must be for the default repository, not other')
         end
       end
 
@@ -3453,10 +3451,10 @@ describe DataMapper::Query do
           end
         end
 
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             @query.update(DataMapper::Query.new(@repository, Clone))
-          }.should raise_error(ArgumentError, '+other+ DataMapper::Query must be for the User model, not Clone')
+          }.to raise_error(ArgumentError, '+other+ DataMapper::Query must be for the User model, not Clone')
         end
       end
 
@@ -3467,44 +3465,44 @@ describe DataMapper::Query do
           @return = @query.update(@other)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it { @return.should equal(@original) }
+        it { expect(@return).to equal(@original) }
 
-        it 'should update the fields' do
-          @return.fields.should == @options[:fields]
+        it 'updates the fields' do
+          expect(@return.fields).to eq @options[:fields]
         end
 
-        it 'should update the links' do
-          @return.links.should == @options[:links]
+        it 'updates the links' do
+          expect(@return.links).to eq @options[:links]
         end
 
-        it 'should update the conditions' do
-          @return.conditions.should == DataMapper::Query::Conditions::Operation.new(:and, [ 'name = ?', [ 'Dan Kubb' ] ])
+        it 'updates the conditions' do
+          expect(@return.conditions).to eq DataMapper::Query::Conditions::Operation.new(:and, [ 'name = ?', [ 'Dan Kubb' ] ])
         end
 
-        it 'should update the offset' do
-          @return.offset.should == @options[:offset]
+        it 'updates the offset' do
+          expect(@return.offset).to eq @options[:offset]
         end
 
-        it 'should update the limit' do
-          @return.limit.should == @options[:limit]
+        it 'updates the limit' do
+          expect(@return.limit).to eq @options[:limit]
         end
 
-        it 'should update the order' do
-          @return.order.should == @options[:order]
+        it 'updates the order' do
+          expect(@return.order).to eq @options[:order]
         end
 
-        it 'should update the unique' do
-          @return.unique?.should == @options[:unique]
+        it 'updates the unique' do
+          expect(@return.unique?).to eq @options[:unique]
         end
 
-        it 'should update the add_reversed' do
-          @return.add_reversed?.should == @options[:add_reversed]
+        it 'updates the add_reversed' do
+          expect(@return.add_reversed?).to eq @options[:add_reversed]
         end
 
-        it 'should update the reload' do
-          @return.reload?.should == @options[:reload]
+        it 'updates the reload' do
+          expect(@return.reload?).to eq @options[:reload]
         end
       end
 
@@ -3516,12 +3514,12 @@ describe DataMapper::Query do
           @return = @query.update(@other)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it { @return.should equal(@original) }
+        it { expect(@return).to equal(@original) }
 
-        it 'should update the conditions' do
-          @return.conditions.should ==
+        it 'updates the conditions' do
+          expect(@return.conditions).to eq
             DataMapper::Query::Conditions::Operation.new(
               :and,
               DataMapper::Query::Conditions::Comparison.new(
@@ -3541,12 +3539,12 @@ describe DataMapper::Query do
           @return = @query.update({})
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@returni).to be_kind_of(DataMapper::Query) }
 
-        it { @return.should equal(@original) }
+        it { expect(@return).to equal(@original) }
 
-        it 'should not change the Query' do
-          @return.should == @copy
+        it 'does not change the Query' do
+          expect(@return).to eq @copy
         end
       end
 
@@ -3555,44 +3553,44 @@ describe DataMapper::Query do
           @return = @query.update(@other_options)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it { @return.should equal(@original) }
+        it { expect(@return).to equal(@original) }
 
-        it 'should update the fields' do
-          @return.fields.should == @other_options[:fields]
+        it 'updates the fields' do
+          expect(@return.fields).to eq @other_options[:fields]
         end
 
-        it 'should update the links' do
-          @return.links.should == @other_options[:links]
+        it 'updates the links' do
+          expect(@return.links).to eq @other_options[:links]
         end
 
-        it 'should update the conditions' do
-          @return.conditions.should == DataMapper::Query::Conditions::Operation.new(:and, [ 'name = ?', [ 'Dan Kubb' ] ])
+        it 'updates the conditions' do
+          expect(@return.conditions).to eq DataMapper::Query::Conditions::Operation.new(:and, [ 'name = ?', [ 'Dan Kubb' ] ])
         end
 
-        it 'should update the offset' do
-          @return.offset.should == @other_options[:offset]
+        it 'updates the offset' do
+          expect(@return.offset).to eq @other_options[:offset]
         end
 
-        it 'should update the limit' do
-          @return.limit.should == @other_options[:limit]
+        it 'updates the limit' do
+          expect(@return.limit).to eq @other_options[:limit]
         end
 
-        it 'should update the order' do
-          @return.order.should == @other_options[:order]
+        it 'updates the order' do
+          expect(@return.order).to eq @other_options[:order]
         end
 
-        it 'should update the unique' do
-          @return.unique?.should == @other_options[:unique]
+        it 'updates the unique' do
+          expect(@return.unique?).to eq @other_options[:unique]
         end
 
-        it 'should update the add_reversed' do
-          @return.add_reversed?.should == @other_options[:add_reversed]
+        it 'updates the add_reversed' do
+          expect(@return.add_reversed?).to eq @other_options[:add_reversed]
         end
 
-        it 'should update the reload' do
-          @return.reload?.should == @other_options[:reload]
+        it 'updates the reload' do
+          expect(@return.reload?).to eq @other_options[:reload]
         end
       end
 
@@ -3603,12 +3601,12 @@ describe DataMapper::Query do
           @return = @query.update(@options)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it { @return.should equal(@original) }
+        it { expect(@return).to equal(@original) }
 
-        it 'should update the conditions' do
-          @return.conditions.should == DataMapper::Query::Conditions::Operation.new(
+        it 'updates the conditions' do
+          expect(@return.conditions).to eq DataMapper::Query::Conditions::Operation.new(
             :and,
             DataMapper::Query::Conditions::Comparison.new(
               :eql,
@@ -3626,12 +3624,12 @@ describe DataMapper::Query do
           @return = @query.update(:conditions => [ 'name = ?', 'Dan Kubb' ])
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        it { @return.should equal(@original) }
+        it { expect(@return).to equal(@original) }
 
-        it 'should update the conditions' do
-          @return.conditions.should == DataMapper::Query::Conditions::Operation.new(
+        it 'updates the conditions' do
+          expect(@return.conditions).to eq DataMapper::Query::Conditions::Operation.new(
             :and,
             [ 'name IS NOT NULL' ],
             [ 'name = ?', [ 'Dan Kubb' ] ]
@@ -3641,25 +3639,25 @@ describe DataMapper::Query do
 
       describe 'with the String key mapping to a Query::Path' do
         before :all do
-          @query.links.should be_empty
+          expect(@query.links).to be_empty
 
           @options = { 'grandparents.name' => 'Dan Kubb' }
 
           @return = @query.update(@options)
         end
 
-        it { @return.should be_kind_of(DataMapper::Query) }
+        it { expect(@return).to be_kind_of(DataMapper::Query) }
 
-        xit 'should not set the conditions' do
-          @return.conditions.should be_nil
+        xit 'does not set the conditions' do
+          expect(@return.conditions).to be_nil
         end
 
-        it 'should set the links' do
-          @return.links.should == [ @model.relationships[:referrals], @model.relationships[:referrer] ]
+        it 'sets the links' do
+          expect(@return.links).to eq [ @model.relationships[:referrals], @model.relationships[:referrer] ]
         end
 
-        it 'should be valid' do
-          @return.should be_valid
+        it 'is valid' do
+          expect(@return).to be_valid
         end
       end
     end

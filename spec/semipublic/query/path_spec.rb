@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 # class methods
 describe DataMapper::Query::Path do
@@ -27,7 +27,7 @@ describe DataMapper::Query::Path do
     DataMapper.finalize
   end
 
-  it { DataMapper::Query::Path.should respond_to(:new) }
+  it { expect(DataMapper::Query::Path).to respond_to(:new) }
 
   describe '.new' do
     describe 'when supplied an Array of Relationships' do
@@ -35,16 +35,16 @@ describe DataMapper::Query::Path do
         @path = DataMapper::Query::Path.new(@relationships)
       end
 
-      it 'should return a Query::Path' do
-        @path.should be_kind_of(DataMapper::Query::Path)
+      it 'returns a Query::Path' do
+        expect(@path).to be_kind_of(DataMapper::Query::Path)
       end
 
-      it 'should set Query::Path#relationships' do
-        @path.relationships.should eql(@relationships)
+      it 'sets Query::Path#relationships' do
+        expect(@path.relationships).to eql(@relationships)
       end
 
-      it 'should copy the relationships' do
-        @path.relationships.should_not equal(@relationships)
+      it 'copies the relationships' do
+        expect(@path.relationships).not_to equal(@relationships)
       end
     end
 
@@ -53,26 +53,26 @@ describe DataMapper::Query::Path do
         @path = DataMapper::Query::Path.new(@relationships, @property.name)
       end
 
-      it 'should return a Query::Path' do
-        @path.should be_kind_of(DataMapper::Query::Path)
+      it 'returns a Query::Path' do
+        expect(@path).to be_kind_of(DataMapper::Query::Path)
       end
 
-      it 'should set Query::Path#relationships' do
-        @path.relationships.should eql(@relationships)
+      it 'sets Query::Path#relationships' do
+        expect(@path.relationships).to eql(@relationships)
       end
 
-      it 'should copy the relationships' do
-        @path.relationships.should_not equal(@relationships)
+      it 'copies the relationships' do
+        expect(@path.relationships).not_to equal(@relationships)
       end
 
-      it 'should set Query::Path#property' do
-        @path.property.should equal(@property)
+      it 'sets Query::Path#property' do
+        expect(@path.property).to equal(@property)
       end
     end
 
     describe 'when supplied an unknown property' do
-      it 'should raise an error' do
-        lambda { DataMapper::Query::Path.new(@relationships, :unknown) }.should raise_error(ArgumentError, "Unknown property 'unknown' in Article")
+      it 'raises an error' do
+        expect { DataMapper::Query::Path.new(@relationships, :unknown) }.to raise_error(ArgumentError, "Unknown property 'unknown' in Article")
       end
     end
   end
@@ -107,7 +107,7 @@ describe DataMapper::Query::Path do
     DataMapper.finalize
   end
 
-  it { @path.should respond_to(:==) }
+  it { expect(@path).to respond_to(:==) }
 
   describe '#==' do
     describe 'when other Query::Path is the same' do
@@ -117,8 +117,8 @@ describe DataMapper::Query::Path do
         @return = @path == @other
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
 
@@ -131,8 +131,8 @@ describe DataMapper::Query::Path do
         @return = @path == @other
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -145,8 +145,8 @@ describe DataMapper::Query::Path do
         @return = @path == @other
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -157,8 +157,8 @@ describe DataMapper::Query::Path do
         @return = @path == @other
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -169,8 +169,8 @@ describe DataMapper::Query::Path do
         @return = @path == @other
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -181,13 +181,13 @@ describe DataMapper::Query::Path do
         @return = @path == @other
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
   end
 
-  it { @path.should respond_to(:eql?) }
+  it { expect(@path).to respond_to(:eql?) }
 
   describe '#eql?' do
     describe 'when other Query::Path is the same' do
@@ -197,8 +197,8 @@ describe DataMapper::Query::Path do
         @return = @path.eql?(@other)
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
 
@@ -211,8 +211,8 @@ describe DataMapper::Query::Path do
         @return = @path.eql?(@other)
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -223,8 +223,8 @@ describe DataMapper::Query::Path do
         @return = @path.eql?(@other)
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -235,8 +235,8 @@ describe DataMapper::Query::Path do
         @return = @path.eql?(@other)
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
 
@@ -247,30 +247,30 @@ describe DataMapper::Query::Path do
         @return = @path.eql?(@other)
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
   end
 
-  it { @path.should respond_to(:model) }
+  it { expect(@path).to respond_to(:model) }
 
   describe '#model' do
-    it 'should return a Model' do
-      @path.model.should be_kind_of(DataMapper::Model)
+    it 'returns a Model' do
+      expect(@path.model).to be_kind_of(DataMapper::Model)
     end
 
-    it 'should return expected value' do
-      @path.model.should eql(Article)
+    it 'returns expected value' do
+      expect(@path.model).to eql(Article)
     end
   end
 
-  it { @path.should respond_to(:property) }
+  it { expect(@path).to respond_to(:property) }
 
   describe '#property' do
     describe 'when no property is defined' do
-      it 'should return nil' do
-        @path.property.should be_nil
+      it 'returns nil' do
+        expect(@path.property).to be_nil
       end
     end
 
@@ -279,29 +279,29 @@ describe DataMapper::Query::Path do
         @path = @path.class.new(@path.relationships, @property.name)
       end
 
-      it 'should return a Property' do
-        @path.property.should be_kind_of(DataMapper::Property::Object)
+      it 'returns a Property' do
+        expect(@path.property).to be_kind_of(DataMapper::Property::Object)
       end
 
-      it 'should return expected value' do
-        @path.property.should eql(@property)
+      it 'returns expected value' do
+        expect(@path.property).to eql(@property)
       end
     end
   end
 
-  it { @path.should respond_to(:relationships) }
+  it { expect(@path).to respond_to(:relationships) }
 
   describe '#relationships' do
-    it 'should return an Array' do
-      @path.relationships.should be_kind_of(Array)
+    it 'returns an Array' do
+      expect(@path.relationships).to be_kind_of(Array)
     end
 
-    it 'should return expected value' do
-      @path.relationships.should eql(@relationships)
+    it 'returns expected value' do
+      expect(@path.relationships).to eql(@relationships)
     end
   end
 
-  it { @path.should respond_to(:respond_to?) }
+  it { expect(@path).to respond_to(:respond_to?) }
 
   describe '#respond_to?' do
     describe 'when supplied a method name provided by the parent class' do
@@ -309,8 +309,8 @@ describe DataMapper::Query::Path do
         @return = @path.respond_to?(:class)
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
 
@@ -321,8 +321,8 @@ describe DataMapper::Query::Path do
         @return = @path.respond_to?(:instance_variable_name)
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
 
@@ -331,8 +331,8 @@ describe DataMapper::Query::Path do
         @return = @path.respond_to?(:author)
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
 
@@ -341,8 +341,8 @@ describe DataMapper::Query::Path do
         @return = @path.respond_to?(:title)
       end
 
-      it 'should return true' do
-        @return.should be(true)
+      it 'returns true' do
+        expect(@return).to be(true)
       end
     end
 
@@ -351,21 +351,21 @@ describe DataMapper::Query::Path do
         @return = @path.respond_to?(:unknown)
       end
 
-      it 'should return false' do
-        @return.should be(false)
+      it 'returns false' do
+        expect(@return).to be(false)
       end
     end
   end
 
-  it { @path.should respond_to(:repository_name) }
+  it { expect(@path).to respond_to(:repository_name) }
 
   describe '#repository_name' do
-    it 'should return a Symbol' do
-      @path.repository_name.should be_kind_of(Symbol)
+    it 'returns a Symbol' do
+      expect(@path.repository_name).to be_kind_of(Symbol)
     end
 
-    it 'should return expected value' do
-      @path.repository_name.should eql(:default)
+    it 'returns expected value' do
+      expect(@path.repository_name).to eql(:default)
     end
   end
 
@@ -375,8 +375,8 @@ describe DataMapper::Query::Path do
         @return = @path.class
       end
 
-      it 'should return the expected value' do
-        @return.should eql(DataMapper::Query::Path)
+      it 'returns the expected value' do
+        expect(@return).to eql(DataMapper::Query::Path)
       end
     end
 
@@ -387,8 +387,8 @@ describe DataMapper::Query::Path do
         @return = @path.instance_variable_name
       end
 
-      it 'should return the expected value' do
-        @return.should eql('@title')
+      it 'returns the expected value' do
+        expect(@return).to eql('@title')
       end
     end
 
@@ -397,12 +397,12 @@ describe DataMapper::Query::Path do
         @return = @path.author
       end
 
-      it 'should return a Query::Path' do
-        @return.should be_kind_of(DataMapper::Query::Path)
+      it 'returns a Query::Path' do
+        expect(@return).to be_kind_of(DataMapper::Query::Path)
       end
 
-      it 'should return the expected value' do
-        @return.should eql(DataMapper::Query::Path.new([ @relationship, Article.relationships[:author] ]))
+      it 'returns the expected value' do
+        expect(@return).to eql(DataMapper::Query::Path.new([ @relationship, Article.relationships[:author] ]))
       end
     end
 
@@ -411,18 +411,18 @@ describe DataMapper::Query::Path do
         @return = @path.title
       end
 
-      it 'should return a Query::Path' do
-        @return.should be_kind_of(DataMapper::Query::Path)
+      it 'returns a Query::Path' do
+        expect(@return).to be_kind_of(DataMapper::Query::Path)
       end
 
-      it 'should return the expected value' do
-        @return.should eql(DataMapper::Query::Path.new(@relationships, :title))
+      it 'returns the expected value' do
+        expect(@return).to eql(DataMapper::Query::Path.new(@relationships, :title))
       end
     end
 
     describe 'when supplied an unknown method name' do
-      it 'should raise an error' do
-        lambda { @path.unknown }.should raise_error(NoMethodError, "undefined property or relationship 'unknown' on Article")
+      it 'raises an error' do
+        expect { @path.unknown }.to raise_error(NoMethodError, "undefined property or relationship 'unknown' on Article")
       end
     end
   end
@@ -438,7 +438,7 @@ describe DataMapper::Query::Path do
       end
 
       it 'returns a :desc operator from the path' do
-        @return.should == DataMapper::Query::Operator.new(@path.property, :desc)
+        expect(@return).to eq DataMapper::Query::Operator.new(@path.property, :desc)
       end
     end
 
@@ -448,7 +448,7 @@ describe DataMapper::Query::Path do
       end
 
       it 'returns a :desc operator from the path' do
-        @return.should == DataMapper::Query::Operator.new(@path.property, :asc)
+        expect(@return).to eq DataMapper::Query::Operator.new(@path.property, :asc)
       end
     end
   end
@@ -459,12 +459,12 @@ describe DataMapper::Query::Path do
         @return = @path.send(slug)
       end
 
-      it 'should return a Query::Operator' do
-        @return.should be_kind_of(DataMapper::Query::Operator)
+      it 'returns a Query::Operator' do
+        expect(@return).to be_kind_of(DataMapper::Query::Operator)
       end
 
-      it 'should return expected value' do
-        @return.should eql(DataMapper::Query::Operator.new(@path, slug))
+      it 'returns expected value' do
+        expect(@return).to eql(DataMapper::Query::Operator.new(@path, slug))
       end
     end
   end

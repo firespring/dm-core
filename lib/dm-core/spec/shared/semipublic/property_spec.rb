@@ -86,7 +86,7 @@ shared_examples 'A semipublic Property' do
     describe "when is able to do typecasting on it's own" do
       it 'delegates all the work to the type' do
         return_value = double(@other_value)
-        @property.should_receive(:typecast_to_primitive).with(@invalid_value).and_return(return_value)
+        expect(@property).to receive(:typecast_to_primitive).with(@invalid_value).and_return(return_value)
         @property.typecast(@invalid_value)
       end
     end

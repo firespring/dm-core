@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 # run the specs once with a loaded collection and once not
 [ false, true ].each do |loaded|
@@ -34,7 +34,7 @@ require 'spec_helper'
         @articles.entries if loaded
       end
 
-      it { DataMapper::Collection.should respond_to(:new) }
+      it { expect(DataMapper::Collection).to respond_to(:new) }
 
       describe '.new' do
         describe 'with resources' do
@@ -42,16 +42,16 @@ require 'spec_helper'
             @return = @collection = DataMapper::Collection.new(@articles_query, [ @article ])
           end
 
-          it 'should return a Collection' do
-            @return.should be_kind_of(DataMapper::Collection)
+          it 'returns a Collection' do
+            expect(@return).to be_kind_of(DataMapper::Collection)
           end
 
-          it 'should be loaded' do
-            @return.should be_loaded
+          it 'is loaded' do
+            expect(@return).to be_loaded
           end
 
-          it 'should contain the article' do
-            @collection.should == [ @article ]
+          it 'contains the article' do
+            expect(@collection).to eq [ @article ]
           end
         end
 
@@ -60,49 +60,49 @@ require 'spec_helper'
             @return = @collection = DataMapper::Collection.new(@articles_query)
           end
 
-          it 'should return a Collection' do
-            @return.should be_kind_of(DataMapper::Collection)
+          it 'returns a Collection' do
+            expect(@return).to be_kind_of(DataMapper::Collection)
           end
 
-          it 'should not be loaded' do
-            @return.should_not be_loaded
+          it 'is not loaded' do
+            expect(@return).not_to be_loaded
           end
 
-          it 'should contain the article' do
-            @collection.should == [ @article ]
+          it 'contains the article' do
+            expect(@collection).to eq [ @article ]
           end
         end
       end
 
-      it { @articles.should respond_to(:query) }
+      it { expect(@articles).to respond_to(:query) }
 
       describe '#query' do
         before :all do
           @return = @articles.query
         end
 
-        it 'should return a Query' do
-          @return.should be_kind_of(DataMapper::Query)
+        it 'returns a Query' do
+          expect(@return).to be_kind_of(DataMapper::Query)
         end
 
-        it 'should return expected Query' do
-          @return.should eql(@articles_query)
+        it 'returns expected Query' do
+          expect(@return).to eql(@articles_query)
         end
       end
 
-      it { @articles.should respond_to(:repository) }
+      it { expect(@articles).to respond_to(:repository) }
 
       describe '#repository' do
         before :all do
           @return = @repository = @articles.repository
         end
 
-        it 'should return a Repository' do
-          @return.should be_kind_of(DataMapper::Repository)
+        it 'returns a Repository' do
+          expect(@return).to be_kind_of(DataMapper::Repository)
         end
 
-        it 'should be expected Repository' do
-          @repository.should == @article_repository
+        it 'is expected Repository' do
+          expect(@repository).to eq @article_repository
         end
       end
     end
