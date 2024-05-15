@@ -1,5 +1,30 @@
 require_relative '../../spec_helper'
 
+class ::Car
+  include DataMapper::Resource
+
+  property :id,   Serial
+  property :name, String
+end
+
+class ::Engine
+  include DataMapper::Resource
+
+  property :id, Serial
+end
+
+class ::Door
+  include DataMapper::Resource
+
+  property :id, Serial
+end
+
+class ::Window
+  include DataMapper::Resource
+
+  property :id, Serial
+end
+
 shared_examples 'it creates a one accessor' do
   describe 'accessor' do
     describe 'when there is no associated resource' do
@@ -432,30 +457,6 @@ end
 
 describe DataMapper::Associations do
   before :all do
-    class ::Car
-      include DataMapper::Resource
-
-      property :id,   Serial
-      property :name, String
-    end
-
-    class ::Engine
-      include DataMapper::Resource
-
-      property :id, Serial
-    end
-
-    class ::Door
-      include DataMapper::Resource
-
-      property :id, Serial
-    end
-
-    class ::Window
-      include DataMapper::Resource
-
-      property :id, Serial
-    end
   end
 
   def n

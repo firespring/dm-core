@@ -402,7 +402,7 @@ shared_examples 'A public Resource' do
       it 'does not raise an exception' do
         expect {
           expect(@user.dirty?).to be(true)
-        }.not_to raise_error(SystemStackError)
+        }.not_to raise_error
       end
     end
   end

@@ -80,7 +80,7 @@ describe DataMapper::Resource::PersistenceState::Dirty do
 
         it 'does not change the identity map' do
           identity_map = @resource.repository.identity_map(@model).dup
-          expect { subject }.to raise_error
+          expect { subject }.to raise_error(DataMapper::Property::InvalidValueError)
           expect(identity_map).to eq @resource.repository.identity_map(@model)
         end
       end

@@ -55,9 +55,9 @@ shared_examples 'A Collection supporting Strategic Eager Loading' do
       if loaded
         expect(@results).to eq [[@article, @revision]]
       else
-        pending_if 'TODO: make m:m not kick when delegating to the relationship', @many_to_many do
-          expect(@results).to eq [[@article, @revision], [@new_article, @new_revision]]
-        end
+        pending 'TODO: make m:m not kick when delegating to the relationship' if @many_to_many
+
+        expect(@results).to eq [[@article, @revision], [@new_article, @new_revision]]
       end
     end
   end

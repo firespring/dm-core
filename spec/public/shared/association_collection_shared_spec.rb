@@ -207,9 +207,9 @@ shared_examples 'A public Association Collection' do
 
     it 'associates the Resource to the Collection' do
       if @resource.respond_to?(:authors)
-        pending 'TODO: make sure the association is bidirectional' do
-          expect(@resource.authors).to eq [@author]
-        end
+        pending 'TODO: make sure the association is bidirectional'
+
+        expect(@resource.authors).to eq [@author]
       else
         expect(@resource.author).to eq @author
       end

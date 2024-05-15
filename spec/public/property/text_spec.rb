@@ -34,7 +34,7 @@ describe DataMapper::Property::Text do
       it 'allows a migration' do
         expect {
           @model.auto_migrate!
-        }.not_to raise_error(DataObjects::SyntaxError)
+        }.not_to raise_error
       end
     end
   end if defined?(DataObjects::SyntaxError)
@@ -55,7 +55,7 @@ describe DataMapper::Property::Text do
       it 'allows a migration' do
         expect {
           @model.auto_migrate!
-        }.not_to raise_error(DataObjects::SyntaxError)
+        }.not_to raise_error
       end
     end
   end if defined?(DataObjects::SyntaxError)

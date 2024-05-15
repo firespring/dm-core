@@ -1400,7 +1400,7 @@ end
         should_be_a_kicker
 
         it 'removes the matching entries' do
-          expect { action }.should change(subject, :entries).from([@nancy, @bessie]).to([@bessie])
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@bessie])
         end
       end
 

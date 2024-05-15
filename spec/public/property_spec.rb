@@ -288,9 +288,9 @@ describe DataMapper::Property do
       end
 
       it 'is true for serial fields' do
-        pending do
-          expect(Track.properties[:title].unique?).to be(true)
-        end
+        pending
+
+        expect(Track.properties[:title].unique?).to be(true)
       end
 
       it 'is true for keys' do

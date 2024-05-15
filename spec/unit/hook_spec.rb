@@ -78,7 +78,7 @@ describe DataMapper::Hook do
 
       it 'is able to register protected methods as hooks' do
         @class.class_eval %{protected; def self.protected_hookable; end;}
-        expect { @class.register_class_hooks(:protected_hookable) }.not_to raise_error(ArgumentError)
+        expect { @class.register_class_hooks(:protected_hookable) }.not_to raise_error
       end
 
       it 'is not able to register private methods as hooks' do
@@ -183,7 +183,7 @@ describe DataMapper::Hook do
 
       it 'is able to register protected methods as hooks' do
         @class.class_eval %(protected; def protected_hookable; end;), __FILE__, __LINE__
-        expect { @class.register_instance_hooks(:protected_hookable) }.not_to raise_error(ArgumentError)
+        expect { @class.register_instance_hooks(:protected_hookable) }.not_to raise_error
       end
 
       it 'is not able to register private methods as hooks' do
