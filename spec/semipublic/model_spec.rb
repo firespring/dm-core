@@ -1,8 +1,8 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe DataMapper::Model do
 
-  it { should respond_to(:append_inclusions) }
+  it { is_expected.to respond_to(:append_inclusions) }
 
   describe '.append_inclusions' do
     module ::Inclusions
@@ -20,8 +20,8 @@ describe DataMapper::Model do
         end
       end
 
-      it 'should respond to :new_method' do
-        User.new.should respond_to(:new_method)
+      it 'responds to :new_method' do
+        expect(User.new).to respond_to(:new_method)
       end
 
       after :all do
@@ -38,8 +38,8 @@ describe DataMapper::Model do
         DataMapper::Model.append_inclusions(Inclusions)
       end
 
-      it 'should respond to :new_method' do
-        User.new.should respond_to(:new_method)
+      it 'responds to :new_method' do
+        expect(User.new).to respond_to(:new_method)
       end
 
       after :all do
@@ -48,7 +48,7 @@ describe DataMapper::Model do
     end
   end
 
-  it { should respond_to(:append_extensions) }
+  it { is_expected.to respond_to(:append_extensions) }
 
   describe '.append_extensions' do
     module ::Extensions
@@ -66,8 +66,8 @@ describe DataMapper::Model do
         end
       end
 
-      it 'should respond to :new_method' do
-        User.should respond_to(:new_method)
+      it 'responds to :new_method' do
+        expect(User).to respond_to(:new_method)
       end
 
       after :all do
@@ -84,8 +84,8 @@ describe DataMapper::Model do
         DataMapper::Model.append_extensions(Extensions)
       end
 
-      it 'should respond to :new_method' do
-        User.should respond_to(:new_method)
+      it 'responds to :new_method' do
+        expect(User).to respond_to(:new_method)
       end
 
       after :all do
