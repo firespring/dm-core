@@ -1609,9 +1609,9 @@ shared_examples 'A public Collection' do
         end
 
         it 'raises an exception' do
-          lambda {
+          expect {
             @articles.send(method, :content => 'New Content')
-          }.should raise_error(DataMapper::UpdateConflictError, "#{@articles.class}##{method} cannot be called on a dirty collection")
+          }.to raise_error(DataMapper::UpdateConflictError, "#{@articles.class}##{method} cannot be called on a dirty collection")
         end
       end
     end

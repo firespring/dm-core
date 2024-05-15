@@ -1909,7 +1909,7 @@ describe DataMapper::Query do
 
           it { is_expected.not_to equal(@other) }
 
-          it { is_expected.to == @query }
+          it { is_expected.to eq @query }
         end
 
         describe 'with other matching everything' do
@@ -3038,7 +3038,7 @@ describe DataMapper::Query do
 
           it { is_expected.not_to equal(@other) }
 
-          it { is_expected.to == @query }
+          it { is_expected.to eq @query }
         end
 
         describe 'with other matching everything' do
@@ -3054,7 +3054,7 @@ describe DataMapper::Query do
           it { is_expected.not_to equal(@other) }
 
           it 'matches everything' do
-            is_expected.to == DataMapper::Query.new(@repository, @model)
+            is_expected.to eq DataMapper::Query.new(@repository, @model)
           end
         end
 
@@ -3071,7 +3071,7 @@ describe DataMapper::Query do
           it { is_expected.not_to equal(@other) }
 
           it 'matches everything' do
-            is_expected.to == DataMapper::Query.new(@repository, @model)
+            is_expected.to eq DataMapper::Query.new(@repository, @model)
           end
         end
 

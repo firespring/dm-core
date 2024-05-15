@@ -23,28 +23,28 @@ describe DataMapper::Property::Time do
           'sec'   => '0'
         )
 
-        result.should be_kind_of(Time)
-        result.year.should  eql(2006)
-        result.month.should eql(11)
-        result.day.should   eql(23)
-        result.hour.should  eql(12)
-        result.min.should   eql(0)
-        result.sec.should   eql(0)
+        expect(result).to be_kind_of(Time)
+        expect(result.year).to eql(2006)
+        expect(result.month).to eql(11)
+        expect(result.day).to eql(23)
+        expect(result.hour).to eql(12)
+        expect(result.min).to eql(0)
+        expect(result.sec).to eql(0)
       end
     end
 
     describe 'and value is a string' do
       it 'parses the string' do
         result = @property.typecast('22:24')
-        result.hour.should eql(22)
-        result.min.should eql(24)
+        expect(result.hour).to eql(22)
+        expect(result.min).to eql(24)
       end
     end
 
     it 'does not typecast non-time values' do
-      pending_if 'Time#parse is too permissive', RUBY_VERSION <= '1.9.1' do
-        @property.typecast('not-time').should eql('not-time')
-      end
+      pending 'Time#parse is too permissive' if RUBY_VERSION <= '1.9.1'
+
+      expect(@property.typecast('not-time')).to eql('not-time')
     end
   end
 end
