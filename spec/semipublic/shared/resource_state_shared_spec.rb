@@ -22,7 +22,7 @@ shared_examples 'A method that does not delegate to the superclass #set' do
       alias_method :original_set, :set
       undef_method(:set)
     end
-    expect { method(:subject) }.not_to raise_error(NoMethodError)
+    expect { method(:subject) }.not_to raise_error
     DataMapper::Resource::PersistenceState.class_eval do
       alias_method :set, :original_set
       undef_method(:original_set)
