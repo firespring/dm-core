@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 require 'dm-core/support/lazy_array'
 
 # only needed for specs
@@ -18,96 +18,96 @@ module LazyArraySpec
     end
 
     def should_respond_to(method)
-      unless loaded
-        it { subject.should respond_to(method) }
-      end
+      return if loaded
+
+      it { expect(subject).to respond_to(method) }
     end
 
     def should_return_expected_value(&block)
-      it 'should return expected value' do
-        action.should eql(instance_eval(&block))
+      it 'returns expected value' do
+        expect(action).to eql(instance_eval(&block))
       end
     end
 
     def should_return_subject
       should_return_kind_of(LazyArray)
 
-      it 'should return self' do
-        action.should equal(subject)
+      it 'returns self' do
+        expect(action).to equal(subject)
       end
     end
 
     def should_return_kind_of(klass)
-      it { action.should be_a_kind_of(klass) }
+      it { expect(action).to be_a_kind_of(klass) }
     end
 
     def should_return_copy
-      it 'should not return self' do
-        action.should_not equal(subject)
+      it 'does not return self' do
+        expect(action).not_to equal(subject)
       end
 
-      it 'should eql self' do
-        action.should eql(subject)
+      it "eql's self" do
+        expect(action).to eql(subject)
       end
     end
 
     def should_return_true
-      it 'should return true' do
-        action.should be(true)
+      it 'returns true' do
+        expect(action).to be(true)
       end
     end
 
     def should_return_false
-      it 'should return false' do
-        action.should be(false)
+      it 'returns false' do
+        expect(action).to be(false)
       end
     end
 
     def should_return_nil
-      it 'should return nil' do
-        action.should be_nil
+      it 'returns nil' do
+        expect(action).to be_nil
       end
     end
 
     def should_raise_error(klass, message = nil)
-      it { lambda { action }.should raise_error(klass, message) }
+      it { expect { action }.to raise_error(klass, message) }
     end
 
     def should_clear_subject
-      it 'should clear self' do
-        lambda { action }.should change(subject, :empty?).from(false).to(true)
+      it 'clears self' do
+        expect { action }.to change(subject, :empty?).from(false).to(true)
       end
     end
 
     def should_yield_to_each_entry
-      it 'should yield to each entry' do
-        lambda { action }.should change(@accumulator, :entries).from([]).to(subject.entries)
+      it 'yields to each entry' do
+        expect { action }.to change(@accumulator, :entries).from([]).to(subject.entries)
       end
     end
 
     def should_not_change_subject
-      it 'should not change self' do
+      it 'does not change self' do
         # XXX: the following does not work with Array#delete_if, even when nothing removed (ruby bug?)
-        #subject.freeze
-        #lambda { action }.should_not raise_error(RUBY_VERSION >= '1.9.0' ? RuntimeError : TypeError)
-        lambda { action }.should_not change(subject, :entries)
+        # subject.freeze
+        # expect { action }.not_to raise_error(RUBY_VERSION >= '1.9.0' ? RuntimeError : TypeError)
+        expect { action }.not_to change(subject, :entries)
       end
     end
 
     def should_be_a_kicker
-      unless loaded
-        it 'should be a kicker' do
-          lambda { action }.should change(subject, :loaded?).from(false).to(true)
-        end
+      return if loaded
+
+      it 'is a kicker' do
+        expect { action }.to change(subject, :loaded?).from(false).to(true)
       end
     end
 
     def should_not_be_a_kicker
-      unless loaded
-        it 'should not be a kicker' do
-          subject.should_not be_loaded
-          lambda { action }.should_not change(subject, :loaded?)
-        end
+      return if loaded
+
+      it 'is not a kicker' do
+        expect(subject).not_to be_loaded
+        expect { action }.not_to change(subject, :loaded?)
       end
     end
   end
@@ -138,19 +138,19 @@ end
 
     subject { @lazy_array }
 
-    it 'should be an Enumerable' do
-      (Enumerable === subject).should be(true)
+    it 'is an Enumerable' do
+      expect((subject.is_a?(Enumerable))).to be(true)
     end
 
     describe 'when frozen', state do
       before { subject.freeze }
 
-      it 'should still be able to kick' do
-        lambda { subject.entries }.should_not raise_error
+      it 'is still able to kick' do
+        expect { subject.entries }.not_to raise_error
       end
 
-      it 'should not allow any modifications' do
-        lambda { subject << @steve }.should raise_error(RUBY_VERSION >= '1.9.0' ? RuntimeError : TypeError)
+      it 'does not allow any modifications' do
+        expect { subject << @steve }.to raise_error((RUBY_VERSION >= '1.9.0') ? RuntimeError : TypeError)
       end
     end
 
@@ -162,8 +162,8 @@ end
       should_return_subject
       should_not_be_a_kicker
 
-      it 'should append an entry' do
-        (subject << @steve).should == [ @nancy, @bessie, @steve ]
+      it 'appends an entry' do
+        expect((subject << @steve)).to eq [@nancy, @bessie, @steve]
       end
     end
 
@@ -297,8 +297,8 @@ end
       should_clear_subject
     end
 
-    [ :collect!, :map! ].each do |method|
-      it { @lazy_array.should respond_to(method) }
+    %i(collect! map!).each do |method|
+      it { expect(@lazy_array).to respond_to(method) }
 
       describe "##{method}", state do
         before { @accumulator = [] }
@@ -309,8 +309,8 @@ end
         should_yield_to_each_entry
         should_be_a_kicker
 
-        it 'should update with the block results' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @steve, @steve ])
+        it 'updates with the block results' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@steve, @steve])
         end
       end
     end
@@ -323,8 +323,8 @@ end
       should_return_subject
       should_not_be_a_kicker
 
-      it 'should concatenate other Enumerable' do
-        subject.concat(@other).should == [ @nancy, @bessie, @steve ]
+      it 'concatenates other Enumerable' do
+        expect(subject.concat(@other)).to eq [@nancy, @bessie, @steve]
       end
     end
 
@@ -337,8 +337,8 @@ end
         should_return_expected_value { @nancy }
         should_be_a_kicker
 
-        it 'should remove the matching entry' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @bessie ])
+        it 'removes the matching entry' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@bessie])
         end
       end
 
@@ -368,8 +368,8 @@ end
         should_return_expected_value { @nancy }
         should_be_a_kicker
 
-        it 'should remove the matching entry' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @bessie ])
+        it 'removes the matching entry' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@bessie])
         end
       end
 
@@ -381,8 +381,8 @@ end
         should_return_expected_value { @steve }
         should_not_be_a_kicker
 
-        it 'should remove the matching entry' do
-          lambda { action }.should change(subject, :entries).from([ @steve, @nancy, @bessie ]).to([ @nancy, @bessie ])
+        it 'removes the matching entry' do
+          expect { action }.to change(subject, :entries).from([@steve, @nancy, @bessie]).to([@nancy, @bessie])
         end
       end
 
@@ -392,8 +392,8 @@ end
         should_return_expected_value { @bessie }
         should_be_a_kicker
 
-        it 'should remove the matching entry' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy ])
+        it 'removes the matching entry' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy])
         end
       end
 
@@ -405,8 +405,8 @@ end
         should_return_expected_value { @steve }
         should_not_be_a_kicker
 
-        it 'should remove the matching entry' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie, @steve ]).to([ @nancy, @bessie ])
+        it 'removes the matching entry' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie, @steve]).to([@nancy, @bessie])
         end
       end
 
@@ -431,8 +431,8 @@ end
         should_yield_to_each_entry
         should_not_be_a_kicker
 
-        it 'should update with the block results' do
-          lambda { action }.should change(subject, :empty?).from(false).to(true)
+        it 'updates with the block results' do
+          expect { action }.to change(subject, :empty?).from(false).to(true)
         end
       end
 
@@ -456,8 +456,8 @@ end
       should_not_be_a_kicker
 
       if loaded
-        it 'should be loaded if subject loaded' do
-          action.should be_loaded
+        it 'is loaded if subject loaded' do
+          expect(action).to be_loaded
         end
       end
     end
@@ -486,8 +486,8 @@ end
       should_be_a_kicker
       should_not_change_subject
 
-      it 'should yield to each index' do
-        lambda { action }.should change(@accumulator, :entries).from([]).to([ 0, 1 ])
+      it 'yields to each index' do
+        expect { action }.to change(@accumulator, :entries).from([]).to([0, 1])
       end
     end
 
@@ -502,8 +502,8 @@ end
       should_be_a_kicker
       should_not_change_subject
 
-      it 'should yield to each entry and index' do
-        lambda { action }.should change(@accumulator, :entries).from([]).to([ [ @nancy, 0 ], [ @bessie, 1 ] ])
+      it 'yields to each entry and index' do
+        expect { action }.to change(@accumulator, :entries).from([]).to([[@nancy, 0], [@bessie, 1]])
       end
     end
 
@@ -681,7 +681,7 @@ end
       should_return_subject
       should_not_be_a_kicker
 
-      it { lambda { action }.should change(subject, :frozen?).from(false).to(true) }
+      it { expect { action }.to change(subject, :frozen?).from(false).to(true) }
     end
 
     should_respond_to(:first)
@@ -708,7 +708,7 @@ end
       describe 'with length specified' do
         action { subject.first(1) }
 
-        it { action.should == [ @nancy ] }
+        it { expect(action).to eq [@nancy] }
 
         should_be_a_kicker
         should_not_change_subject
@@ -719,7 +719,7 @@ end
 
         action { subject.first(1) }
 
-        it { action.should == [ @steve ] }
+        it { expect(action).to eq [@steve] }
 
         should_not_be_a_kicker
         should_not_change_subject
@@ -815,8 +815,8 @@ end
         should_return_subject
         should_not_be_a_kicker
 
-        it 'should insert the entries before the index' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @steve, @nancy, @bessie ])
+        it 'inserts the entries before the index' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@steve, @nancy, @bessie])
         end
       end
 
@@ -827,7 +827,7 @@ end
         should_be_a_kicker
 
         it 'should insert the entries before the index' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @steve, @bessie ])
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @steve, @bessie])
         end
       end
 
@@ -838,7 +838,7 @@ end
         should_not_be_a_kicker
 
         it 'should insert the entries before the index' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, @steve ])
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, @steve])
         end
       end
 
@@ -849,7 +849,7 @@ end
         should_be_a_kicker
 
         it 'should insert the entries before the index' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @steve, @bessie ])
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @steve, @bessie])
         end
       end
 
@@ -859,8 +859,8 @@ end
         should_return_subject
         should_be_a_kicker
 
-        it 'should insert the entries before the index' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, @steve ])
+        it 'inserts the entries before the index' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, @steve])
         end
       end
 
@@ -870,8 +870,8 @@ end
         should_return_subject
         should_be_a_kicker
 
-        it 'should insert the entries before the index, expanding the LazyArray' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, nil, @steve ])
+        it 'inserts the entries before the index, expanding the LazyArray' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, nil, @steve])
         end
       end
 
@@ -881,8 +881,8 @@ end
         should_return_subject
         should_be_a_kicker
 
-        it 'should insert the entries before the index, expanding the LazyArray' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @steve, @nancy, @bessie ])
+        it 'inserts the entries before the index, expanding the LazyArray' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@steve, @nancy, @bessie])
         end
       end
 
@@ -945,7 +945,7 @@ end
       describe 'with length specified' do
         action { subject.last(1) }
 
-        it { action.should == [ @bessie ] }
+        it { expect(action).to eq [@bessie] }
 
         should_be_a_kicker
         should_not_change_subject
@@ -956,7 +956,7 @@ end
 
         action { subject.last(1) }
 
-        it { action.should == [ @steve ] }
+        it { expect(action).to eq [@steve] }
 
         should_not_be_a_kicker
         should_not_change_subject
@@ -1002,8 +1002,8 @@ end
         should_return_expected_value { @bessie }
         should_be_a_kicker
 
-        it 'should remove the last entry' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy ])
+        it 'removes the last entry' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy])
         end
       end
 
@@ -1015,8 +1015,8 @@ end
         should_return_expected_value { @steve }
         should_not_be_a_kicker
 
-        it 'should remove the last entry' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie, @steve ]).to([ @nancy, @bessie ])
+        it 'removes the last entry' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie, @steve]).to([@nancy, @bessie])
         end
       end
     end
@@ -1029,8 +1029,8 @@ end
       should_return_subject
       should_not_be_a_kicker
 
-      it 'should append entries' do
-        lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, @steve, @steve ])
+      it 'appends entries' do
+        expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, @steve, @steve])
       end
     end
 
@@ -1046,8 +1046,8 @@ end
         should_yield_to_each_entry
         should_be_a_kicker
 
-        it 'should update with the block results' do
-          lambda { action }.should change(subject, :empty?).from(false).to(true)
+        it 'updates with the block results' do
+          expect { action }.to change(subject, :empty?).from(false).to(true)
         end
       end
 
@@ -1069,8 +1069,8 @@ end
       should_return_subject
       should_be_a_kicker
 
-      it 'should replace with other Enumerable' do
-        lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @steve ])
+      it 'replaces with other Enumerable' do
+        expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@steve])
       end
     end
 
@@ -1083,8 +1083,8 @@ end
       should_not_be_a_kicker
       should_not_change_subject
 
-      it 'should return a reversed LazyArray' do
-        action.should == [ @bessie, @nancy ]
+      it 'returns a reversed LazyArray' do
+        expect(action).to eq [@bessie, @nancy]
       end
     end
 
@@ -1096,8 +1096,8 @@ end
       should_return_subject
       should_not_be_a_kicker
 
-      it 'should return a reversed LazyArray' do
-        action.should == [ @bessie, @nancy ]
+      it 'returns a reversed LazyArray' do
+        expect(action).to eq [@bessie, @nancy]
       end
     end
 
@@ -1112,8 +1112,8 @@ end
       should_be_a_kicker
       should_not_change_subject
 
-      it 'should yield to each entry' do
-        lambda { action }.should change(@accumulator, :entries).from([]).to([ @bessie, @nancy ])
+      it 'yields to each entry' do
+        expect { action }.to change(@accumulator, :entries).from([]).to([@bessie, @nancy])
       end
     end
 
@@ -1166,8 +1166,8 @@ end
         should_return_expected_value { @nancy }
         should_be_a_kicker
 
-        it 'should remove the last entry' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @bessie ])
+        it 'removes the last entry' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@bessie])
         end
       end
 
@@ -1179,8 +1179,8 @@ end
         should_return_expected_value { @steve }
         should_not_be_a_kicker
 
-        it 'should remove the last entry' do
-          lambda { action }.should change(subject, :entries).from([ @steve, @nancy, @bessie ]).to([ @nancy, @bessie ])
+        it 'removes the last entry' do
+          expect { action }.to change(subject, :entries).from([@steve, @nancy, @bessie]).to([@nancy, @bessie])
         end
       end
     end
@@ -1348,8 +1348,8 @@ end
         should_return_expected_value { @nancy }
         should_be_a_kicker
 
-        it 'should remove the matching entry' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @bessie ])
+        it 'removes the matching entry' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@bessie])
         end
       end
 
@@ -1361,8 +1361,8 @@ end
         should_return_expected_value { @steve }
         should_not_be_a_kicker
 
-        it 'should remove the matching entry' do
-          lambda { action }.should change(subject, :entries).from([ @steve, @nancy, @bessie ]).to([ @nancy, @bessie ])
+        it 'removes the matching entry' do
+          expect { action }.to change(subject, :entries).from([@steve, @nancy, @bessie]).to([@nancy, @bessie])
         end
       end
 
@@ -1373,8 +1373,8 @@ end
         should_return_expected_value { [ @nancy ] }
         should_be_a_kicker
 
-        it 'should remove the matching entries' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @bessie ])
+        it 'removes the matching entries' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@bessie])
         end
       end
 
@@ -1387,8 +1387,8 @@ end
         should_return_expected_value { [ @steve ] }
         should_not_be_a_kicker
 
-        it 'should remove the matching entries' do
-          lambda { action }.should change(subject, :entries).from([ @steve, @nancy, @bessie ]).to([ @nancy, @bessie ])
+        it 'removes the matching entries' do
+          expect { action }.to change(subject, :entries).from([@steve, @nancy, @bessie]).to([@nancy, @bessie])
         end
       end
 
@@ -1399,8 +1399,8 @@ end
         should_return_expected_value { [ @nancy ] }
         should_be_a_kicker
 
-        it 'should remove the matching entries' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @bessie ])
+        it 'removes the matching entries' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@bessie])
         end
       end
 
@@ -1413,8 +1413,8 @@ end
         should_return_expected_value { [ @steve ] }
         should_not_be_a_kicker
 
-        it 'should remove the matching entry' do
-          lambda { action }.should change(subject, :entries).from([ @steve, @nancy, @bessie ]).to([ @nancy, @bessie ])
+        it 'removes the matching entry' do
+          expect { action }.to change(subject, :entries).from([@steve, @nancy, @bessie]).to([@nancy, @bessie])
         end
       end
 
@@ -1424,8 +1424,8 @@ end
         should_return_expected_value { @bessie }
         should_be_a_kicker
 
-        it 'should remove the matching entries' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy ])
+        it 'removes the matching entries' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy])
         end
       end
 
@@ -1437,8 +1437,8 @@ end
         should_return_expected_value { @steve }
         should_not_be_a_kicker
 
-        it 'should remove the matching entries' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie, @steve ]).to([ @nancy, @bessie ])
+        it 'removes the matching entries' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie, @steve]).to([@nancy, @bessie])
         end
       end
 
@@ -1449,8 +1449,8 @@ end
         should_return_expected_value { [ @bessie ] }
         should_be_a_kicker
 
-        it 'should remove the matching entries' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy ])
+        it 'removes the matching entries' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy])
         end
       end
 
@@ -1463,8 +1463,8 @@ end
         should_return_expected_value { [ @steve ] }
         should_not_be_a_kicker
 
-        it 'should remove the matching entries' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie, @steve ]).to([ @nancy, @bessie ])
+        it 'removes the matching entries' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie, @steve]).to([@nancy, @bessie])
         end
       end
 
@@ -1475,8 +1475,8 @@ end
         should_return_expected_value { [ @bessie ] }
         should_be_a_kicker
 
-        it 'should remove the matching entries' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy ])
+        it 'removes the matching entries' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy])
         end
       end
 
@@ -1489,8 +1489,8 @@ end
         should_return_expected_value { [ @steve ] }
         should_not_be_a_kicker
 
-        it 'should remove the matching entries' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie, @steve ]).to([ @nancy, @bessie ])
+        it 'removes the matching entries' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie, @steve]).to([@nancy, @bessie])
         end
       end
 
@@ -1530,8 +1530,8 @@ end
         should_return_subject
         should_be_a_kicker
 
-        it 'should sort the LazyArray inline using default sort order' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @bessie, @nancy ])
+        it 'sorts the LazyArray inline using default sort order' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@bessie, @nancy])
         end
       end
 
@@ -1541,8 +1541,8 @@ end
         should_return_subject
         should_be_a_kicker
 
-        it 'should sort the LazyArray inline using block' do
-          lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @bessie, @nancy ])
+        it 'sorts the LazyArray inline using block' do
+          expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@bessie, @nancy])
         end
       end
     end
@@ -1561,8 +1561,8 @@ end
           should_return_expected_value { @jon }
           should_be_a_kicker
 
-          it 'should change the matching entry' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @jon, @bessie ])
+          it 'changes the matching entry' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@jon, @bessie])
           end
         end
 
@@ -1574,8 +1574,8 @@ end
           should_return_expected_value { @jon }
           should_not_be_a_kicker
 
-          it 'should change the matching entry' do
-            lambda { action }.should change(subject, :entries).from([ @steve, @nancy, @bessie ]).to([ @jon, @nancy, @bessie ])
+          it 'changes the matching entry' do
+            expect { action }.to change(subject, :entries).from([@steve, @nancy, @bessie]).to([@jon, @nancy, @bessie])
           end
         end
 
@@ -1586,8 +1586,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @jon, @bessie ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@jon, @bessie])
           end
         end
 
@@ -1600,8 +1600,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_not_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @steve, @nancy, @bessie ]).to([ @jon, @nancy, @bessie ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@steve, @nancy, @bessie]).to([@jon, @nancy, @bessie])
           end
         end
 
@@ -1612,8 +1612,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @jon, @bessie ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@jon, @bessie])
           end
         end
 
@@ -1626,8 +1626,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_not_be_a_kicker
 
-          it 'should change the matching entry' do
-            lambda { action }.should change(subject, :entries).from([ @steve, @nancy, @bessie ]).to([ @jon, @nancy, @bessie ])
+          it 'changes the matching entry' do
+            expect { action }.to change(subject, :entries).from([@steve, @nancy, @bessie]).to([@jon, @nancy, @bessie])
           end
         end
 
@@ -1637,8 +1637,8 @@ end
           should_return_expected_value { @jon }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @jon])
           end
         end
 
@@ -1650,8 +1650,8 @@ end
           should_return_expected_value { @jon }
           should_not_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie, @steve ]).to([ @nancy, @bessie, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie, @steve]).to([@nancy, @bessie, @jon])
           end
         end
 
@@ -1662,8 +1662,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @jon])
           end
         end
 
@@ -1676,8 +1676,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_not_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie, @steve ]).to([ @nancy, @bessie, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie, @steve]).to([@nancy, @bessie, @jon])
           end
         end
 
@@ -1688,8 +1688,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @jon])
           end
         end
 
@@ -1702,8 +1702,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_not_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie, @steve ]).to([ @nancy, @bessie, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie, @steve]).to([@nancy, @bessie, @jon])
           end
         end
 
@@ -1713,8 +1713,8 @@ end
           should_return_expected_value { @jon }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, @jon])
           end
         end
 
@@ -1724,8 +1724,8 @@ end
           should_return_expected_value { @jon }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, nil, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, nil, @jon])
           end
         end
 
@@ -1742,8 +1742,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, @jon])
           end
         end
 
@@ -1754,8 +1754,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, nil, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, nil, @jon])
           end
         end
 
@@ -1772,8 +1772,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, @jon])
           end
         end
 
@@ -1784,8 +1784,8 @@ end
           should_return_expected_value { [ @jon ] }
           should_be_a_kicker
 
-          it 'should change the matching entries' do
-            lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @nancy, @bessie, nil, @jon ])
+          it 'changes the matching entries' do
+            expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@nancy, @bessie, nil, @jon])
           end
         end
 
@@ -1805,8 +1805,8 @@ end
       should_return_kind_of(Array)
       should_be_a_kicker
 
-      it 'should be equivalent to self' do
-        action.should == subject
+      it 'is equivalent to self' do
+        expect(action).to eq subject
       end
     end
 
@@ -1818,8 +1818,8 @@ end
       should_return_subject
       should_not_be_a_kicker
 
-      it 'should prepend entries' do
-        lambda { action }.should change(subject, :entries).from([ @nancy, @bessie ]).to([ @steve, @steve, @nancy, @bessie ])
+      it 'prepends entries' do
+        expect { action }.to change(subject, :entries).from([@nancy, @bessie]).to([@steve, @steve, @nancy, @bessie])
       end
     end
 
@@ -1935,8 +1935,8 @@ end
         end
       end
 
-      it 'should delegate to the Array' do
-        subject.lazy_spec.should be(true)
+      it 'delegates to the Array' do
+        expect(subject.lazy_spec).to be(true)
       end
     end
 

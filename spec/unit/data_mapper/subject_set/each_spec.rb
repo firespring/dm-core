@@ -1,11 +1,11 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/subject_set'
-require 'unit/data_mapper/subject_set/shared/each_spec'
+require_relative 'shared/each_spec'
 
 describe 'DataMapper::SubjectSet' do
   subject { DataMapper::SubjectSet.new }
 
-  it_should_behave_like 'DataMapper::SubjectSet'
+  it_behaves_like 'DataMapper::SubjectSet'
 end
 
 describe 'DataMapper::SubjectSet#each' do
@@ -26,5 +26,5 @@ describe 'DataMapper::SubjectSet#each' do
   let(:entry)  { Person.new('Alice')                   }
   let(:yields) { []                                    }
 
-  it_should_behave_like 'DataMapper::SubjectSet#each'
+  it_behaves_like 'DataMapper::SubjectSet#each'
 end

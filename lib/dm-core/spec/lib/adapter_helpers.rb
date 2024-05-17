@@ -1,11 +1,9 @@
 module DataMapper
   module Spec
     module Adapters
-
       module Helpers
-
         def supported_by(*adapters, &block)
-          adapters = adapters.map { |adapter| adapter.to_sym }
+          adapters = adapters.map(&:to_sym)
           adapter  = DataMapper::Spec.adapter_name.to_sym
           if adapters.include?(:all) || adapters.include?(adapter)
             describe_adapter(:default, &block)
@@ -24,15 +22,16 @@ module DataMapper
             before :all do
               # store these in instance vars for the shared adapter specs
               @adapter    = DataMapper::Spec.adapter(kind)
-              @repository = DataMapper.repository(@adapter.name)
+              @repository = DataMapper.repository(@adapter&.name)
 
-              @repository.scope { DataMapper.finalize }
+              @repository&.scope { DataMapper.finalize }
 
               # create all tables and constraints before each spec
               DataMapper::Model.descendants.each do |model|
                 next unless model.respond_to?(:auto_migrate!)
+
                 begin
-                  model.auto_migrate!(@repository.name)
+                  model.auto_migrate!(@repository&.name)
                 rescue IncompleteModelError
                   # skip incomplete models
                 end
@@ -43,24 +42,22 @@ module DataMapper
               # remove all tables and constraints after each spec
               DataMapper::Model.descendants.each do |model|
                 next unless model.respond_to?(:auto_migrate_down!)
+
                 begin
-                  model.auto_migrate_down!(@repository.name)
+                  model.auto_migrate_down!(@repository&.name)
                 rescue IncompleteModelError
                   # skip incomplete models
                 end
               end
-              # TODO consider proper automigrate functionality
+              # TODO: consider proper automigrate functionality
               if @adapter.respond_to?(:reset)
                 @adapter.reset
               end
             end
-
             instance_eval(&block)
           end
         end
-
       end
-
     end
   end
 end

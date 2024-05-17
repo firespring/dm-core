@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
-share_examples_for 'A Limited Many to Many Collection' do
+shared_examples 'A Limited Many to Many Collection' do
   describe '#destroy!' do
     describe 'on a limited collection' do
       before :all do
@@ -10,8 +10,8 @@ share_examples_for 'A Limited Many to Many Collection' do
         @return = @limited.destroy!
       end
 
-      it 'should only remove the join resource for the destroyed resource' do
-        @join_model.all.should_not be_empty
+      it 'only removes the join resource for the destroyed resource' do
+        expect(@join_model.all).not_to be_empty
       end
     end
   end
@@ -91,12 +91,12 @@ end
         @articles.entries if loaded
       end
 
-      it_should_behave_like 'A public Collection'
-      it_should_behave_like 'A public Association Collection'
-      it_should_behave_like 'A Collection supporting Strategic Eager Loading' unless loaded
-      it_should_behave_like 'Finder Interface'
-      it_should_behave_like 'Collection Finder Interface'
-      it_should_behave_like 'A Limited Many to Many Collection'
+      it_behaves_like 'A public Collection'
+      it_behaves_like 'A public Association Collection'
+      it_behaves_like 'A Collection supporting Strategic Eager Loading' unless loaded
+      it_behaves_like 'Finder Interface'
+      it_behaves_like 'Collection Finder Interface'
+      it_behaves_like 'A Limited Many to Many Collection'
     end
   end
 
@@ -186,12 +186,12 @@ end
         @articles.entries if loaded
       end
 
-      it_should_behave_like 'A public Collection'
-      it_should_behave_like 'A public Association Collection'
-      it_should_behave_like 'A Collection supporting Strategic Eager Loading' unless loaded
-      it_should_behave_like 'Finder Interface'
-      it_should_behave_like 'Collection Finder Interface'
-      it_should_behave_like 'A Limited Many to Many Collection'
+      it_behaves_like 'A public Collection'
+      it_behaves_like 'A public Association Collection'
+      it_behaves_like 'A Collection supporting Strategic Eager Loading' unless loaded
+      it_behaves_like 'Finder Interface'
+      it_behaves_like 'Collection Finder Interface'
+      it_behaves_like 'A Limited Many to Many Collection'
     end
   end
 end

@@ -7,7 +7,7 @@ describe DataMapper::Property do
       describe "with #{type}" do
         subject { DataMapper::Property.find_class(type) }
 
-        it { subject.should be(DataMapper::Property.const_get(type)) }
+        it { expect(subject).to be(DataMapper::Property.const_get(type)) }
       end
     end
   end
@@ -17,7 +17,7 @@ describe DataMapper::Property do
       describe "with #{type}" do
         subject { DataMapper::Property.determine_class(type) }
 
-        it { subject.should be(DataMapper::Property.const_get(type.name)) }
+        it { expect(subject).to be(DataMapper::Property.const_get(type.name)) }
       end
     end
 
@@ -37,26 +37,26 @@ describe DataMapper::Property do
       describe "with ::Foo::Property::Hash" do
         subject { DataMapper::Property.determine_class(Hash) }
 
-        it { subject.should be(::CustomProps::Property::Hash) }
+        it { expect(subject).to be(::CustomProps::Property::Hash) }
       end
 
       describe "with ::Foo::Property::Other" do
         subject { DataMapper::Property.determine_class(::CustomProps::Property::Other) }
 
-        it { subject.should be(::CustomProps::Property::Other) }
+        it { expect(subject).to be(::CustomProps::Property::Other) }
       end
 
-      describe "should always use the DM property when a built-in is referenced indirectly" do
+      describe "always uses the DM property when a built-in is referenced indirectly" do
         subject do
           Class.new do
             extend ::DataMapper::Model
           end
         end
 
-        it { subject::Serial.should be(::DataMapper::Property::Serial) }
+        it { expect(subject::Serial).to be(::DataMapper::Property::Serial) }
       end
 
-      describe "should always use the custom property when an overridden built-in is directly attached to the model" do
+      describe "always uses the custom property when an overridden built-in is directly attached to the model" do
         subject do
           Class.new do
             extend ::DataMapper::Model
@@ -64,7 +64,7 @@ describe DataMapper::Property do
           end
         end
 
-        it { subject::Serial.should be(::CustomProps::Property::Serial) }
+        it { expect(subject::Serial).to be(::CustomProps::Property::Serial) }
       end
 
     end
@@ -103,12 +103,12 @@ describe DataMapper::Property do
       end
     end
 
-    it 'should return property options in other repository' do
-      @model.properties(:other)[:name].options[:field].should == 'other_name'
+    it 'returns property options in other repository' do
+      expect(@model.properties(:other)[:name].options[:field]).to eq 'other_name'
     end
 
-    it 'should return property options in default repository' do
-      @model.properties[:name].options[:field].should be_nil
+    it 'returns property options in default repository' do
+      expect(@model.properties[:name].options[:field]).to be_nil
     end
   end
 end

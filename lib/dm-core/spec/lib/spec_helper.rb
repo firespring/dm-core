@@ -15,7 +15,7 @@ module DataMapper
     def self.cleanup_models
       descendants = DataMapper::Model.descendants.to_a
 
-      while model = descendants.shift
+      while (model = descendants.shift)
         model_name = model.name.to_s.strip
 
         unless model_name.empty? || model_name[0] == ?#
@@ -36,19 +36,19 @@ module DataMapper
 
     def self.remove_ivars(object, instance_variables = object.instance_variables)
       seen  = {}
-      stack = instance_variables.map { |var| [ object, var ] }
+      stack = instance_variables.map { |var| [object, var] }
 
-      while node = stack.pop
+      while (node = stack.pop)
         object, ivar = node
 
         # skip "global" and non-DM objects
-        next if object.kind_of?(DataMapper::Logger)                    ||
-                object.kind_of?(DataMapper::DescendantSet)             ||
-                object.kind_of?(DataMapper::Adapters::AbstractAdapter) ||
+        next if object.is_a?(DataMapper::Logger)                    ||
+                object.is_a?(DataMapper::DescendantSet)             ||
+                object.is_a?(DataMapper::Adapters::AbstractAdapter) ||
                 object.class.name.to_s[0, 13] == 'DataObjects::'
 
         # skip classes and modules in the DataMapper namespace
-        next if object.kind_of?(Module) &&
+        next if object.is_a?(Module) &&
                 object.name.to_s[0, 12] == 'DataMapper::'
 
         # skip when the ivar is no longer defined in the object
@@ -57,15 +57,16 @@ module DataMapper
         value = object.instance_variable_get(ivar)
 
         # skip descendant sets
-        next if value.kind_of?(DataMapper::DescendantSet)
+        next if value.is_a?(DataMapper::DescendantSet)
 
         object.__send__(:remove_instance_variable, ivar) unless object.frozen?
 
         # skip when the value was seen
         next if seen.key?(value.object_id)
+
         seen[value.object_id] = true
 
-        stack.concat value.instance_variables.map { |ivar| [ value, ivar ] }
+        stack.concat(value.instance_variables.map { |ivar| [value, ivar] })
       end
     end
 

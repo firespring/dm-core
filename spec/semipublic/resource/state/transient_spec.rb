@@ -1,4 +1,5 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
+
 describe DataMapper::Resource::PersistenceState::Transient do
   before :all do
     class ::Author
@@ -27,7 +28,7 @@ describe DataMapper::Resource::PersistenceState::Transient do
     @resource = @model.new(:name => 'Dan Kubb', :coding => false, :parent => @parent)
 
     @state = @resource.persistence_state
-    @state.should be_kind_of(DataMapper::Resource::PersistenceState::Transient)
+    expect(@state).to be_kind_of(DataMapper::Resource::PersistenceState::Transient)
   end
 
   after do
@@ -38,15 +39,15 @@ describe DataMapper::Resource::PersistenceState::Transient do
     subject { @state.commit }
 
     supported_by :all do
-      it 'should return the expected Clean state' do
-        should eql(DataMapper::Resource::PersistenceState::Clean.new(@resource))
+      it 'Returns the expected Clean state' do
+        is_expected.to eql(DataMapper::Resource::PersistenceState::Clean.new(@resource))
       end
 
-      it 'should set the serial property' do
-        method(:subject).should change(@resource, :id).from(nil)
+      it 'Sets the serial property' do
+        expect { method(:subject) }.to change(@resource, :id).from(nil)
       end
 
-      it 'should set the child key if the parent key changes' do
+      it 'Sets the child key if the parent key changes' do
         # SqlServer does not allow updating IDENTITY columns.
         if defined?(DataMapper::Adapters::SqlserverAdapter) &&
            @adapter.kind_of?(DataMapper::Adapters::SqlserverAdapter)
@@ -54,24 +55,24 @@ describe DataMapper::Resource::PersistenceState::Transient do
         end
 
         original_id = @parent.id
-        @parent.update(:id => 42).should be(true)
-        method(:subject).should change(@resource, :parent_id).from(original_id).to(42)
+        expect { @parent.update(id: 42) }.to be(true)
+        expect { method(:subject) }.to change(@resource, :parent_id).from(original_id).to(42)
       end
 
-      it 'should set default values' do
-        method(:subject).should change { @model.relationships[:with_default].get!(@resource) }.from(nil).to(@parent)
+      it 'Sets the default values' do
+        expect { method(:subject) }.to change { @model.relationships[:with_default].get!(@resource) }.from(nil).to(@parent)
       end
 
-      it 'should not set default values when they are already set' do
-        method(:subject).should_not change(@resource, :coding)
+      it "Doesn't set default values when they are already set" do
+        expect { method(:subject) }.not_to change(@resource, :coding)
       end
 
-      it 'should create the resource' do
+      it 'Creates the resource' do
         subject
-        @model.get(*@resource.key).should == @resource
+        expect { @model.get(*@resource.key) }.to eq @resource
       end
 
-      it 'should reset original attributes' do
+      it 'resets original attributes' do
         original_attributes = {
           @model.properties[:name]      => nil,
           @model.properties[:coding]    => nil,
@@ -81,15 +82,15 @@ describe DataMapper::Resource::PersistenceState::Transient do
 
         expect do
           @resource.persistence_state = subject
-        end.should change { @resource.original_attributes.dup }.from(original_attributes).to({})
+        end.to change { @resource.original_attributes.dup }.from(original_attributes).to({})
       end
 
-      it 'should add the resource to the identity map' do
+      it 'adds the resource to the identity map' do
         DataMapper.repository do |repository|
           identity_map = repository.identity_map(@model)
-          identity_map.should be_empty
+          expect(identity_map).to be_empty
           subject
-          identity_map.should == { @parent.key => @parent, @resource.key => @resource }
+          expect(identity_map).to eq({@parent.key => @parent, @resource.key => @resource})
         end
       end
     end
@@ -100,8 +101,8 @@ describe DataMapper::Resource::PersistenceState::Transient do
       subject { @state.send(method) }
 
       supported_by :all do
-        it 'should be a no-op' do
-          should equal(@state)
+        it 'is a no-op' do
+          is_expected.to equal(@state)
         end
       end
     end
@@ -114,47 +115,47 @@ describe DataMapper::Resource::PersistenceState::Transient do
       describe 'with a set value' do
         before do
           @key = @model.properties[:coding]
-          @key.should be_loaded(@resource)
+          expect(@key).to be_loaded(@resource)
         end
 
-        it 'should return value' do
-          should be(false)
+        it 'returns value' do
+          is_expected.to be(false)
         end
 
-        it 'should be idempotent' do
-          should equal(subject)
+        it 'is idempotent' do
+          is_expected.to equal(subject)
         end
       end
 
       describe 'with an unset value and no default value' do
         before do
           @key = @model.properties[:age]
-          @key.should_not be_loaded(@resource)
-          @key.should_not be_default
+          expect(@key).not_to be_loaded(@resource)
+          expect(@key).not_to be_default
         end
 
-        it 'should return nil' do
-          should be_nil
+        it 'returns nil' do
+          is_expected.to be_nil
         end
 
-        it 'should be idempotent' do
-          should equal(subject)
+        it 'is idempotent' do
+          is_expected.to equal(subject)
         end
       end
 
       describe 'with an unset value and a default value' do
         before do
           @key = @model.properties[:description]
-          @key.should_not be_loaded(@resource)
-          @key.should be_default
+          expect(@key).not_to be_loaded(@resource)
+          expect(@key).to be_default
         end
 
-        it 'should return the name' do
-          should == 'Dan Kubb'
+        it 'Returns the name' do
+          is_expected.to eq 'Dan Kubb'
         end
 
-        it 'should be idempotent' do
-          should equal(subject)
+        it 'Is idempotent' do
+          is_expected.to equal(subject)
         end
       end
     end

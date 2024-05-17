@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property, 'Object type' do
   before :all do
@@ -22,12 +22,11 @@ describe DataMapper::Property, 'Object type' do
   describe '.options' do
     subject { described_class.options }
 
-    it { should be_kind_of(Hash) }
-
-    it { should be_empty }
+    it { is_expected.to be_kind_of(Hash) }
+    it { is_expected.to be_empty }
   end
 
-  it { should respond_to(:typecast) }
+  it { is_expected.to respond_to(:typecast) }
 
   describe '#typecast' do
     subject { @property.typecast(@value) }
@@ -37,20 +36,20 @@ describe DataMapper::Property, 'Object type' do
     end
 
     context 'when the value is a primitive' do
-      it { should equal(@value) }
+      it { is_expected.to equal(@value) }
     end
 
     context 'when the value is not a primitive' do
       before do
         # simulate the value not being a primitive
-        @property.should_receive(:value_loaded?).with(@value).and_return(false)
+        expect(@property).to receive(:value_loaded?).with(@value).and_return(false)
       end
 
-      it { should equal(@value) }
+      it { is_expected.to equal(@value) }
     end
   end
 
-  it { should respond_to(:dump) }
+  it { is_expected.to respond_to(:dump) }
 
   describe '#dump' do
     describe 'with a value' do
@@ -60,23 +59,23 @@ describe DataMapper::Property, 'Object type' do
 
       subject { @property.dump(@value) }
 
-      it { @property.load(subject).should == @value }
+      it { expect(@property.load(subject)).to eq @value }
     end
 
     describe 'with nil' do
       subject { @property.dump(nil) }
 
-      it { should be_nil }
+      it { is_expected.to be_nil }
     end
   end
 
-  it { should respond_to(:valid?) }
+  it { is_expected.to respond_to(:valid?) }
 
   describe '#valid?' do
     describe 'with a valid load_as' do
       subject { @property.valid?('lang' => 'en_CA') }
 
-      it { should be(true) }
+      it { is_expected.to be(true) }
     end
 
     describe 'with nil and property is not required' do
@@ -86,19 +85,19 @@ describe DataMapper::Property, 'Object type' do
 
       subject { @property.valid?(nil) }
 
-      it { should be(true) }
+      it { is_expected.to be(true) }
     end
 
     describe 'with nil and property is required' do
       subject { @property.valid?(nil) }
 
-      it { should be(false) }
+      it { is_expected.to be(false) }
     end
 
     describe 'with nil and property is required, but validity is negated' do
       subject { @property.valid?(nil, true) }
 
-      it { should be(true) }
+      it { is_expected.to be(true) }
     end
   end
 
@@ -110,8 +109,8 @@ describe DataMapper::Property, 'Object type' do
 
       subject { @resource.reload.meta }
 
-      it 'should load the correct value' do
-        should == { 'lang' => 'en_CA' }
+      it 'loads the correct value' do
+        is_expected.to eq({'lang' => 'en_CA'})
       end
     end
   end

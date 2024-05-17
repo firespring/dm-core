@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Binary do
   before :all do
@@ -10,12 +10,12 @@ describe DataMapper::Property::Binary do
     @invalid_value = 1
   end
 
-  it_should_behave_like 'A public Property'
+  it_behaves_like 'A public Property'
 
   describe '.options' do
     subject { described_class.options }
 
-    it { should eql(:load_as => @load_as, :dump_as => @load_as, :length => 50) }
+    it { is_expected.to eql(load_as: @load_as, dump_as: @load_as, length: 50) }
   end
 
   if RUBY_VERSION >= "1.9"
@@ -27,16 +27,16 @@ describe DataMapper::Property::Binary do
         end
       end
 
-      it 'should always dump with BINARY' do
-        model.bin_data.dump("foo".freeze).encoding.names.should include("BINARY")
+      it 'always dumps with BINARY' do
+        expect(model.bin_data.dump('foo'.freeze).encoding.names).to include('BINARY')
       end
 
-      it 'should always load with BINARY' do
-        model.bin_data.load("foo".freeze).encoding.names.should include("BINARY")
+      it 'always loads with BINARY' do
+        expect(model.bin_data.load('foo'.freeze).encoding.names).to include('BINARY')
       end
 
-      it 'should have valid options' do
-        model.bin_data.options.should eql(:load_as => @load_as, :dump_as => @load_as, :length => 50)
+      it 'has valid options' do
+        expect(model.bin_data.options).to eql(load_as: @load_as, dump_as: @load_as, length: 50)
       end
     end
   end

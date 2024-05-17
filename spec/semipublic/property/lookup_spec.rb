@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 require 'dm-core/property/lookup'
 
 describe DataMapper::Property::Lookup do
@@ -12,18 +12,18 @@ describe DataMapper::Property::Lookup do
       end
     end
 
-    it 'should provide access to Property classes' do
-      @klass::Serial.should == DataMapper::Property::Serial
+    it 'provides access to Property classes' do
+      expect(@klass::Serial).to eq DataMapper::Property::Serial
     end
 
-    it 'should provide access to Property classes from outside of the Property namespace' do
-      @klass::OtherProperty.should be(Foo::OtherProperty)
+    it 'provides access to Property classes from outside of the Property namespace' do
+      expect(@klass::OtherProperty).to be(Foo::OtherProperty)
     end
 
-    it 'should not provide access to unknown Property classes' do
-      lambda {
+    it 'does not provide access to unknown Property classes' do
+      expect {
         @klass::Bla
-      }.should raise_error(NameError)
+      }.to raise_error(NameError)
     end
   end
 end

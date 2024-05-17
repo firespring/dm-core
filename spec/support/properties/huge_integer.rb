@@ -2,11 +2,11 @@ module DataMapper
   class Property
     class HugeInteger < DataMapper::Property::String
       def load(value)
-        value.to_i unless value.nil?
+        value&.to_i
       end
 
       def dump(value)
-        value.to_s unless value.nil?
+        value&.to_s
       end
 
       def typecast(value)

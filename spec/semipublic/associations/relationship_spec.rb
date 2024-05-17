@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Associations::Relationship do
   before :all do
@@ -32,18 +32,18 @@ describe DataMapper::Associations::Relationship do
         @article_relationship  = @comment_model.belongs_to(:article)
 
         # TODO: move this to spec/public/model/relationship_spec.rb
-        @comments_relationship.child_repository_name.should be_nil
-        @comments_relationship.parent_repository_name.should == :default
+        expect(@comments_relationship.child_repository_name).to be_nil
+        expect(@comments_relationship.parent_repository_name).to eq :default
 
         # TODO: move this to spec/public/model/relationship_spec.rb
-        @article_relationship.child_repository_name.should == :default
-        @article_relationship.parent_repository_name.should be_nil
+        expect(@article_relationship.child_repository_name).to eq :default
+        expect(@article_relationship.parent_repository_name).to be_nil
         DataMapper.finalize
       end
 
-      it 'should return the inverted relationships' do
-        @comments_relationship.inverse.should equal(@article_relationship)
-        @article_relationship.inverse.should  equal(@comments_relationship)
+      it 'returns the inverted relationships' do
+        expect(@comments_relationship.inverse).to equal(@article_relationship)
+        expect(@article_relationship.inverse).to equal(@comments_relationship)
       end
     end
 
@@ -53,18 +53,18 @@ describe DataMapper::Associations::Relationship do
         @article_relationship  = @comment_model.belongs_to(:article)
 
         # TODO: move this to spec/public/model/relationship_spec.rb
-        @comments_relationship.child_repository_name.should == :default
-        @comments_relationship.parent_repository_name.should == :default
+        expect(@comments_relationship.child_repository_name).to eq :default
+        expect(@comments_relationship.parent_repository_name).to eq :default
 
         # TODO: move this to spec/public/model/relationship_spec.rb
-        @article_relationship.child_repository_name.should == :default
-        @article_relationship.parent_repository_name.should be_nil
+        expect(@article_relationship.child_repository_name).to eq :default
+        expect(@article_relationship.parent_repository_name).to be_nil
         DataMapper.finalize
       end
 
-      it 'should return the inverted relationships' do
-        @comments_relationship.inverse.should equal(@article_relationship)
-        @article_relationship.inverse.should  equal(@comments_relationship)
+      it 'returns the inverted relationships' do
+        expect(@comments_relationship.inverse).to equal(@article_relationship)
+        expect(@article_relationship.inverse).to equal(@comments_relationship)
       end
     end
 
@@ -74,18 +74,18 @@ describe DataMapper::Associations::Relationship do
         @article_relationship  = @comment_model.belongs_to(:article, :repository => :default)
 
         # TODO: move this to spec/public/model/relationship_spec.rb
-        @comments_relationship.child_repository_name.should be_nil
-        @comments_relationship.parent_repository_name.should == :default
+        expect(@comments_relationship.child_repository_name).to be_nil
+        expect(@comments_relationship.parent_repository_name).to eq :default
 
         # TODO: move this to spec/public/model/relationship_spec.rb
-        @article_relationship.child_repository_name.should == :default
-        @article_relationship.parent_repository_name.should == :default
+        expect(@article_relationship.child_repository_name).to eq :default
+        expect(@article_relationship.parent_repository_name).to eq :default
         DataMapper.finalize
       end
 
-      it 'should return the inverted relationships' do
-        @comments_relationship.inverse.should equal(@article_relationship)
-        @article_relationship.inverse.should  equal(@comments_relationship)
+      it 'returns the inverted relationships' do
+        expect(@comments_relationship.inverse).to equal(@article_relationship)
+        expect(@article_relationship.inverse).to equal(@comments_relationship)
       end
     end
 
@@ -104,24 +104,24 @@ describe DataMapper::Associations::Relationship do
         DataMapper.finalize
       end
 
-      it 'should return a Relationship' do
-        @inverse.should be_kind_of(DataMapper::Associations::Relationship)
+      it 'returns a Relationship' do
+        expect(@inverse).to be_kind_of(DataMapper::Associations::Relationship)
       end
 
-      it 'should return an inverted relationship' do
-        @inverse.should == @expected
+      it 'returns an inverted relationship' do
+        expect(@inverse).to eq @expected
       end
 
-      it 'should be an anonymous relationship' do
-        @inverse.should_not equal(@expected)
+      it 'is an anonymous relationship' do
+        expect(@inverse).not_to equal(@expected)
       end
 
-      it 'should have a source repository equal to the target repository of the relationship' do
-        @inverse.source_repository_name.should == @relationship.target_repository_name
+      it 'has a source repository equal to the target repository of the relationship' do
+        expect(@inverse.source_repository_name).to eq @relationship.target_repository_name
       end
 
-      it "should be have the relationship as it's inverse" do
-        @inverse.inverse.should equal(@relationship)
+      it "has the relationship as it's inverse" do
+        expect(@inverse.inverse).to equal(@relationship)
       end
     end
 
@@ -136,24 +136,24 @@ describe DataMapper::Associations::Relationship do
         DataMapper.finalize
       end
 
-      it 'should return a Relationship' do
-        @inverse.should be_kind_of(DataMapper::Associations::Relationship)
+      it 'returns a Relationship' do
+        expect(@inverse).to be_kind_of(DataMapper::Associations::Relationship)
       end
 
-      it 'should return an inverted relationship' do
-        @inverse.should == @expected
+      it 'returns an inverted relationship' do
+        expect(@inverse).to eq @expected
       end
 
-      it 'should be an anonymous relationship' do
-        @inverse.should_not equal(@expected)
+      it 'is an anonymous relationship' do
+        expect(@inverse).not_to equal(@expected)
       end
 
-      it 'should have a source repository equal to the target repository of the relationship' do
-        @inverse.source_repository_name.should == @relationship.target_repository_name
+      it 'has a source repository equal to the target repository of the relationship' do
+        expect(@inverse.source_repository_name).to eq @relationship.target_repository_name
       end
 
-      it "should be have the relationship as it's inverse" do
-        @inverse.inverse.should equal(@relationship)
+      it "has the relationship as it's inverse" do
+        expect(@inverse.inverse).to equal(@relationship)
       end
     end
   end
@@ -171,8 +171,8 @@ describe DataMapper::Associations::Relationship do
           @resource = @article.comments.create
         end
 
-        it 'should return true' do
-          @relationship.valid?(@resource).should be(true)
+        it 'returns true' do
+          expect(@relationship.valid?(@resource)).to be(true)
         end
       end
 
@@ -181,8 +181,8 @@ describe DataMapper::Associations::Relationship do
           @resource  = @article_model.new
         end
 
-        it 'should return false' do
-          @relationship.valid?(@resource).should be(false)
+        it 'returns false' do
+          expect(@relationship.valid?(@resource)).to be(false)
         end
       end
 
@@ -191,8 +191,8 @@ describe DataMapper::Associations::Relationship do
           @resource = @comment_model.new
         end
 
-        it 'should return false' do
-          @relationship.valid?(@resource).should be(false)
+        it 'returns false' do
+          expect(@relationship.valid?(@resource)).to be(false)
         end
       end
     end

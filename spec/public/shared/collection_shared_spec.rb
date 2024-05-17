@@ -1,11 +1,11 @@
-share_examples_for 'A public Collection' do
+shared_examples 'A public Collection' do
   before :all do
-    %w[ @article_model @article @other @original @articles @other_articles ].each do |ivar|
-      raise "+#{ivar}+ should be defined in before block" unless instance_variable_defined?(ivar)
-      raise "+#{ivar}+ should not be nil in before block" unless instance_variable_get(ivar)
+    %w(@article_model @article @other @original @articles @other_articles).each do |ivar|
+      raise "+#{ivar}+ is defined in before block" unless instance_variable_defined?(ivar)
+      raise "+#{ivar}+ does not be nil in before block" unless instance_variable_get(ivar)
     end
 
-    @articles.loaded?.should == loaded
+    expect(@articles.loaded?).to eq loaded
   end
 
   before :all do
@@ -24,7 +24,7 @@ share_examples_for 'A public Collection' do
 
   subject { @articles }
 
-  it { should respond_to(:<<) }
+  it { is_expected.to respond_to(:<<) }
 
   describe '#<<' do
     before :all do
@@ -33,41 +33,41 @@ share_examples_for 'A public Collection' do
       @return = @articles << @resource
     end
 
-    it 'should return a Collection' do
-      @return.should be_kind_of(DataMapper::Collection)
+    it 'returns a Collection' do
+      expect(@return).to be_kind_of(DataMapper::Collection)
     end
 
-    it 'should return self' do
-      @return.should equal(@articles)
+    it 'returns self' do
+      expect(@return).to equal(@articles)
     end
 
-    it 'should append one Resource to the Collection' do
-      @articles.last.should equal(@resource)
+    it 'appends one Resource to the Collection' do
+      expect(@articles.last).to equal(@resource)
     end
   end
 
-  it { should respond_to(:blank?) }
+  it { is_expected.to respond_to(:blank?) }
 
   describe '#blank?' do
     describe 'when the collection is empty' do
-      it 'should be true' do
-        @articles.clear.blank?.should be(true)
+      it 'is true' do
+        expect(@articles.clear.blank?).to be(true)
       end
     end
 
     describe 'when the collection is not empty' do
-      it 'should be false' do
-        @articles.blank?.should be(false)
+      it 'is false' do
+        expect(@articles.blank?).to be(false)
       end
     end
   end
 
-  it { should respond_to(:clean?) }
+  it { is_expected.to respond_to(:clean?) }
 
   describe '#clean?' do
     describe 'with all clean resources in the collection' do
-      it 'should return true' do
-        @articles.clean?.should be(true)
+      it 'returns true' do
+        expect(@articles.clean?).to be(true)
       end
     end
 
@@ -76,13 +76,13 @@ share_examples_for 'A public Collection' do
         @articles.each { |r| r.content = 'Changed' }
       end
 
-      it 'should return true' do
-        @articles.clean?.should be(false)
+      it 'returns true' do
+        expect(@articles.clean?).to be(false)
       end
     end
   end
 
-  it { should respond_to(:clear) }
+  it { is_expected.to respond_to(:clear) }
 
   describe '#clear' do
     before :all do
@@ -91,21 +91,21 @@ share_examples_for 'A public Collection' do
       @return = @articles.clear
     end
 
-    it 'should return a Collection' do
-      @return.should be_kind_of(DataMapper::Collection)
+    it 'returns a Collection' do
+      expect(@return).to be_kind_of(DataMapper::Collection)
     end
 
-    it 'should return self' do
-      @return.should equal(@articles)
+    it 'returns self' do
+      expect(@return).to equal(@articles)
     end
 
-    it 'should make the Collection empty' do
-      @articles.should be_empty
+    it 'makes the Collection empty' do
+      expect(@articles).to be_empty
     end
   end
 
-  [ :collect!, :map! ].each do |method|
-    it { should respond_to(method) }
+  %i(collect! map!).each do |method|
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       before :all do
@@ -114,45 +114,44 @@ share_examples_for 'A public Collection' do
         @return = @articles.send(method) { |resource| @article_model.new(:title => 'Ignored Title', :content => 'New Content') }
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      it 'should update the Collection inline' do
-        @articles.each { |resource|
-          DataMapper::Ext::Hash.only(resource.attributes, :title, :content).should ==
-            { :title => 'Sample Article', :content => 'New Content' }
-        }
+      it 'updates the Collection inline' do
+        @articles.each do |resource|
+          expect(DataMapper::Ext::Hash.only(resource.attributes, :title, :content)).to eq({title: 'Sample Article', content: 'New Content'})
+        end
       end
     end
   end
 
-  it { should respond_to(:concat) }
+  it { is_expected.to respond_to(:concat) }
 
   describe '#concat' do
     before :all do
       @return = @articles.concat(@other_articles)
     end
 
-    it 'should return a Collection' do
-      @return.should be_kind_of(DataMapper::Collection)
+    it 'returns a Collection' do
+      expect(@return).to be_kind_of(DataMapper::Collection)
     end
 
-    it 'should return self' do
-      @return.should equal(@articles)
+    it 'returns self' do
+      expect(@return).to equal(@articles)
     end
 
-    it 'should concatenate the two collections' do
-      @return.should == [ @article, @other ]
+    it 'concatenates the two collections' do
+      expect(@return).to eq [@article, @other]
     end
   end
 
-  [ :create, :create! ].each do |method|
-    it { should respond_to(method) }
+  %i(create create!).each do |method|
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       describe 'when scoped to a property' do
@@ -160,23 +159,23 @@ share_examples_for 'A public Collection' do
           @return = @resource = @articles.send(method)
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should be a saved Resource' do
-          @resource.should be_saved
+        it 'is a saved Resource' do
+          expect(@resource).to be_saved
         end
 
-        it 'should append the Resource to the Collection' do
-          @articles.last.should equal(@resource)
+        it 'appends the Resource to the Collection' do
+          expect(@articles.last).to equal(@resource)
         end
 
-        it 'should use the query conditions to set default values' do
-          @resource.title.should == 'Sample Article'
+        it 'uses the query conditions to set default values' do
+          expect(@resource.title).to eq 'Sample Article'
         end
 
-        it 'should not append a Resource if create fails' do
+        it 'does not append a Resource if create fails' do
           pending 'TODO: not sure how to best spec this'
         end
       end
@@ -188,23 +187,23 @@ share_examples_for 'A public Collection' do
           @return = @resource = @articles.send(method)
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should be a saved Resource' do
-          @resource.should be_saved
+        it 'is a saved Resource' do
+          expect(@resource).to be_saved
         end
 
-        it 'should append the Resource to the Collection' do
-          @articles.last.should equal(@resource)
+        it 'appends the Resource to the Collection' do
+          expect(@articles.last).to equal(@resource)
         end
 
-        it 'should not use the query conditions to set default values' do
-          @resource.id.should_not == 1
+        it 'does not use the query conditions to set default values' do
+          expect(@resource.id).not_to eq 1
         end
 
-        it 'should not append a Resource if create fails' do
+        it 'does not append a Resource if create fails' do
           pending 'TODO: not sure how to best spec this'
         end
       end
@@ -216,23 +215,23 @@ share_examples_for 'A public Collection' do
           @return = @resource = @articles.send(method)
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should be a saved Resource' do
-          @resource.should be_saved
+        it 'is a saved Resource' do
+          expect(@resource).to be_saved
         end
 
-        it 'should append the Resource to the Collection' do
-          @articles.last.should equal(@resource)
+        it 'appends the Resource to the Collection' do
+          expect(@articles.last).to equal(@resource)
         end
 
-        it 'should not use the query conditions to set default values' do
-          @resource.content.should be_nil
+        it 'does not use the query conditions to set default values' do
+          expect(@resource.content).to be_nil
         end
 
-        it 'should not append a Resource if create fails' do
+        it 'does not append a Resource if create fails' do
           pending 'TODO: not sure how to best spec this'
         end
       end
@@ -244,68 +243,61 @@ share_examples_for 'A public Collection' do
           @return = @resource = @articles.send(method)
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should be a saved Resource' do
-          @resource.should be_saved
+        it 'is a saved Resource' do
+          expect(@resource).to be_saved
         end
 
-        it 'should append the Resource to the Collection' do
-          @articles.last.should equal(@resource)
+        it 'appends the Resource to the Collection' do
+          expect(@articles.last).to equal(@resource)
         end
 
-        it 'should not use the query conditions to set default values' do
-          @resource.content.should be_nil
+        it 'does not use the query conditions to set default values' do
+          expect(@resource.content).to be_nil
         end
 
-        it 'should not append a Resource if create fails' do
+        it 'does not append a Resource if create fails' do
           pending 'TODO: not sure how to best spec this'
         end
       end
     end
   end
 
-  [ :difference, :- ].each do |method|
-    it { should respond_to(method) }
+  %i(difference -).each do |method|
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       subject { @articles.send(method, @other_articles) }
 
       describe 'with a Collection' do
-        it { should be_kind_of(DataMapper::Collection) }
-
-        it { should == [ @article ] }
-
-        it { subject.query.should == @articles.query.difference(@other_articles.query) }
-
-        it { should == @articles.to_a - @other_articles.to_a }
+        it { is_expected.to be_kind_of(DataMapper::Collection) }
+        it { is_expected.to eq [@article] }
+        it { expect(subject.query).to eq @articles.query.difference(@other_articles.query) }
+        it { is_expected.to eq @articles.to_a - @other_articles.to_a }
       end
 
       describe 'with an Array' do
         before { @other_articles = @other_articles.to_ary }
 
-        it { should be_kind_of(DataMapper::Collection) }
-
-        it { should == [ @article ] }
-
-        it { should == @articles.to_a - @other_articles.to_a }
+        it { is_expected.to be_kind_of(DataMapper::Collection) }
+        it { is_expected.to eq [@article] }
+        it { is_expected.to eq @articles.to_a - @other_articles.to_a }
       end
 
       describe 'with a Set' do
         before { @other_articles = @other_articles.to_set }
 
-        it { should be_kind_of(DataMapper::Collection) }
-
-        it { should == [ @article ] }
-
-        it { should == @articles.to_a - @other_articles.to_a }
+        it { is_expected.to be_kind_of(DataMapper::Collection) }
+        it { is_expected.to eq [@article] }
+        it { is_expected.to eq @articles.to_a - @other_articles.to_a }
       end
     end
   end
 
-  it { should respond_to(:delete) }
+  it { is_expected.to respond_to(:delete) }
 
   describe '#delete' do
     describe 'with a Resource within the Collection' do
@@ -313,18 +305,18 @@ share_examples_for 'A public Collection' do
         @return = @resource = @articles.delete(@article)
       end
 
-      it 'should return a DataMapper::Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a DataMapper::Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be the expected Resource' do
+      it 'is the expected Resource' do
         # compare keys because FK attributes may have been altered
         # when removing from the Collection
-        @resource.key.should == @article.key
+        expect(@resource.key).to eq @article.key
       end
 
-      it 'should remove the Resource from the Collection' do
-        @articles.should_not include(@resource)
+      it 'removes the Resource from the Collection' do
+        expect(@articles).not_to include(@resource)
       end
     end
 
@@ -333,13 +325,13 @@ share_examples_for 'A public Collection' do
         @return = @articles.delete(@other)
       end
 
-      it 'should return nil' do
-        @return.should be_nil
+      it 'returns nil' do
+        expect(@return).to be_nil
       end
     end
   end
 
-  it { should respond_to(:delete_at) }
+  it { is_expected.to respond_to(:delete_at) }
 
   describe '#delete_at' do
     describe 'with an offset within the Collection' do
@@ -347,16 +339,16 @@ share_examples_for 'A public Collection' do
         @return = @resource = @articles.delete_at(0)
       end
 
-      it 'should return a DataMapper::Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a DataMapper::Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be the expected Resource' do
-        @resource.key.should == @article.key
+      it 'is the expected Resource' do
+        expect(@resource.key).to eq @article.key
       end
 
-      it 'should remove the Resource from the Collection' do
-        @articles.should_not include(@resource)
+      it 'removes the Resource from the Collection' do
+        expect(@articles).not_to include(@resource)
       end
     end
 
@@ -365,13 +357,13 @@ share_examples_for 'A public Collection' do
         @return = @articles.delete_at(1)
       end
 
-      it 'should return nil' do
-        @return.should be_nil
+      it 'returns nil' do
+        expect(@return).to be_nil
       end
     end
   end
 
-  it { should respond_to(:delete_if) }
+  it { is_expected.to respond_to(:delete_if) }
 
   describe '#delete_if' do
     describe 'with a block that matches a Resource in the Collection' do
@@ -381,16 +373,16 @@ share_examples_for 'A public Collection' do
         @return = @articles.delete_if { true }
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      it 'should remove the Resources from the Collection' do
-        @resources.each { |resource| @articles.should_not include(resource) }
+      it 'removes the Resources from the Collection' do
+        @resources.each { |resource| expect(@articles).not_to include(resource) }
       end
     end
 
@@ -401,22 +393,22 @@ share_examples_for 'A public Collection' do
         @return = @articles.delete_if { false }
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      it 'should not modify the Collection' do
-        @articles.should == @resources
+      it 'does not modify the Collection' do
+        expect(@articles).to eq @resources
       end
     end
   end
 
-  [ :destroy, :destroy! ].each do |method|
-    it { should respond_to(method) }
+  %i(destroy destroy!).each do |method|
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       describe 'on a normal collection' do
@@ -424,16 +416,16 @@ share_examples_for 'A public Collection' do
           @return = @articles.send(method)
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
 
-        it 'should remove the Resources from the datasource' do
-          @article_model.all(:title => 'Sample Article').should be_empty
+        it 'removes the Resources from the datasource' do
+          expect(@article_model.all(title: 'Sample Article')).to be_empty
         end
 
-        it 'should clear the collection' do
-          @articles.should be_empty
+        it 'clears the collection' do
+          expect(@articles).to be_empty
         end
       end
 
@@ -445,31 +437,31 @@ share_examples_for 'A public Collection' do
           @return = @limited.send(method)
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
 
-        it 'should remove the Resources from the datasource' do
-          @article_model.all(:title => 'Sample Article').should == [ @other ]
+        it 'removes the Resources from the datasource' do
+          expect(@article_model.all(title: 'Sample Article')).to eq [@other]
         end
 
-        it 'should clear the collection' do
-          @limited.should be_empty
+        it 'clears the collection' do
+          expect(@limited).to be_empty
         end
 
-        it 'should not destroy the other Resource' do
-          @article_model.get!(*@other.key).should_not be_nil
+        it 'does not destroy the other Resource' do
+          expect(@article_model.get!(*@other.key)).not_to be_nil
         end
       end
     end
   end
 
-  it { should respond_to(:dirty?) }
+  it { is_expected.to respond_to(:dirty?) }
 
   describe '#dirty?' do
     describe 'with all clean resources in the collection' do
-      it 'should return false' do
-        @articles.dirty?.should be(false)
+      it 'returns false' do
+        expect(@articles.dirty?).to be(false)
       end
     end
 
@@ -478,13 +470,13 @@ share_examples_for 'A public Collection' do
         @articles.each { |r| r.content = 'Changed' }
       end
 
-      it 'should return true' do
-        @articles.dirty?.should be(true)
+      it 'returns true' do
+        expect(@articles.dirty?).to be(true)
       end
     end
   end
 
-  it { should respond_to(:insert) }
+  it { is_expected.to respond_to(:insert) }
 
   describe '#insert' do
     before :all do
@@ -493,20 +485,20 @@ share_examples_for 'A public Collection' do
       @return = @articles.insert(0, *@resources)
     end
 
-    it 'should return a Collection' do
-      @return.should be_kind_of(DataMapper::Collection)
+    it 'returns a Collection' do
+      expect(@return).to be_kind_of(DataMapper::Collection)
     end
 
-    it 'should return self' do
-      @return.should equal(@articles)
+    it 'returns self' do
+      expect(@return).to equal(@articles)
     end
 
-    it 'should insert one or more Resources at a given offset' do
-      @articles.should == @resources << @article
+    it 'inserts one or more Resources at a given offset' do
+      expect(@articles).to eq @resources << @article
     end
   end
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     before :all do
@@ -516,55 +508,46 @@ share_examples_for 'A public Collection' do
       @return = @copy.inspect
     end
 
-    it { @return.should match(/\A\[.*\]\z/) }
-
-    it { @return.should match(/\bid=#{@article.id}\b/) }
-    it { @return.should match(/\bid=nil\b/) }
-
-    it { @return.should match(/\btitle=\"Sample Article\"\s/) }
-    it { @return.should_not match(/\btitle=\"Ignored Title\"\s/) }
-    it { @return.should match(/\bcontent=\"Other Article\"\s/) }
+    it { expect(@return).to match(/\A\[.*\]\z/) }
+    it { expect(@return).to match(/\bid=#{@article.id}\b/) }
+    it { expect(@return).to match(/\bid=nil\b/) }
+    it { expect(@return).to match(/\btitle="Sample Article"\s/) }
+    it { expect(@return).not_to match(/\btitle="Ignored Title"\s/) }
+    it { expect(@return).to match(/\bcontent="Other Article"\s/) }
   end
 
-  [ :intersection, :& ].each do |method|
-    it { should respond_to(method) }
+  %i(intersection &).each do |method|
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       subject { @articles.send(method, @other_articles) }
 
       describe 'with a Collection' do
-        it { should be_kind_of(DataMapper::Collection) }
-
-        it { should == [] }
-
-        it { subject.query.should == @articles.query.intersection(@other_articles.query) }
-
-        it { should == @articles.to_a & @other_articles.to_a }
+        it { is_expected.to be_kind_of(DataMapper::Collection) }
+        it { is_expected.to eq [] }
+        it { expect(subject.query).to eq @articles.query.intersection(@other_articles.query) }
+        it { is_expected.to eq @articles.to_a & @other_articles.to_a }
       end
 
       describe 'with an Array' do
         before { @other_articles = @other_articles.to_ary }
 
-        it { should be_kind_of(DataMapper::Collection) }
-
-        it { should == [] }
-
-        it { should == @articles.to_a & @other_articles.to_a }
+        it { is_expected.to be_kind_of(DataMapper::Collection) }
+        it { is_expected.to eq [] }
+        it { is_expected.to eq @articles.to_a & @other_articles.to_a }
       end
 
       describe 'with a Set' do
         before { @other_articles = @other_articles.to_set }
 
-        it { should be_kind_of(DataMapper::Collection) }
-
-        it { should == [] }
-
-        it { should == @articles.to_a & @other_articles.to_a }
+        it { is_expected.to be_kind_of(DataMapper::Collection) }
+        it { is_expected.to eq [] }
+        it { is_expected.to eq @articles.to_a & @other_articles.to_a }
       end
     end
   end
 
-  it { should respond_to(:new) }
+  it { is_expected.to respond_to(:new) }
 
   describe '#new' do
     describe 'when scoped to a property' do
@@ -573,24 +556,24 @@ share_examples_for 'A public Collection' do
         @return = @resource = @articles.new(:original => @source)
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be a new Resource' do
-        @resource.should be_new
+      it 'is a new Resource' do
+        expect(@resource).to be_new
       end
 
-      it 'should append the Resource to the Collection' do
-        @articles.last.should equal(@resource)
+      it 'appends the Resource to the Collection' do
+        expect(@articles.last).to equal(@resource)
       end
 
-      it 'should use the query conditions to set default values' do
-        @resource.title.should == 'Sample Article'
+      it 'uses the query conditions to set default values' do
+        expect(@resource.title).to eq 'Sample Article'
       end
 
-      it 'should use the query conditions to set default values when accessed through a m:1 relationship' do
-        @resource.original.attachment.should == 'A File'
+      it 'uses the query conditions to set default values when accessed through a m:1 relationship' do
+        expect(@resource.original.attachment).to eq 'A File'
       end
     end
 
@@ -601,20 +584,20 @@ share_examples_for 'A public Collection' do
         @return = @resource = @articles.new
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be a new Resource' do
-        @resource.should be_new
+      it 'is a new Resource' do
+        expect(@resource).to be_new
       end
 
-      it 'should append the Resource to the Collection' do
-        @articles.last.should equal(@resource)
+      it 'appends the Resource to the Collection' do
+        expect(@articles.last).to equal(@resource)
       end
 
-      it 'should not use the query conditions to set default values' do
-        @resource.id.should be_nil
+      it 'does not use the query conditions to set default values' do
+        expect(@resource.id).to be_nil
       end
     end
 
@@ -625,20 +608,20 @@ share_examples_for 'A public Collection' do
         @return = @resource = @articles.new
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be a new Resource' do
-        @resource.should be_new
+      it 'is a new Resource' do
+        expect(@resource).to be_new
       end
 
-      it 'should append the Resource to the Collection' do
-        @articles.last.should equal(@resource)
+      it 'appends the Resource to the Collection' do
+        expect(@articles.last).to equal(@resource)
       end
 
-      it 'should not use the query conditions to set default values' do
-        @resource.content.should be_nil
+      it 'does not use the query conditions to set default values' do
+        expect(@resource.content).to be_nil
       end
     end
 
@@ -649,25 +632,25 @@ share_examples_for 'A public Collection' do
         @return = @resource = @articles.new
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be a new Resource' do
-        @resource.should be_new
+      it 'is a new Resource' do
+        expect(@resource).to be_new
       end
 
-      it 'should append the Resource to the Collection' do
-        @articles.last.should equal(@resource)
+      it 'appends the Resource to the Collection' do
+        expect(@articles.last).to equal(@resource)
       end
 
-      it 'should not use the query conditions to set default values' do
-        @resource.content.should be_nil
+      it 'does not use the query conditions to set default values' do
+        expect(@resource.content).to be_nil
       end
     end
   end
 
-  it { should respond_to(:pop) }
+  it { is_expected.to respond_to(:pop) }
 
   describe '#pop' do
     before :all do
@@ -679,16 +662,16 @@ share_examples_for 'A public Collection' do
         @return = @articles.pop
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be the last Resource in the Collection' do
-        @return.should == @new
+      it 'is the last Resource in the Collection' do
+        expect(@return).to eq @new
       end
 
-      it 'should remove the Resource from the Collection' do
-        @articles.should_not include(@new)
+      it 'removes the Resource from the Collection' do
+        expect(@articles).not_to include(@new)
       end
     end
 
@@ -698,22 +681,22 @@ share_examples_for 'A public Collection' do
           @return = @articles.pop(1)
         end
 
-        it 'should return an Array' do
-          @return.should be_kind_of(Array)
+        it 'returns an Array' do
+          expect(@return).to be_kind_of(Array)
         end
 
-        it 'should return the expected Resources' do
-          @return.should == [ @new ]
+        it 'returns the expected Resources' do
+          expect(@return).to eq [@new]
         end
 
-        it 'should remove the Resource from the Collection' do
-          @articles.should_not include(@new)
+        it 'removes the Resource from the Collection' do
+          expect(@articles).not_to include(@new)
         end
       end
     end
   end
 
-  it { should respond_to(:push) }
+  it { is_expected.to respond_to(:push) }
 
   describe '#push' do
     before :all do
@@ -722,20 +705,20 @@ share_examples_for 'A public Collection' do
       @return = @articles.push(*@resources)
     end
 
-    it 'should return a Collection' do
-      @return.should be_kind_of(DataMapper::Collection)
+    it 'returns a Collection' do
+      expect(@return).to be_kind_of(DataMapper::Collection)
     end
 
-    it 'should return self' do
-      @return.should equal(@articles)
+    it 'returns self' do
+      expect(@return).to equal(@articles)
     end
 
-    it 'should append the Resources to the Collection' do
-      @articles.should == [ @article ] + @resources
+    it 'appends the Resources to the Collection' do
+      expect(@articles).to eq [@article] + @resources
     end
   end
 
-  it { should respond_to(:reject!) }
+  it { is_expected.to respond_to(:reject!) }
 
   describe '#reject!' do
     describe 'with a block that matches a Resource in the Collection' do
@@ -745,16 +728,16 @@ share_examples_for 'A public Collection' do
         @return = @articles.reject! { true }
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      it 'should remove the Resources from the Collection' do
-        @resources.each { |resource| @articles.should_not include(resource) }
+      it 'removes the Resources from the Collection' do
+        @resources.each { |resource| expect(@articles).not_to include(resource) }
       end
     end
 
@@ -765,17 +748,17 @@ share_examples_for 'A public Collection' do
         @return = @articles.reject! { false }
       end
 
-      it 'should return nil' do
-        @return.should be_nil
+      it 'returns nil' do
+        expect(@return).to be_nil
       end
 
-      it 'should not modify the Collection' do
-        @articles.should == @resources
+      it 'does not modify the Collection' do
+        expect(@articles).to eq @resources
       end
     end
   end
 
-  it { should respond_to(:reload) }
+  it { is_expected.to respond_to(:reload) }
 
   describe '#reload' do
     describe 'with no arguments' do
@@ -788,24 +771,24 @@ share_examples_for 'A public Collection' do
       # FIXME: this is spec order dependent, move this into a helper method
       # and execute in the before :all block
       unless loaded
-        it 'should not be a kicker' do
+        it 'does not be a kicker' do
           pending do
-            @articles.should_not be_loaded
+            expect(@articles).not_to be_loaded
           end
         end
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      { :title => true, :content => false }.each do |attribute, expected|
-        it "should have query field #{attribute.inspect} #{'not' unless expected} loaded".squeeze(' ') do
-          @collection.each { |resource| resource.attribute_loaded?(attribute).should == expected }
+      {title: true, content: false}.each do |attribute, expected|
+        it "has query field #{attribute.inspect} #{'not' unless expected} loaded".squeeze(' ') do
+          @collection.each { |resource| expect(resource.attribute_loaded?(attribute)).to eq expected }
         end
       end
     end
@@ -820,24 +803,24 @@ share_examples_for 'A public Collection' do
       # FIXME: this is spec order dependent, move this into a helper method
       # and execute in the before :all block
       unless loaded
-        it 'should not be a kicker' do
+        it 'does not be a kicker' do
           pending do
-            @articles.should_not be_loaded
+            expect(@articles).not_to be_loaded
           end
         end
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      [ :id, :content, :title ].each do |attribute|
-        it "should have query field #{attribute.inspect} loaded" do
-          @collection.each { |resource| resource.attribute_loaded?(attribute).should be(true) }
+      %i(id content title).each do |attribute|
+        it "has query field #{attribute.inspect} loaded" do
+          @collection.each { |resource| expect(resource.attribute_loaded?(attribute)).to be(true) }
         end
       end
     end
@@ -852,30 +835,30 @@ share_examples_for 'A public Collection' do
       # FIXME: this is spec order dependent, move this into a helper method
       # and execute in the before :all block
       unless loaded
-        it 'should not be a kicker' do
+        it 'does not be a kicker' do
           pending do
-            @articles.should_not be_loaded
+            expect(@articles).not_to be_loaded
           end
         end
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      [ :id, :content, :title ].each do |attribute|
-        it "should have query field #{attribute.inspect} loaded" do
-          @collection.each { |resource| resource.attribute_loaded?(attribute).should be(true) }
+      %i(id content title).each do |attribute|
+        it "has query field #{attribute.inspect} loaded" do
+          @collection.each { |resource| expect(resource.attribute_loaded?(attribute)).to be(true) }
         end
       end
     end
   end
 
-  it { should respond_to(:replace) }
+  it { is_expected.to respond_to(:replace) }
 
   describe '#replace' do
     describe 'when provided an Array of Resources' do
@@ -885,16 +868,16 @@ share_examples_for 'A public Collection' do
         @return = @articles.replace(@other_articles)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      it 'should update the Collection with new Resources' do
-        @articles.should == @other_articles
+      it 'updates the Collection with new Resources' do
+        expect(@articles).to eq @other_articles
       end
     end
 
@@ -905,29 +888,29 @@ share_examples_for 'A public Collection' do
         @return = @articles.replace(@array)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      it 'should initialize a Resource' do
-        @return.first.should be_kind_of(DataMapper::Resource)
+      it 'initializes a Resource' do
+        expect(@return.first).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be a new Resource' do
-        @return.first.should be_new
+      it 'is a new Resource' do
+        expect(@return.first).to be_new
       end
 
-      it 'should be a Resource with attributes matching the Hash' do
-        DataMapper::Ext::Hash.only(@return.first.attributes, *@array.first.keys).should == @array.first
+      it 'is a Resource with attributes matching the Hash' do
+        expect(DataMapper::Ext::Hash.only(@return.first.attributes, *@array.first.keys)).to eq @array.first
       end
     end
   end
 
-  it { should respond_to(:reverse!) }
+  it { is_expected.to respond_to(:reverse!) }
 
   describe '#reverse!' do
     before :all do
@@ -938,25 +921,25 @@ share_examples_for 'A public Collection' do
       @return = @articles.reverse!
     end
 
-    it 'should return a Collection' do
-      @return.should be_kind_of(DataMapper::Collection)
+    it 'returns a Collection' do
+      expect(@return).to be_kind_of(DataMapper::Collection)
     end
 
-    it 'should return self' do
-      @return.should equal(@articles)
+    it 'returns self' do
+      expect(@return).to equal(@articles)
     end
 
-    it 'should return a Collection with reversed entries' do
-      @return.should == [ @new, @article ]
+    it 'returns a Collection with reversed entries' do
+      expect(@return).to eq [@new, @article]
     end
 
-    it 'should return a Query that equal to the original' do
-      @return.query.should equal(@query)
+    it 'returns a Query that equal to the original' do
+      expect(@return.query).to equal(@query)
     end
   end
 
-  [ :save, :save! ].each do |method|
-    it { should respond_to(method) }
+  %i(save save!).each do |method|
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       describe 'when Resources are not saved' do
@@ -966,12 +949,12 @@ share_examples_for 'A public Collection' do
           @return = @articles.send(method)
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
 
-        it 'should save each Resource' do
-          @articles.each { |resource| resource.should be_saved }
+        it 'saves each Resource' do
+          @articles.each { |resource| expect(resource).to be_saved }
         end
       end
 
@@ -983,14 +966,14 @@ share_examples_for 'A public Collection' do
           @return = @articles.send(method)
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
       end
     end
   end
 
-  it { should respond_to(:shift) }
+  it { is_expected.to respond_to(:shift) }
 
   describe '#shift' do
     describe 'with no arguments' do
@@ -998,16 +981,16 @@ share_examples_for 'A public Collection' do
         @return = @articles.shift
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be the first Resource in the Collection' do
-        @return.key.should == @article.key
+      it 'is the first Resource in the Collection' do
+        expect(@return.key).to eq @article.key
       end
 
-      it 'should remove the Resource from the Collection' do
-        @articles.should_not include(@return)
+      it 'removes the Resource from the Collection' do
+        expect(@articles).not_to include(@return)
       end
     end
 
@@ -1017,23 +1000,23 @@ share_examples_for 'A public Collection' do
           @return = @articles.shift(1)
         end
 
-        it 'should return an Array' do
-          @return.should be_kind_of(Array)
+        it 'returns an Array' do
+          expect(@return).to be_kind_of(Array)
         end
 
-        it 'should return the expected Resources' do
-          @return.size.should == 1
-          @return.first.key.should == @article.key
+        it 'returns the expected Resources' do
+          expect(@return.size).to eq 1
+          expect(@return.first.key).to eq @article.key
         end
 
-        it 'should remove the Resource from the Collection' do
-          @articles.should_not include(@article)
+        it 'removes the Resource from the Collection' do
+          expect(@articles).not_to include(@article)
         end
       end
     end
   end
 
-  it { should respond_to(:slice!) }
+  it { is_expected.to respond_to(:slice!) }
 
   describe '#slice!' do
     before :all do
@@ -1049,20 +1032,20 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @return.key.should == @article.key
+      it 'returns expected Resource' do
+        expect(@return.key).to eq @article.key
       end
 
-      it 'should return the same as Array#slice!' do
-        @return.should == @copy.entries.slice!(0)
+      it 'returns the same as Array#slice!' do
+        expect(@return).to eq @copy.entries.slice!(0)
       end
 
-      it 'should remove the Resource from the Collection' do
-        @articles.should_not include(@resource)
+      it 'removes the Resource from the Collection' do
+        expect(@articles).not_to include(@resource)
       end
     end
 
@@ -1073,20 +1056,20 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return the expected Resource' do
-        @return.should == @copy.entries.slice!(5, 5)
+      it 'returns the expected Resource' do
+        expect(@return).to eq @copy.entries.slice!(5, 5)
       end
 
-      it 'should remove the Resources from the Collection' do
-        @resources.each { |resource| @articles.should_not include(resource) }
+      it 'removes the Resources from the Collection' do
+        @resources.each { |resource| expect(@articles).not_to include(resource) }
       end
 
-      it 'should scope the Collection' do
-        @resources.reload.should == @copy.entries.slice!(5, 5)
+      it 'scopes the Collection' do
+        expect(@resources.reload).to eq @copy.entries.slice!(5, 5)
       end
     end
 
@@ -1097,20 +1080,20 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return the expected Resources' do
-        @return.should == @copy.entries.slice!(5..10)
+      it 'returns the expected Resources' do
+        expect(@return).to eq @copy.entries.slice!(5..10)
       end
 
-      it 'should remove the Resources from the Collection' do
-        @resources.each { |resource| @articles.should_not include(resource) }
+      it 'removes the Resources from the Collection' do
+        @resources.each { |resource| expect(@articles).not_to include(resource) }
       end
 
-      it 'should scope the Collection' do
-        @resources.reload.should == @copy.entries.slice!(5..10)
+      it 'scopes the Collection' do
+        expect(@resources.reload).to eq @copy.entries.slice!(5..10)
       end
     end
 
@@ -1121,16 +1104,16 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @return.should == @copy.entries.slice!(-1)
+      it 'returns expected Resource' do
+        expect(@return).to eq @copy.entries.slice!(-1)
       end
 
-      it 'should remove the Resource from the Collection' do
-        @articles.should_not include(@resource)
+      it 'removes the Resource from the Collection' do
+        expect(@articles).not_to include(@resource)
       end
     end
 
@@ -1141,20 +1124,20 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return the expected Resources' do
-        @return.should == @copy.entries.slice!(-5, 5)
+      it 'returns the expected Resources' do
+        expect(@return).to eq @copy.entries.slice!(-5, 5)
       end
 
-      it 'should remove the Resources from the Collection' do
-        @resources.each { |resource| @articles.should_not include(resource) }
+      it 'removes the Resources from the Collection' do
+        @resources.each { |resource| expect(@articles).not_to include(resource) }
       end
 
-      it 'should scope the Collection' do
-        @resources.reload.should == @copy.entries.slice!(-5, 5)
+      it 'scopes the Collection' do
+        expect(@resources.reload).to eq @copy.entries.slice!(-5, 5)
       end
     end
 
@@ -1165,20 +1148,20 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return the expected Resources' do
-        @return.should == @copy.entries.slice!(-3..-2)
+      it 'returns the expected Resources' do
+        expect(@return).to eq @copy.entries.slice!(-3..-2)
       end
 
-      it 'should remove the Resources from the Collection' do
-        @resources.each { |resource| @articles.should_not include(resource) }
+      it 'removes the Resources from the Collection' do
+        @resources.each { |resource| expect(@articles).not_to include(resource) }
       end
 
-      it 'should scope the Collection' do
-        @resources.reload.should == @copy.entries.slice!(-3..-2)
+      it 'scopes the Collection' do
+        expect(@resources.reload).to eq @copy.entries.slice!(-3..-2)
       end
     end
 
@@ -1189,8 +1172,8 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should return nil' do
-        @return.should be_nil
+      it 'returns nil' do
+        expect(@return).to be_nil
       end
     end
 
@@ -1201,8 +1184,8 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should return nil' do
-        @return.should be_nil
+      it 'returns nil' do
+        expect(@return).to be_nil
       end
     end
 
@@ -1213,13 +1196,13 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should return nil' do
-        @return.should be_nil
+      it 'returns nil' do
+        expect(@return).to be_nil
       end
     end
   end
 
-  it { should respond_to(:sort!) }
+  it { is_expected.to respond_to(:sort!) }
 
   describe '#sort!' do
     describe 'without a block' do
@@ -1227,16 +1210,16 @@ share_examples_for 'A public Collection' do
         @return = @articles.unshift(@other).sort!
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      it 'should modify and sort the Collection using default sort order' do
-        @articles.should == [ @article, @other ]
+      it 'modifies and sorts the Collection using default sort order' do
+        expect(@articles).to eq [@article, @other]
       end
     end
 
@@ -1245,22 +1228,22 @@ share_examples_for 'A public Collection' do
         @return = @articles.unshift(@other).sort! { |a_resource, b_resource| b_resource.id <=> a_resource.id }
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return self' do
-        @return.should equal(@articles)
+      it 'returns self' do
+        expect(@return).to equal(@articles)
       end
 
-      it 'should modify and sort the Collection using supplied block' do
-        @articles.should == [ @other, @article ]
+      it 'modifies and sorts the Collection using supplied block' do
+        expect(@articles).to eq [@other, @article]
       end
     end
   end
 
-  [ :splice, :[]= ].each do |method|
-    it { should respond_to(method) }
+  %i(splice []=).each do |method|
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       before :all do
@@ -1274,9 +1257,7 @@ share_examples_for 'A public Collection' do
           @articles.unshift(*orphans.first(5))
           @articles.concat(orphans.last(5))
 
-          unless loaded
-            @articles.should_not be_loaded
-          end
+          expect(@articles).not_to be_loaded unless loaded
 
           @copy = @articles.dup
           @new = @article_model.new(:content => 'New Article')
@@ -1294,20 +1275,20 @@ share_examples_for 'A public Collection' do
 
         should_not_be_a_kicker
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return expected Resource' do
-          @return.should equal(@new)
+        it 'returns expected Resource' do
+          expect(@return).to equal(@new)
         end
 
-        it 'should return the same as Array#[]=' do
-          @return.should == @copy.entries[1] = @new
+        it 'returns the same as Array#[]=' do
+          expect(@return).to eq @copy.entries[1] = @new
         end
 
-        it 'should include the Resource in the Collection' do
-          @articles.should include(@resource)
+        it 'includes the Resource in the Collection' do
+          expect(@articles).to include(@resource)
         end
       end
 
@@ -1322,20 +1303,20 @@ share_examples_for 'A public Collection' do
 
         should_not_be_a_kicker
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return the expected Resource' do
-          @return.should equal(@new)
+        it 'returns the expected Resource' do
+          expect(@return).to equal(@new)
         end
 
-        it 'should return the same as Array#[]=' do
-          @return.should == @copy.entries[2, 1] = @new
+        it 'returns the same as Array#[]=' do
+          expect(@return).to eq @copy.entries[2, 1] = @new
         end
 
-        it 'should include the Resource in the Collection' do
-          @articles.should include(@resource)
+        it 'includes the Resource in the Collection' do
+          expect(@articles).to include(@resource)
         end
       end
 
@@ -1350,20 +1331,20 @@ share_examples_for 'A public Collection' do
 
         should_not_be_a_kicker
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return the expected Resources' do
-            @return.should equal(@new)
+        it 'returns the expected Resources' do
+          expect(@return).to equal(@new)
         end
 
-        it 'should return the same as Array#[]=' do
-          @return.should == @copy.entries[2..3] = @new
+        it 'returns the same as Array#[]=' do
+          expect(@return).to eq @copy.entries[2..3] = @new
         end
 
-        it 'should include the Resource in the Collection' do
-          @articles.should include(@resource)
+        it 'includes the Resource in the Collection' do
+          expect(@articles).to include(@resource)
         end
       end
 
@@ -1378,20 +1359,20 @@ share_examples_for 'A public Collection' do
 
         should_not_be_a_kicker
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return expected Resource' do
-          @return.should equal(@new)
+        it 'returns expected Resource' do
+          expect(@return).to equal(@new)
         end
 
-        it 'should return the same as Array#[]=' do
-          @return.should == @copy.entries[-1] = @new
+        it 'returns the same as Array#[]=' do
+          expect(@return).to eq @copy.entries[-1] = @new
         end
 
-        it 'should include the Resource in the Collection' do
-          @articles.should include(@resource)
+        it 'includes the Resource in the Collection' do
+          expect(@articles).to include(@resource)
         end
       end
 
@@ -1399,27 +1380,26 @@ share_examples_for 'A public Collection' do
         before :all do
           rescue_if @skip do
             @original = @copy[-2]
-
             @return = @resource = @articles.send(method, -2, 1, @new)
           end
         end
 
         should_not_be_a_kicker
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return the expected Resource' do
-          @return.should equal(@new)
+        it 'returns the expected Resource' do
+          expect(@return).to equal(@new)
         end
 
-        it 'should return the same as Array#[]=' do
-          @return.should == @copy.entries[-2, 1] = @new
+        it 'returns the same as Array#[]=' do
+          expect(@return).to eq @copy.entries[-2, 1] = @new
         end
 
-        it 'should include the Resource in the Collection' do
-          @articles.should include(@resource)
+        it 'includes the Resource in the Collection' do
+          expect(@articles).to include(@resource)
         end
       end
 
@@ -1427,27 +1407,26 @@ share_examples_for 'A public Collection' do
         before :all do
           rescue_if @skip do
             @originals = @articles.values_at(-3..-2)
-
             @return = @resource = @articles.send(method, -3..-2, @new)
           end
         end
 
         should_not_be_a_kicker
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return the expected Resources' do
-          @return.should equal(@new)
+        it 'returns the expected Resources' do
+          expect(@return).to equal(@new)
         end
 
-        it 'should return the same as Array#[]=' do
-          @return.should == @copy.entries[-3..-2] = @new
+        it 'returns the same as Array#[]=' do
+          expect(@return).to eq @copy.entries[-3..-2] = @new
         end
 
-        it 'should include the Resource in the Collection' do
-          @articles.should include(@resource)
+        it 'includes the Resource in the Collection' do
+          expect(@articles).to include(@resource)
         end
       end
     end
@@ -1465,51 +1444,44 @@ share_examples_for 'A public Collection' do
         end
       end
 
-      it 'should include the Resource in the Collection' do
-        @articles.should == @entries.reverse
+      it 'includes the Resource in the Collection' do
+        expect(@articles).to eq @entries.reverse
       end
     end
   end
 
-  [ :union, :|, :+ ].each do |method|
-    it { should respond_to(method) }
+  %i(union | +).each do |method|
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       subject { @articles.send(method, @other_articles) }
 
       describe 'with a Collection' do
-        it { should be_kind_of(DataMapper::Collection) }
-
-        it { should == [ @article, @other ] }
-
-        it { subject.query.should == @articles.query.union(@other_articles.query) }
-
-        it { should == @articles.to_a | @other_articles.to_a }
+        it { is_expected.to be_kind_of(DataMapper::Collection) }
+        it { is_expected.to eq [@article, @other] }
+        it { expect(subject.query).to eq @articles.query.union(@other_articles.query) }
+        it { is_expected.to eq @articles.to_a | @other_articles.to_a }
       end
 
       describe 'with an Array' do
         before { @other_articles = @other_articles.to_ary }
 
-        it { should be_kind_of(DataMapper::Collection) }
-
-        it { should == [ @article, @other ] }
-
-        it { should == @articles.to_a | @other_articles.to_a }
+        it { is_expected.to be_kind_of(DataMapper::Collection) }
+        it { is_expected.to eq [@article, @other] }
+        it { is_expected.to eq @articles.to_a | @other_articles.to_a }
       end
 
       describe 'with a Set' do
         before { @other_articles = @other_articles.to_set }
 
-        it { should be_kind_of(DataMapper::Collection) }
-
-        it { should == [ @article, @other ] }
-
-        it { should == @articles.to_a | @other_articles.to_a }
+        it { is_expected.to be_kind_of(DataMapper::Collection) }
+        it { is_expected.to eq [@article, @other] }
+        it { is_expected.to eq @articles.to_a | @other_articles.to_a }
       end
     end
   end
 
-  it { should respond_to(:unshift) }
+  it { is_expected.to respond_to(:unshift) }
 
   describe '#unshift' do
     before :all do
@@ -1518,21 +1490,21 @@ share_examples_for 'A public Collection' do
       @return = @articles.unshift(*@resources)
     end
 
-    it 'should return a Collection' do
-      @return.should be_kind_of(DataMapper::Collection)
+    it 'returns a Collection' do
+      expect(@return).to be_kind_of(DataMapper::Collection)
     end
 
-    it 'should return self' do
-      @return.should equal(@articles)
+    it 'returns self' do
+      expect(@return).to equal(@articles)
     end
 
-    it 'should prepend the Resources to the Collection' do
-      @articles.should == @resources + [ @article ]
+    it 'prepends the Resources to the Collection' do
+      expect(@articles).to eq @resources + [@article]
     end
   end
 
-  [ :update, :update! ].each do |method|
-    it { should respond_to(method) }
+  %i(update update!).each do |method|
+    it { is_expected.to respond_to(method) }
 
     describe "##{method}" do
       describe 'with attributes' do
@@ -1542,21 +1514,19 @@ share_examples_for 'A public Collection' do
           @return = @articles.send(method, @attributes)
         end
 
-        if method == :update!
-          should_not_be_a_kicker
+        should_not_be_a_kicker if method == :update!
+
+        it 'returns true' do
+          expect(@return).to be(true)
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'updates attributes of all Resources' do
+          @articles.each { |resource| @attributes.each { |key, value| expect(resource.__send__(key)).to eq value } }
         end
 
-        it 'should update attributes of all Resources' do
-          @articles.each { |resource| @attributes.each { |key, value| resource.__send__(key).should == value } }
-        end
-
-        it 'should persist the changes' do
+        it 'persists the changes' do
           resource = @article_model.get!(*@article.key)
-          @attributes.each { |key, value| resource.__send__(key).should == value }
+          @attributes.each { |key, value| expect(resource.__send__(key)).to eq value }
         end
       end
 
@@ -1571,24 +1541,24 @@ share_examples_for 'A public Collection' do
           should_not_be_a_kicker
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
 
-        it 'should update attributes of all Resources' do
-          @articles.each { |resource| @attributes.each { |key, value| resource.__send__(key).should == value } }
+        it 'updates attributes of all Resources' do
+          @articles.each { |resource| @attributes.each { |key, value| expect(resource.__send__(key)).to eq value } }
         end
 
-        it 'should persist the changes' do
+        it 'persists the changes' do
           resource = @article_model.get!(*@article.key)
-          @attributes.each { |key, value| resource.__send__(key).should == value }
+          @attributes.each { |key, value| expect(resource.__send__(key)).to eq value }
         end
       end
 
       describe 'with attributes where a required property is nil' do
         before :all do
-          expect { @articles.send(method, :title => nil) }.to(raise_error(DataMapper::Property::InvalidValueError) do |error|
-            error.property.should == @articles.model.title
+          expect { @articles.send(method, title: nil) }.to(raise_error(DataMapper::Property::InvalidValueError) do |error|
+            expect(error.property).to eq @articles.model.title
           end)
         end
 
@@ -1610,26 +1580,26 @@ share_examples_for 'A public Collection' do
           should_not_be_a_kicker(:@limited)
         end
 
-        it 'should return true' do
-          @return.should be(true)
+        it 'returns true' do
+          expect(@return).to be(true)
         end
 
-        it 'should bypass validation' do
+        it 'bypasses validation' do
           pending 'TODO: not sure how to best spec this'
         end
 
-        it 'should update attributes of all Resources' do
-          @limited.each { |resource| @attributes.each { |key, value| resource.__send__(key).should == value } }
+        it 'updates attributes of all Resources' do
+          @limited.each { |resource| @attributes.each { |key, value| expect(resource.__send__(key)).to eq value } }
         end
 
-        it 'should persist the changes' do
+        it 'persists the changes' do
           resource = @article_model.get!(*@article.key)
-          @attributes.each { |key, value| resource.__send__(key).should == value }
+          @attributes.each { |key, value| expect(resource.__send__(key)).to eq value }
         end
 
-        it 'should not update the other Resource' do
+        it 'does not update the other Resource' do
           @other.reload
-          @attributes.each { |key, value| @other.__send__(key).should_not == value }
+          @attributes.each { |key, value| expect(@other.__send__(key)).not_to eq value }
         end
       end
 
@@ -1638,17 +1608,17 @@ share_examples_for 'A public Collection' do
           @articles.each { |r| r.content = 'Changed' }
         end
 
-        it 'should raise an exception' do
-          lambda {
+        it 'raises an exception' do
+          expect {
             @articles.send(method, :content => 'New Content')
-          }.should raise_error(DataMapper::UpdateConflictError, "#{@articles.class}##{method} cannot be called on a dirty collection")
+          }.to raise_error(DataMapper::UpdateConflictError, "#{@articles.class}##{method} cannot be called on a dirty collection")
         end
       end
     end
   end
 
-  it 'should respond to a public model method with #method_missing' do
-    @articles.should respond_to(:base_model)
+  it 'responds to a public model method with #method_missing' do
+    expect(@articles).to respond_to(:base_model)
   end
 
   describe '#method_missing' do
@@ -1659,8 +1629,8 @@ share_examples_for 'A public Collection' do
 
       should_not_be_a_kicker
 
-      it 'should return expected object' do
-        @return.should == @article_model
+      it 'returns expected object' do
+        expect(@return).to eq @article_model
       end
     end
   end

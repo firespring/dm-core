@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Discriminator do
   before :all do
@@ -26,13 +26,12 @@ describe DataMapper::Property::Discriminator do
   describe '.options' do
     subject { described_class.options }
 
-    it { should be_kind_of(Hash) }
-
-    it { should include(:load_as => Class, :required => true) }
+    it { is_expected.to be_kind_of(Hash) }
+    it { is_expected.to include(load_as: Class, required: true) }
   end
 
-  it 'should typecast to a Model' do
-    @article_model.properties[:type].typecast('Blog::Release').should equal(@release_model)
+  it 'typecasts to a Model' do
+    expect(@article_model.properties[:type].typecast('Blog::Release')).to equal(@release_model)
   end
 
   describe 'Model#new' do
@@ -41,12 +40,12 @@ describe DataMapper::Property::Discriminator do
         @resource = @article_model.new(:type => 'Blog::Release')
       end
 
-      it 'should return a Resource' do
-        @resource.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@resource).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be an descendant instance' do
-        @resource.should be_instance_of(Blog::Release)
+      it 'is an descendant instance' do
+        expect(@resource).to be_instance_of(Blog::Release)
       end
     end
 
@@ -55,12 +54,12 @@ describe DataMapper::Property::Discriminator do
         @resource = @article_model.new(:type => Blog::Release)
       end
 
-      it 'should return a Resource' do
-        @resource.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@resource).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be an descendant instance' do
-        @resource.should be_instance_of(Blog::Release)
+      it 'is an descendant instance' do
+        expect(@resource).to be_instance_of(Blog::Release)
       end
     end
 
@@ -69,45 +68,45 @@ describe DataMapper::Property::Discriminator do
         @resource = @article_model.new
       end
 
-      it 'should return a Resource' do
-        @resource.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@resource).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be a base model instance' do
-        @resource.should be_instance_of(@article_model)
+      it 'is a base model instance' do
+        expect(@resource).to be_instance_of(@article_model)
       end
     end
   end
 
   describe 'Model#descendants' do
-    it 'should set the descendants for the grandparent model' do
-      @article_model.descendants.to_a.should =~ [ @announcement_model, @release_model ]
+    it 'sets the descendants for the grandparent model' do
+      expect(@article_model.descendants.to_a).to match([@announcement_model, @release_model])
     end
 
-    it 'should set the descendants for the parent model' do
-      @announcement_model.descendants.to_a.should == [ @release_model ]
+    it 'sets the descendants for the parent model' do
+      expect(@announcement_model.descendants.to_a).to eq [@release_model]
     end
 
-    it 'should set the descendants for the child model' do
-      @release_model.descendants.to_a.should == []
+    it 'sets the descendants for the child model' do
+      expect(@release_model.descendants.to_a).to eq []
     end
   end
 
   describe 'Model#default_scope' do
-    it 'should have no default scope for the top level model' do
-      @content_model.default_scope[:type].should be_nil
+    it 'has no default scope for the top level model' do
+      expect(@content_model.default_scope[:type]).to be_nil
     end
 
-    it 'should set the default scope for the grandparent model' do
-      @article_model.default_scope[:type].to_a.should =~ [ @article_model, @announcement_model, @release_model ]
+    it 'sets the default scope for the grandparent model' do
+      expect(@article_model.default_scope[:type].to_a).to match([@article_model, @announcement_model, @release_model])
     end
 
-    it 'should set the default scope for the parent model' do
-      @announcement_model.default_scope[:type].to_a.should =~ [ @announcement_model, @release_model ]
+    it 'sets the default scope for the parent model' do
+      expect(@announcement_model.default_scope[:type].to_a).to match([@announcement_model, @release_model])
     end
 
-    it 'should set the default scope for the child model' do
-      @release_model.default_scope[:type].to_a.should == [ @release_model ]
+    it 'sets the default scope for the child model' do
+      expect(@release_model.default_scope[:type].to_a).to eq [@release_model]
     end
   end
 
@@ -116,20 +115,20 @@ describe DataMapper::Property::Discriminator do
       @announcement = @announcement_model.create(:title => 'Announcement')
     end
 
-    it 'should persist the type' do
-      @announcement.model.get!(*@announcement.key).type.should equal(@announcement_model)
+    it 'persists the type' do
+      expect(@announcement.model.get!(*@announcement.key).type).to equal(@announcement_model)
     end
 
-    it 'should be retrieved as an instance of the correct class' do
-      @announcement.model.get!(*@announcement.key).should be_instance_of(@announcement_model)
+    it 'is retrieved as an instance of the correct class' do
+      expect(@announcement.model.get!(*@announcement.key)).to be_instance_of(@announcement_model)
     end
 
-    it 'should include descendants in finders' do
-      @article_model.first.should eql(@announcement)
+    it 'includes descendants in finders' do
+      expect(@article_model.first).to eql(@announcement)
     end
 
-    it 'should not include ancestors' do
-      @release_model.first.should be_nil
+    it 'does not include ancestors' do
+      expect(@release_model.first).to be_nil
     end
   end
 end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 require 'dm-core/spec/shared/adapter_spec'
 
 describe 'Adapter' do
@@ -7,7 +7,7 @@ describe 'Adapter' do
       let(:adapter)    { DataMapper::Spec.adapter }
       let(:repository) { DataMapper.repository(adapter.name) }
 
-      it_should_behave_like 'An Adapter'
+      it_behaves_like 'An Adapter'
     end
   end
 end

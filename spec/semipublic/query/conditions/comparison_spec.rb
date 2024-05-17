@@ -1,4 +1,5 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
+
 describe DataMapper::Query::Conditions::Comparison do
   before :all do
     module ::Blog
@@ -6,7 +7,7 @@ describe DataMapper::Query::Conditions::Comparison do
         include DataMapper::Resource
 
         property :id,    Serial
-        property :title, String, :required => true
+        property :title, String, required: true
       end
     end
     DataMapper.finalize
@@ -18,36 +19,36 @@ describe DataMapper::Query::Conditions::Comparison do
     @property = @model.properties[:id]
   end
 
-  it { DataMapper::Query::Conditions::Comparison.should respond_to(:new) }
+  it { expect(DataMapper::Query::Conditions::Comparison).to respond_to(:new) }
 
   describe '.new' do
     {
-      :eql    => DataMapper::Query::Conditions::EqualToComparison,
-      :in     => DataMapper::Query::Conditions::InclusionComparison,
-      :regexp => DataMapper::Query::Conditions::RegexpComparison,
-      :like   => DataMapper::Query::Conditions::LikeComparison,
-      :gt     => DataMapper::Query::Conditions::GreaterThanComparison,
-      :lt     => DataMapper::Query::Conditions::LessThanComparison,
-      :gte    => DataMapper::Query::Conditions::GreaterThanOrEqualToComparison,
-      :lte    => DataMapper::Query::Conditions::LessThanOrEqualToComparison,
+      eql: DataMapper::Query::Conditions::EqualToComparison,
+      in: DataMapper::Query::Conditions::InclusionComparison,
+      regexp: DataMapper::Query::Conditions::RegexpComparison,
+      like: DataMapper::Query::Conditions::LikeComparison,
+      gt: DataMapper::Query::Conditions::GreaterThanComparison,
+      lt: DataMapper::Query::Conditions::LessThanComparison,
+      gte: DataMapper::Query::Conditions::GreaterThanOrEqualToComparison,
+      lte: DataMapper::Query::Conditions::LessThanOrEqualToComparison,
     }.each do |slug, klass|
       describe "with a slug #{slug.inspect}" do
         subject { DataMapper::Query::Conditions::Comparison.new(slug, @property, @value) }
 
-        it { should be_kind_of(klass) }
+        it { is_expected.to be_kind_of(klass) }
       end
     end
 
     describe 'with an invalid slug' do
       subject { DataMapper::Query::Conditions::Comparison.new(:invalid, @property, @value) }
 
-      it { method(:subject).should raise_error(ArgumentError, 'No Comparison class for :invalid has been defined') }
+      it { expect { method(:subject) }.to raise_error(ArgumentError, 'No Comparison class for :invalid has been defined') }
     end
   end
 end
 
 describe DataMapper::Query::Conditions::EqualToComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -56,37 +57,37 @@ describe DataMapper::Query::Conditions::EqualToComparison do
     @other_value    = 2
     @slug           = :eql
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
 
-  it { should respond_to(:foreign_key_mapping) }
+  it { is_expected.to respond_to(:foreign_key_mapping) }
 
   describe '#foreign_key_mapping' do
     supported_by :all do
       before do
-        @parent = @model.create(:title => 'Parent')
-        @child  = @parent.children.create(:title => 'Child')
+        @parent = @model.create(title: 'Parent')
+        @child  = @parent.children.create(title: 'Child')
 
         @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent)
       end
 
-      it 'should return criteria that matches the record' do
-        @model.all(:conditions => @comparison.foreign_key_mapping).should == [ @child ]
+      it 'returns criteria that matches the record' do
+        expect(@model.all(conditions: @comparison.foreign_key_mapping)).to eq [ @child ]
       end
     end
   end
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     subject { @comparison.inspect }
 
-    it { should == '#<DataMapper::Query::Conditions::EqualToComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
+    it { is_expected.to eq '#<DataMapper::Query::Conditions::EqualToComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
   end
 
-  it { should respond_to(:matches?) }
+  it { is_expected.to respond_to(:matches?) }
 
   describe '#matches?' do
     supported_by :all do
@@ -95,25 +96,25 @@ describe DataMapper::Query::Conditions::EqualToComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?(@property.field => 1) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?(@property.field => 2) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 1)) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 2)) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
 
@@ -125,25 +126,25 @@ describe DataMapper::Query::Conditions::EqualToComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?(@property.field => nil) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?(@property.field => 1) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@model.new(@property => nil)) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 1)) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
       end
@@ -151,8 +152,8 @@ describe DataMapper::Query::Conditions::EqualToComparison do
       describe 'with a Relationship subject' do
         describe 'with a nil value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, nil)
           end
@@ -160,32 +161,32 @@ describe DataMapper::Query::Conditions::EqualToComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => nil }) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => {} }) }
 
-            it { pending { should be(false) } }
+            it { pending { is_expected.to be(false) } }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
 
         describe 'with a Hash value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent.attributes.except(:id))
           end
@@ -193,32 +194,32 @@ describe DataMapper::Query::Conditions::EqualToComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { pending { should be(false) } }
+            it { pending { is_expected.to be(false) } }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { pending { should be(false) } }
+            it { pending { is_expected.to be(false) } }
           end
         end
 
         describe 'with new Resource value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             new_resource = @model.new(@parent.attributes.except(:id))
 
@@ -228,32 +229,32 @@ describe DataMapper::Query::Conditions::EqualToComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { pending { should be(false) } }
+            it { pending { is_expected.to be(false) } }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { pending { should be(false) } }
+            it { pending { is_expected.to be(false) } }
           end
         end
 
         describe 'with a saved Resource value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent)
           end
@@ -261,48 +262,48 @@ describe DataMapper::Query::Conditions::EqualToComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
       end
     end
   end
 
-  it { should respond_to(:relationship?) }
+  it { is_expected.to respond_to(:relationship?) }
 
   describe '#relationship?' do
     subject { @comparison.relationship? }
 
-    it { should be(false) }
+    it { is_expected.to be(false) }
   end
 
-  it { should respond_to(:to_s) }
+  it { is_expected.to respond_to(:to_s) }
 
   describe '#to_s' do
     subject { @comparison.to_s }
 
-    it { should == 'id = 1' }
+    it { is_expected.to eq 'id = 1' }
   end
 
-  it { should respond_to(:value) }
+  it { is_expected.to respond_to(:value) }
 
   describe '#value' do
     supported_by :all do
@@ -310,7 +311,7 @@ describe DataMapper::Query::Conditions::EqualToComparison do
 
       describe 'with a Property subject' do
         describe 'with an Integer value' do
-          it { should == @value }
+          it { is_expected.to eq @value }
         end
 
         describe 'with a nil value' do
@@ -318,22 +319,22 @@ describe DataMapper::Query::Conditions::EqualToComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, nil)
           end
 
-          it { should be_nil }
+          it { is_expected.to be_nil }
         end
       end
 
       describe 'with a Relationship subject' do
         before :all do
-          @parent = @model.create(:title => 'Parent')
-          @child  = @parent.children.create(:title => 'Child')
+          @parent = @model.create(title: 'Parent')
+          @child  = @parent.children.create(title: 'Child')
         end
 
         describe 'with an Hash value' do
           before do
-            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, :id => 1)
+            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, id: 1)
           end
 
-          it { should == @model.new(:id => 1) }
+          it { is_expected.to eq @model.new(id: 1) }
         end
 
         describe 'with a Resource value' do
@@ -341,7 +342,7 @@ describe DataMapper::Query::Conditions::EqualToComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent)
           end
 
-          it { should == @parent }
+          it { is_expected.to eq @parent }
         end
       end
     end
@@ -349,7 +350,7 @@ describe DataMapper::Query::Conditions::EqualToComparison do
 end
 
 describe DataMapper::Query::Conditions::InclusionComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -358,37 +359,37 @@ describe DataMapper::Query::Conditions::InclusionComparison do
     @other_value    = [ 2 ]
     @slug           = :in
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
 
-  it { should respond_to(:foreign_key_mapping) }
+  it { is_expected.to respond_to(:foreign_key_mapping) }
 
   describe '#foreign_key_mapping' do
     supported_by :all do
       before do
-        @parent = @model.create(:title => 'Parent')
-        @child  = @parent.children.create(:title => 'Child')
+        @parent = @model.create(title: 'Parent')
+        @child  = @parent.children.create(title: 'Child')
 
         @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @model.all)
       end
 
-      it 'should return criteria that matches the record' do
-        @model.all(:conditions => @comparison.foreign_key_mapping).should == [ @child ]
+      it 'returns criteria that matches the record' do
+        expect(@model.all(conditions: @comparison.foreign_key_mapping)).to eq [ @child ]
       end
     end
   end
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     subject { @comparison.inspect }
 
-    it { should == '#<DataMapper::Query::Conditions::InclusionComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=[1] @loaded_value=[1]>' }
+    it { is_expected.to eq '#<DataMapper::Query::Conditions::InclusionComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=[1] @loaded_value=[1]>' }
   end
 
-  it { should respond_to(:matches?) }
+  it { is_expected.to respond_to(:matches?) }
 
   describe '#matches?' do
     supported_by :all do
@@ -397,25 +398,25 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?(@property.field => 1) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?(@property.field => 2) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 1)) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 2)) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
 
@@ -428,25 +429,25 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?(@property.field => 1) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?(@property.field => 2) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 1)) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 2)) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
 
@@ -459,25 +460,25 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?(@property.field => 1) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?(@property.field => 0) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 1)) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 0)) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
 
@@ -490,25 +491,25 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?(@property.field => 1) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?(@property.field => 2) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 1)) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@model.new(@property => 2)) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
       end
@@ -516,8 +517,8 @@ describe DataMapper::Query::Conditions::InclusionComparison do
       describe 'with a Relationship subject' do
         describe 'with a Hash value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent.attributes.except(:id))
           end
@@ -525,32 +526,32 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
 
         describe 'with a new Resource value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             new_resource = @model.new(@parent.attributes.except(:id))
 
@@ -560,32 +561,32 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { pending { should be(false) } }
+            it { pending { is_expected.to be(false) } }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { pending { should be(false) } }
+            it { pending { is_expected.to be(false) } }
           end
         end
 
         describe 'with a saved Resource value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent)
           end
@@ -593,98 +594,98 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
 
         describe 'with a Collection value' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
-            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @model.all(:title => 'Parent'))
+            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @model.all(title: 'Parent'))
           end
 
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
 
         describe 'with an Enumerable value containing a Hash' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
-            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, [ @parent.attributes.except(:id), { :title => 'Other' } ])
+            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, [ @parent.attributes.except(:id), { title: 'Other' } ])
           end
 
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
 
         describe 'with an Enumerable value containing a new Resource' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             new_resource = @model.new(@parent.attributes.except(:id))
 
@@ -694,32 +695,32 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { pending { should be(false) } }
+            it { pending { is_expected.to be(false) } }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { pending { should be(false) } }
+            it { pending { is_expected.to be(false) } }
           end
         end
 
         describe 'with an Enumerable value containing a saved Resource' do
           before do
-            @parent = @model.create(:title => 'Parent')
-            @child  = @parent.children.create(:title => 'Child')
+            @parent = @model.create(title: 'Parent')
+            @child  = @parent.children.create(title: 'Child')
 
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, [ @parent ])
           end
@@ -727,55 +728,55 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           describe 'with a matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @parent.attributes(:field) }) }
 
-            it { pending { should be(true) } }
+            it { pending { is_expected.to be(true) } }
           end
 
           describe 'with a not matching Hash' do
             subject { @comparison.matches?({ @relationship.field => @child.attributes(:field) }) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
 
           describe 'with a matching Resource' do
             subject { @comparison.matches?(@child) }
 
-            it { should be(true) }
+            it { is_expected.to be(true) }
           end
 
           describe 'with a not matching Resource' do
             subject { @comparison.matches?(@parent) }
 
-            it { should be(false) }
+            it { is_expected.to be(false) }
           end
         end
       end
     end
   end
 
-  it { should respond_to(:relationship?) }
+  it { is_expected.to respond_to(:relationship?) }
 
   describe '#relationship?' do
     subject { @comparison.relationship? }
 
-    it { should be(false) }
+    it { is_expected.to be(false) }
   end
 
-  it { should respond_to(:to_s) }
+  it { is_expected.to respond_to(:to_s) }
 
   describe '#to_s' do
     subject { @comparison.to_s }
 
-    it { should == 'id IN [1]' }
+    it { is_expected.to eq 'id IN [1]' }
   end
 
-  it { should respond_to(:valid?) }
+  it { is_expected.to respond_to(:valid?) }
 
   describe '#valid?' do
     subject { @comparison.valid? }
 
     describe 'with a Property subject' do
       describe 'with a valid Array value' do
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a valid Array value that needs typecasting' do
@@ -784,7 +785,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
         end
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with an invalid Array value' do
@@ -793,7 +794,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with an empty Array value' do
@@ -802,7 +803,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a valid Range value' do
@@ -811,7 +812,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
         end
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a valid Range value that needs typecasting' do
@@ -820,7 +821,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
         end
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with an invalid Range value' do
@@ -829,7 +830,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with an empty Range value' do
@@ -838,7 +839,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
     end
 
@@ -846,11 +847,11 @@ describe DataMapper::Query::Conditions::InclusionComparison do
       supported_by :all do
         describe 'with a valid Array value' do
           before do
-            @value      = [ @model.new(:id => 1) ]
+            @value      = [ @model.new(id: 1) ]
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @value)
           end
 
-          it { should be(true) }
+          it { is_expected.to be(true) }
         end
 
         describe 'with an invalid Array value' do
@@ -859,7 +860,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @value)
           end
 
-          it { should be(false) }
+          it { is_expected.to be(false) }
         end
 
         describe 'with an empty Array value' do
@@ -868,7 +869,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @value)
           end
 
-          it { should be(false) }
+          it { is_expected.to be(false) }
         end
 
         describe 'with a valid Collection' do
@@ -877,13 +878,13 @@ describe DataMapper::Query::Conditions::InclusionComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @value)
           end
 
-          it { should be(true) }
+          it { is_expected.to be(true) }
         end
       end
     end
   end
 
-  it { should respond_to(:value) }
+  it { is_expected.to respond_to(:value) }
 
   describe '#value' do
     supported_by :all do
@@ -895,9 +896,9 @@ describe DataMapper::Query::Conditions::InclusionComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, [ 1, 1 ])
           end
 
-          it { should be_kind_of(Array) }
+          it { is_expected.to be_kind_of(Array) }
 
-          it { should == @value }
+          it { is_expected.to eq @value }
         end
 
         describe 'with a Range value' do
@@ -906,26 +907,26 @@ describe DataMapper::Query::Conditions::InclusionComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
           end
 
-          it { should be_kind_of(Range) }
+          it { is_expected.to be_kind_of(Range) }
 
-          it { should == @value }
+          it { is_expected.to eq @value }
         end
       end
 
       describe 'with a Relationship subject' do
         before :all do
-          @parent = @model.create(:title => 'Parent')
-          @child  = @parent.children.create(:title => 'Child')
+          @parent = @model.create(title: 'Parent')
+          @child  = @parent.children.create(title: 'Child')
         end
 
         describe 'with an Hash value' do
           before do
-            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, :id => @parent.id)
+            @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, id: @parent.id)
           end
 
-          it { should be_kind_of(DataMapper::Collection) }
+          it { is_expected.to be_kind_of(DataMapper::Collection) }
 
-          it { should == [ @parent ] }
+          it { is_expected.to eq [ @parent ] }
         end
 
         describe 'with an Array value' do
@@ -934,9 +935,9 @@ describe DataMapper::Query::Conditions::InclusionComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @value)
           end
 
-          it { should be_kind_of(DataMapper::Collection) }
+          it { is_expected.to be_kind_of(DataMapper::Collection) }
 
-          it { should == @value }
+          it { is_expected.to eq @value }
         end
 
         describe 'with a Resource value' do
@@ -944,9 +945,9 @@ describe DataMapper::Query::Conditions::InclusionComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @parent)
           end
 
-          it { should be_kind_of(DataMapper::Collection) }
+          it { is_expected.to be_kind_of(DataMapper::Collection) }
 
-          it { should == [ @parent ] }
+          it { is_expected.to eq [ @parent ] }
         end
 
         describe 'with a Collection value' do
@@ -955,13 +956,13 @@ describe DataMapper::Query::Conditions::InclusionComparison do
             @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @relationship, @value)
           end
 
-          it 'should not be a kicker' do
-            @value.should_not be_loaded
+          it 'is not a kicker' do
+            expect(@value).not_to be_loaded
           end
 
-          it { should be_kind_of(DataMapper::Collection) }
+          it { is_expected.to be_kind_of(DataMapper::Collection) }
 
-          it { should == @value }
+          it { is_expected.to eq @value }
         end
       end
     end
@@ -969,7 +970,7 @@ describe DataMapper::Query::Conditions::InclusionComparison do
 end
 
 describe DataMapper::Query::Conditions::RegexpComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:title]
@@ -978,80 +979,80 @@ describe DataMapper::Query::Conditions::RegexpComparison do
     @other_value = /Other Title/
     @slug        = :regexp
     @comparison  = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other       = OtherComparison.new(@property, @value)
+    @other       = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     subject { @comparison.inspect }
 
-    it { should == '#<DataMapper::Query::Conditions::RegexpComparison @subject=#<DataMapper::Property::String @model=Blog::Article @name=:title> @dumped_value=/Title/ @loaded_value=/Title/>' }
+    it { is_expected.to eq '#<DataMapper::Query::Conditions::RegexpComparison @subject=#<DataMapper::Property::String @model=Blog::Article @name=:title> @dumped_value=/Title/ @loaded_value=/Title/>' }
   end
 
-  it { should respond_to(:matches?) }
+  it { is_expected.to respond_to(:matches?) }
 
   describe '#matches?' do
     supported_by :all do
       describe 'with a matching Hash' do
         subject { @comparison.matches?(@property.field => 'Title') }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Hash' do
         subject { @comparison.matches?(@property.field => 'Other') }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 'Title')) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 'Other')) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil field' do
         subject { @comparison.matches?(@property.field => nil) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil attribute' do
         subject { @comparison.matches?(@model.new(@property => nil)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
     end
   end
 
-  it { should respond_to(:relationship?) }
+  it { is_expected.to respond_to(:relationship?) }
 
   describe '#relationship?' do
     subject { @comparison.relationship? }
 
-    it { should be(false) }
+    it { is_expected.to be(false) }
   end
 
-  it { should respond_to(:to_s) }
+  it { is_expected.to respond_to(:to_s) }
 
   describe '#to_s' do
     subject { @comparison.to_s }
 
-    it { should == 'title =~ /Title/' }
+    it { is_expected.to eq 'title =~ /Title/' }
   end
 end
 
 describe DataMapper::Query::Conditions::LikeComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:title]
@@ -1060,80 +1061,80 @@ describe DataMapper::Query::Conditions::LikeComparison do
     @other_value    = 'Other Title'
     @slug           = :like
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     subject { @comparison.inspect }
 
-    it { should == '#<DataMapper::Query::Conditions::LikeComparison @subject=#<DataMapper::Property::String @model=Blog::Article @name=:title> @dumped_value="_it%" @loaded_value="_it%">' }
+    it { is_expected.to eq '#<DataMapper::Query::Conditions::LikeComparison @subject=#<DataMapper::Property::String @model=Blog::Article @name=:title> @dumped_value="_it%" @loaded_value="_it%">' }
   end
 
-  it { should respond_to(:matches?) }
+  it { is_expected.to respond_to(:matches?) }
 
   describe '#matches?' do
     supported_by :all do
       describe 'with a matching Hash' do
         subject { @comparison.matches?(@property.field => 'Title') }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Hash' do
         subject { @comparison.matches?(@property.field => 'Other Title') }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 'Title')) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 'Other Title')) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil field' do
         subject { @comparison.matches?(@property.field => nil) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil attribute' do
         subject { @comparison.matches?(@model.new(@property => nil)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
     end
   end
 
-  it { should respond_to(:relationship?) }
+  it { is_expected.to respond_to(:relationship?) }
 
   describe '#relationship?' do
     subject { @comparison.relationship? }
 
-    it { should be(false) }
+    it { is_expected.to be(false) }
   end
 
-  it { should respond_to(:to_s) }
+  it { is_expected.to respond_to(:to_s) }
 
   describe '#to_s' do
     subject { @comparison.to_s }
 
-    it { should == 'title LIKE "_it%"' }
+    it { is_expected.to eq 'title LIKE "_it%"' }
   end
 end
 
 describe DataMapper::Query::Conditions::GreaterThanComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -1142,57 +1143,57 @@ describe DataMapper::Query::Conditions::GreaterThanComparison do
     @other_value    = 2
     @slug           = :gt
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     subject { @comparison.inspect }
 
-    it { should == '#<DataMapper::Query::Conditions::GreaterThanComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
+    it { is_expected.to eq '#<DataMapper::Query::Conditions::GreaterThanComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
   end
 
-  it { should respond_to(:matches?) }
+  it { is_expected.to respond_to(:matches?) }
 
   describe '#matches?' do
     supported_by :all do
       describe 'with a matching Hash' do
         subject { @comparison.matches?(@property.field => 2) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Hash' do
         subject { @comparison.matches?(@property.field => 1) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 2)) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 1)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil field' do
         subject { @comparison.matches?(@property.field => nil) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil attribute' do
         subject { @comparison.matches?(@model.new(@property => nil)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with an expected value of nil' do
@@ -1202,30 +1203,30 @@ describe DataMapper::Query::Conditions::GreaterThanComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, nil)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
     end
   end
 
-  it { should respond_to(:relationship?) }
+  it { is_expected.to respond_to(:relationship?) }
 
   describe '#relationship?' do
     subject { @comparison.relationship? }
 
-    it { should be(false) }
+    it { is_expected.to be(false) }
   end
 
-  it { should respond_to(:to_s) }
+  it { is_expected.to respond_to(:to_s) }
 
   describe '#to_s' do
     subject { @comparison.to_s }
 
-    it { should == 'id > 1' }
+    it { is_expected.to eq 'id > 1' }
   end
 end
 
 describe DataMapper::Query::Conditions::LessThanComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -1234,57 +1235,57 @@ describe DataMapper::Query::Conditions::LessThanComparison do
     @other_value    = 2
     @slug           = :lt
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     subject { @comparison.inspect }
 
-    it { should == '#<DataMapper::Query::Conditions::LessThanComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
+    it { is_expected.to eq '#<DataMapper::Query::Conditions::LessThanComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
   end
 
-  it { should respond_to(:matches?) }
+  it { is_expected.to respond_to(:matches?) }
 
   describe '#matches?' do
     supported_by :all do
       describe 'with a matching Hash' do
         subject { @comparison.matches?(@property.field => 0) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Hash' do
         subject { @comparison.matches?(@property.field => 1) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 0)) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 1)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil field' do
         subject { @comparison.matches?(@property.field => nil) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil attribute' do
         subject { @comparison.matches?(@model.new(@property => nil)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with an expected value of nil' do
@@ -1294,30 +1295,30 @@ describe DataMapper::Query::Conditions::LessThanComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, nil)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
     end
   end
 
-  it { should respond_to(:relationship?) }
+  it { is_expected.to respond_to(:relationship?) }
 
   describe '#relationship?' do
     subject { @comparison.relationship? }
 
-    it { should be(false) }
+    it { is_expected.to be(false) }
   end
 
-  it { should respond_to(:to_s) }
+  it { is_expected.to respond_to(:to_s) }
 
   describe '#to_s' do
     subject { @comparison.to_s }
 
-    it { should == 'id < 1' }
+    it { is_expected.to eq 'id < 1' }
   end
 end
 
 describe DataMapper::Query::Conditions::GreaterThanOrEqualToComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -1326,57 +1327,57 @@ describe DataMapper::Query::Conditions::GreaterThanOrEqualToComparison do
     @other_value    = 2
     @slug           = :gte
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     subject { @comparison.inspect }
 
-    it { should == '#<DataMapper::Query::Conditions::GreaterThanOrEqualToComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
+    it { is_expected.to eq '#<DataMapper::Query::Conditions::GreaterThanOrEqualToComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
   end
 
-  it { should respond_to(:matches?) }
+  it { is_expected.to respond_to(:matches?) }
 
   describe '#matches?' do
     supported_by :all do
       describe 'with a matching Hash' do
         subject { @comparison.matches?(@property.field => 1) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Hash' do
         subject { @comparison.matches?(@property.field => 0) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 1)) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 0)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil field' do
         subject { @comparison.matches?(@property.field => nil) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil attribute' do
         subject { @comparison.matches?(@model.new(@property => nil)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with an expected value of nil' do
@@ -1386,30 +1387,30 @@ describe DataMapper::Query::Conditions::GreaterThanOrEqualToComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, nil)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
     end
   end
 
-  it { should respond_to(:relationship?) }
+  it { is_expected.to respond_to(:relationship?) }
 
   describe '#relationship?' do
     subject { @comparison.relationship? }
 
-    it { should be(false) }
+    it { is_expected.to be(false) }
   end
 
-  it { should respond_to(:to_s) }
+  it { is_expected.to respond_to(:to_s) }
 
   describe '#to_s' do
     subject { @comparison.to_s }
 
-    it { should == 'id >= 1' }
+    it { is_expected.to eq 'id >= 1' }
   end
 end
 
 describe DataMapper::Query::Conditions::LessThanOrEqualToComparison do
-  it_should_behave_like 'DataMapper::Query::Conditions::AbstractComparison'
+  it_behaves_like 'DataMapper::Query::Conditions::AbstractComparison'
 
   before do
     @property       = @model.properties[:id]
@@ -1418,57 +1419,57 @@ describe DataMapper::Query::Conditions::LessThanOrEqualToComparison do
     @other_value    = 2
     @slug           = :lte
     @comparison     = DataMapper::Query::Conditions::Comparison.new(@slug, @property, @value)
-    @other          = OtherComparison.new(@property, @value)
+    @other          = ::OtherComparison.new(@property, @value)
   end
 
   subject { @comparison }
 
-  it { should respond_to(:inspect) }
+  it { is_expected.to respond_to(:inspect) }
 
   describe '#inspect' do
     subject { @comparison.inspect }
 
-    it { should == '#<DataMapper::Query::Conditions::LessThanOrEqualToComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
+    it { is_expected.to eq '#<DataMapper::Query::Conditions::LessThanOrEqualToComparison @subject=#<DataMapper::Property::Serial @model=Blog::Article @name=:id> @dumped_value=1 @loaded_value=1>' }
   end
 
-  it { should respond_to(:matches?) }
+  it { is_expected.to respond_to(:matches?) }
 
   describe '#matches?' do
     supported_by :all do
       describe 'with a matching Hash' do
         subject { @comparison.matches?(@property.field => 1) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Hash' do
         subject { @comparison.matches?(@property.field => 2) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 1)) }
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'with a not matching Resource' do
         subject { @comparison.matches?(@model.new(@property => 2)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil field' do
         subject { @comparison.matches?(@property.field => nil) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with a not matching nil attribute' do
         subject { @comparison.matches?(@model.new(@property => nil)) }
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'with an expected value of nil' do
@@ -1478,24 +1479,24 @@ describe DataMapper::Query::Conditions::LessThanOrEqualToComparison do
           @comparison = DataMapper::Query::Conditions::Comparison.new(@slug, @property, nil)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
     end
   end
 
-  it { should respond_to(:relationship?) }
+  it { is_expected.to respond_to(:relationship?) }
 
   describe '#relationship?' do
     subject { @comparison.relationship? }
 
-    it { should be(false) }
+    it { is_expected.to be(false) }
   end
 
-  it { should respond_to(:to_s) }
+  it { is_expected.to respond_to(:to_s) }
 
   describe '#to_s' do
     subject { @comparison.to_s }
 
-    it { should == 'id <= 1' }
+    it { is_expected.to eq 'id <= 1' }
   end
 end

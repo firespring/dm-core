@@ -44,7 +44,7 @@ describe 'DataMapper::Resource' do
     describe '.new' do
       subject { @resource }
 
-      it { should_not be_dirty }
+      it { is_expected.not_to be_dirty }
     end
 
     [:string_, :bool_, :float_, :integer_, :decimal_, :datetime_, :date_, :time_].each do |property|
@@ -54,7 +54,7 @@ describe 'DataMapper::Resource' do
         end
 
         it 'type casts given equal value so resource remains clean' do
-          @resource.should_not be_dirty
+          expect(@resource).not_to be_dirty
         end
       end
 
@@ -64,7 +64,7 @@ describe 'DataMapper::Resource' do
         end
 
         it 'type casts given equal value so resource remains clean' do
-          @resource.should_not be_dirty
+          expect(@resource).not_to be_dirty
         end
       end
     end

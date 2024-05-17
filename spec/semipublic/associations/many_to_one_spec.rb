@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe 'Many to One Associations' do
   before :all do
@@ -50,14 +50,14 @@ describe 'Many to One Associations' do
       @user = @comment_model.get(*comment.key).user
     end
 
-    it_should_behave_like 'A semipublic Resource'
+    it_behaves_like 'A semipublic Resource'
 
     describe 'acts like a subject' do
       before do
         @resource = @user_model.new(:name => 'A subject')
       end
 
-      it_should_behave_like 'A semipublic Subject'
+      it_behaves_like 'A semipublic Subject'
     end
   end
 end

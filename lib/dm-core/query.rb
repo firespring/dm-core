@@ -107,7 +107,7 @@ module DataMapper
       elsif source.is_a?(Enumerable)
         key        = model.key(repository.name)
         conditions = Query.target_conditions(source, key, key)
-        repository.new_query(model, conditions:)
+        repository.new_query(model, conditions: conditions)
       else
         raise ArgumentError, "+source+ must respond to #query or be an Enumerable, but was #{source.class}"
       end

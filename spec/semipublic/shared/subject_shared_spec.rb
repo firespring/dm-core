@@ -1,15 +1,15 @@
-share_examples_for 'A semipublic Subject' do
+shared_examples 'A semipublic Subject' do
   describe '#default?' do
     describe 'with a default' do
       subject { @subject_with_default.default? }
 
-      it { should be(true) }
+      it { is_expected.to be(true) }
     end
 
     describe 'without a default' do
       subject { @subject_without_default.default? }
 
-      it { should be(false) }
+      it { is_expected.to be(false) }
     end
   end
 
@@ -17,62 +17,62 @@ share_examples_for 'A semipublic Subject' do
     describe 'without a default' do
       subject { @subject_without_default.default_for(@resource) }
 
-      it 'should match the default value' do
-        DataMapper::Ext.blank?(subject).should == true
+      it 'Matches the default value' do
+        expect(DataMapper::Ext.blank?(subject)).to eq true
       end
 
-      it 'should be used as a default for the subject accessor' do
-        should == @resource.__send__(@subject_without_default.name)
+      it 'Is used as a default for the subject accessor' do
+        is_expected.to eq @resource.__send__(@subject_without_default.name)
       end
 
-      it 'should persist the value' do
-        @resource.save.should be(true)
+      it 'Persists the value' do
+        expect(@resource.save).to be(true)
         @resource = @resource.model.get!(*@resource.key)
-        @resource.without_default.should == subject
+        expect(@resource.without_default).to eq subject
       end
     end
 
     describe 'with a default value' do
       subject { @subject_with_default.default_for(@resource) }
 
-      it 'should match the default value' do
-        if @default_value.kind_of?(DataMapper::Resource)
-          subject.key.should == @default_value.key
+      it 'Matches the default value' do
+        if @default_value.is_a?(DataMapper::Resource)
+          expect(subject.key).to eq @default_value.key
         else
-          should == @default_value
+          is_expected.to eq @default_value
         end
       end
 
-      it 'should be used as a default for the subject accessor' do
-        should == @resource.__send__(@subject_with_default.name)
+      it 'Is used as a default for the subject accessor' do
+        is_expected.to eq @resource.__send__(@subject_with_default.name)
       end
 
-      it 'should persist the value' do
-        @resource.save.should be(true)
+      it 'Persists the value' do
+        expect(@resource.save).to be(true)
         @resource = @resource.model.get!(*@resource.key)
-        @resource.with_default.should == subject
+        expect(@resource.with_default).to eq subject
       end
     end
 
     describe 'with a default value responding to #call' do
       subject { @subject_with_default_callable.default_for(@resource) }
 
-      it 'should match the default value' do
-        if @default_value.kind_of?(DataMapper::Resource)
-          subject.key.should == @default_value_callable.key
+      it 'Matches the default value' do
+        if @default_value.is_a?(DataMapper::Resource)
+          expect(subject.key).to eq @default_value_callable.key
         else
-          should == @default_value_callable
+          is_expected.to eq @default_value_callable
         end
       end
 
-      it 'should be used as a default for the subject accessor' do
-        should == @resource.__send__(@subject_with_default_callable.name)
+      it 'Is used as a default for the subject accessor' do
+        is_expected.to eq @resource.__send__(@subject_with_default_callable.name)
       end
 
-      it 'should persist the value' do
-        @resource.save.should be(true)
+      it 'Persists the value' do
+        expect(@resource.save).to be(true)
         @resource = @resource.model.get!(*@resource.key)
-        @resource.with_default_callable.should == subject
+        expect(@resource.with_default_callable).to eq subject
       end
     end
   end

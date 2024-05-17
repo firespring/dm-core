@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/subject_set'
-require 'unit/data_mapper/subject_set/shared/to_ary_spec'
+require_relative 'shared/to_ary_spec'
 
 describe 'DataMapper::SubjectSet#to_ary' do
   before :all do
@@ -23,12 +23,12 @@ describe 'DataMapper::SubjectSet#to_ary' do
   context 'when no entries are present' do
     let(:entries) { [] }
 
-    it_should_behave_like 'DataMapper::SubjectSet#to_ary when no entries are present'
+    it_behaves_like 'DataMapper::SubjectSet#to_ary when no entries are present'
   end
 
   context 'when entries are present' do
     let(:entries) { [ entry1, entry2 ] }
 
-    it_should_behave_like 'DataMapper::SubjectSet#to_ary when entries are present'
+    it_behaves_like 'DataMapper::SubjectSet#to_ary when entries are present'
   end
 end

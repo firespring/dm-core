@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Class do
   before :all do
@@ -16,13 +16,12 @@ describe DataMapper::Property::Class do
     @invalid_value = 1
   end
 
-  it_should_behave_like 'A public Property'
+  it_behaves_like 'A public Property'
 
   describe '.options' do
     subject { described_class.options }
 
-    it { should be_kind_of(Hash) }
-
-    it { should eql(:load_as => @load_as, :dump_as => @load_as) }
+    it { is_expected.to be_kind_of(Hash) }
+    it { is_expected.to eql(load_as: @load_as, dump_as: @load_as) }
   end
 end

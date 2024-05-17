@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe 'One to One Associations' do
   before :all do
@@ -47,7 +47,7 @@ describe 'One to One Associations' do
         @resource = @article_model.new(:title => 'DataMapper Rocks!', :body => 'TSIA')
       end
 
-      it_should_behave_like 'A semipublic Subject'
+      it_behaves_like 'A semipublic Subject'
     end
   end
 end

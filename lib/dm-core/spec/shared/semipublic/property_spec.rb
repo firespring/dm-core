@@ -1,6 +1,6 @@
-share_examples_for 'A semipublic Property' do
+shared_examples 'A semipublic Property' do
   before :all do
-    %w[ @type @name @value @other_value ].each do |ivar|
+    %w(@type @name @value @other_value).each do |ivar|
       raise "+#{ivar}+ should be defined in before block" unless instance_variable_defined?(ivar)
     end
 
@@ -18,54 +18,54 @@ share_examples_for 'A semipublic Property' do
 
   describe '.new' do
     describe 'when provided no options' do
-      it 'should return a Property' do
-        @property.should be_kind_of(@type)
+      it 'returns a Property' do
+        expect(@property).to be_kind_of(@type)
       end
 
-      it 'should set the load_as' do
-        @property.load_as.should be(@type.load_as)
+      it 'sets the load_as' do
+        expect(@property.load_as).to be(@type.load_as)
       end
 
-      it 'should set the model' do
-        @property.model.should equal(@model)
+      it 'sets the model' do
+        expect(@property.model).to equal(@model)
       end
 
-      it 'should set the options to the default' do
-        @property.options.should == @type.options.merge(@options)
+      it 'sets the options to the default' do
+        expect(@property.options).to eq @type.options.merge(@options)
       end
     end
 
-    [ :index, :unique_index, :unique, :lazy ].each do |attribute|
-      [ true, false, :title, [ :title ] ].each do |value|
-        describe "when provided #{(options = { attribute => value }).inspect}" do
+    %i(index unique_index unique lazy).each do |attribute|
+      [true, false, :title, [:title]].each do |value|
+        describe "when provided #{(options = {attribute => value}).inspect}" do
           before :all do
             @property = @type.new(@model, @name, @options.merge(options))
           end
 
-          it 'should return a Property' do
-            @property.should be_kind_of(@type)
+          it 'returns a Property' do
+            expect(@property).to be_kind_of(@type)
           end
 
-          it 'should set the model' do
-            @property.model.should equal(@model)
+          it 'sets the model' do
+            expect(@property.model).to equal(@model)
           end
 
-          it 'should set the load_as' do
-            @property.load_as.should be(@type.load_as)
+          it 'sets the load_as' do
+            expect(@property.load_as).to be(@type.load_as)
           end
 
-          it "should set the options to #{options.inspect}" do
-            @property.options.should == @type.options.merge(@options.merge(options))
+          it "sets the options to #{options.inspect}" do
+            expect(@property.options).to eq @type.options.merge(@options.merge(options))
           end
         end
       end
 
-      [ [], nil ].each do |value|
-        describe "when provided #{(invalid_options = { attribute => value }).inspect}" do
-          it 'should raise an exception' do
-            lambda {
+      [[], nil].each do |value|
+        describe "when provided #{(invalid_options = {attribute => value}).inspect}" do
+          it 'raises an exception' do
+            expect {
               @type.new(@model, @name, @options.merge(invalid_options))
-            }.should raise_error(ArgumentError, "options[#{attribute.inspect}] must be either true, false, a Symbol or an Array of Symbols")
+            }.to raise_error(ArgumentError, "options[#{attribute.inspect}] must be either true, false, a Symbol or an Array of Symbols")
           end
         end
       end
@@ -76,29 +76,29 @@ share_examples_for 'A semipublic Property' do
     subject { @property.load(@value) }
 
     before do
-      @property.should_receive(:typecast).with(@value).and_return(@value)
+      expect(@property).to receive(:typecast).with(@value).and_return(@value)
     end
 
-    it { should eql(@value) }
+    it { is_expected.to eql(@value) }
   end
 
-  describe "#typecast" do
+  describe '#typecast' do
     describe "when is able to do typecasting on it's own" do
       it 'delegates all the work to the type' do
-        return_value = mock(@other_value)
-        @property.should_receive(:typecast_to_primitive).with(@invalid_value).and_return(return_value)
+        return_value = double(@other_value)
+        expect(@property).to receive(:typecast_to_primitive).with(@invalid_value).and_return(return_value)
         @property.typecast(@invalid_value)
       end
     end
 
     describe 'when value is nil' do
       it 'returns value unchanged' do
-        @property.typecast(nil).should be(nil)
+        expect(@property.typecast(nil)).to be(nil)
       end
 
       describe 'when value is a Ruby primitive' do
         it 'returns value unchanged' do
-          @property.typecast(@value).should == @value
+          expect(@property.typecast(@value)).to eq @value
         end
       end
     end
@@ -106,28 +106,28 @@ share_examples_for 'A semipublic Property' do
 
   describe '#valid?' do
     describe 'when provided a valid value' do
-      it 'should return true' do
-        @property.valid?(@value).should be(true)
+      it 'returns true' do
+        expect(@property.valid?(@value)).to be(true)
       end
     end
 
     describe 'when provide an invalid value' do
-      it 'should return false' do
-        @property.valid?(@invalid_value).should be(false)
+      it 'returns false' do
+        expect(@property.valid?(@invalid_value)).to be(false)
       end
     end
 
     describe 'when provide a nil value when required' do
-      it 'should return false' do
-        @property = @type.new(@model, @name, @options.merge(:required => true))
-        @property.valid?(nil).should be(false)
+      it 'returns false' do
+        @property = @type.new(@model, @name, @options.merge(required: true))
+        expect(@property.valid?(nil)).to be(false)
       end
     end
 
     describe 'when provide a nil value when not required' do
-      it 'should return false' do
-        @property = @type.new(@model, @name, @options.merge(:required => false))
-        @property.valid?(nil).should be(true)
+      it 'returns false' do
+        @property = @type.new(@model, @name, @options.merge(required: false))
+        expect(@property.valid?(nil)).to be(true)
       end
     end
   end
@@ -137,10 +137,10 @@ share_examples_for 'A semipublic Property' do
       @property.assert_valid_value(value)
     end
 
-    shared_examples_for 'assert_valid_value on invalid value' do
-      it 'should raise DataMapper::Property::InvalidValueError' do
+    shared_examples 'assert_valid_value on invalid value' do
+      it 'raises DataMapper::Property::InvalidValueError' do
         expect { subject }.to(raise_error(DataMapper::Property::InvalidValueError) do |error|
-          error.property.should == @property
+          expect(error.property).to eq @property
         end)
       end
     end
@@ -148,36 +148,36 @@ share_examples_for 'A semipublic Property' do
     describe 'when provided a valid value' do
       let(:value) { @value }
 
-      it 'should return true' do
-        subject.should be(true)
+      it 'returns true' do
+        expect(subject).to be(true)
       end
     end
 
     describe 'when provide an invalid value' do
       let(:value) { @invalid_value }
 
-      it_should_behave_like 'assert_valid_value on invalid value'
+      it_behaves_like 'assert_valid_value on invalid value'
     end
 
     describe 'when provide a nil value when required' do
       before do
-        @property = @type.new(@model, @name, @options.merge(:required => true))
+        @property = @type.new(@model, @name, @options.merge(required: true))
       end
 
       let(:value) { nil }
 
-      it_should_behave_like 'assert_valid_value on invalid value'
+      it_behaves_like 'assert_valid_value on invalid value'
     end
 
     describe 'when provide a nil value when not required' do
       before do
-        @property = @type.new(@model, @name, @options.merge(:required => false))
+        @property = @type.new(@model, @name, @options.merge(required: false))
       end
 
       let(:value) { nil }
 
-      it 'should return true' do
-        subject.should be(true)
+      it 'returns true' do
+        expect(subject).to be(true)
       end
     end
   end

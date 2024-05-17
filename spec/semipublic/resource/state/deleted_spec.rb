@@ -1,4 +1,5 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
+
 describe DataMapper::Resource::PersistenceState::Deleted do
   before :all do
     class ::Author
@@ -31,18 +32,18 @@ describe DataMapper::Resource::PersistenceState::Deleted do
     subject { @state.commit }
 
     supported_by :all do
-      it 'should return an Immutable state' do
-        should eql(DataMapper::Resource::PersistenceState::Immutable.new(@resource))
+      it 'returns an Immutable state' do
+        is_expected.to eql(DataMapper::Resource::PersistenceState::Immutable.new(@resource))
       end
 
-      it 'should delete the resource' do
+      it 'deletes the resource' do
         subject
-        @model.get(*@resource.key).should be_nil
+        expect(@model.get(*@resource.key)).to be_nil
       end
 
-      it 'should remove the resource from the identity map' do
+      it 'removes the resource from the identity map' do
         identity_map = @resource.repository.identity_map(@model)
-        method(:subject).should change { identity_map.dup }.from(@resource.key => @resource).to({})
+        expect { method(:subject) }.to change { identity_map.dup }.from(@resource.key => @resource).to({})
       end
     end
   end
@@ -51,14 +52,14 @@ describe DataMapper::Resource::PersistenceState::Deleted do
     subject { @state.delete }
 
     supported_by :all do
-      it 'should be a no-op' do
-        should equal(@state)
+      it 'is a no-op' do
+        is_expected.to equal(@state)
       end
     end
   end
 
   describe '#get' do
-    it_should_behave_like 'Resource::PersistenceState::Persisted#get'
+    it_behaves_like 'Resource::PersistenceState::Persisted#get'
   end
 
   describe '#set' do
@@ -70,8 +71,8 @@ describe DataMapper::Resource::PersistenceState::Deleted do
         @value = @key.get!(@resource)
       end
 
-      it 'should raise an exception' do
-        method(:subject).should raise_error(DataMapper::ImmutableDeletedError, 'Deleted resource cannot be modified')
+      it 'raises an exception' do
+        expect { method(:subject) }.to raise_error(DataMapper::ImmutableDeletedError, 'Deleted resource cannot be modified')
       end
     end
   end

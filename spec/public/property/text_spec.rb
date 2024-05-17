@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Text do
   before :all do
@@ -10,14 +10,13 @@ describe DataMapper::Property::Text do
     @invalid_value = 1
   end
 
-  it_should_behave_like 'A public Property'
+  it_behaves_like 'A public Property'
 
   describe '.options' do
     subject { described_class.options }
 
-    it { should be_kind_of(Hash) }
-
-    it { should eql(:load_as => @load_as, :dump_as => @load_as, :length => 65535, :lazy => true) }
+    it { is_expected.to be_kind_of(Hash) }
+    it { is_expected.to eql(load_as: @load_as, dump_as: @load_as, length: 65_535, lazy: true) }
   end
 
   describe 'migration with an index' do
@@ -32,10 +31,10 @@ describe DataMapper::Property::Text do
         end
       end
 
-      it 'should allow a migration' do
-        lambda {
+      it 'allows a migration' do
+        expect {
           @model.auto_migrate!
-        }.should_not raise_error(DataObjects::SyntaxError)
+        }.not_to raise_error
       end
     end
   end if defined?(DataObjects::SyntaxError)
@@ -53,10 +52,10 @@ describe DataMapper::Property::Text do
         end
       end
 
-      it 'should allow a migration' do
-        lambda {
+      it 'allows a migration' do
+        expect {
           @model.auto_migrate!
-        }.should_not raise_error(DataObjects::SyntaxError)
+        }.not_to raise_error
       end
     end
   end if defined?(DataObjects::SyntaxError)

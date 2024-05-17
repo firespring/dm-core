@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 describe DataMapper::Resource do
   before :all do
@@ -18,6 +18,6 @@ describe DataMapper::Resource do
       @user = @user_model.create(:name => 'dbussink', :age => 25, :description => "Test")
     end
 
-    it_should_behave_like 'A semipublic Resource'
+    it_behaves_like 'A semipublic Resource'
   end
 end

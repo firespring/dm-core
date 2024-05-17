@@ -1,4 +1,5 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
+
 describe DataMapper::Resource::PersistenceState::Clean do
   before :all do
     class ::Author
@@ -21,7 +22,7 @@ describe DataMapper::Resource::PersistenceState::Clean do
     @resource = @model.create(:name => 'Dan Kubb')
 
     @state = @resource.persistence_state
-    @state.should be_kind_of(DataMapper::Resource::PersistenceState::Clean)
+    expect(@state).to be_kind_of(DataMapper::Resource::PersistenceState::Clean)
   end
 
   after do
@@ -33,8 +34,8 @@ describe DataMapper::Resource::PersistenceState::Clean do
       subject { @state.send(method) }
 
       supported_by :all do
-        it 'should be a no-op' do
-          should equal(@state)
+        it 'is a no-op' do
+          is_expected.to equal(@state)
         end
       end
     end
@@ -44,14 +45,14 @@ describe DataMapper::Resource::PersistenceState::Clean do
     subject { @state.delete }
 
     supported_by :all do
-      it 'should return a Deleted state' do
-        should eql(DataMapper::Resource::PersistenceState::Deleted.new(@resource))
+      it 'returns a Deleted state' do
+        is_expected.to eql(DataMapper::Resource::PersistenceState::Deleted.new(@resource))
       end
     end
   end
 
   describe '#get' do
-    it_should_behave_like 'Resource::PersistenceState::Persisted#get'
+    it_behaves_like 'Resource::PersistenceState::Persisted#get'
   end
 
   describe '#set' do
@@ -60,14 +61,14 @@ describe DataMapper::Resource::PersistenceState::Clean do
     supported_by :all do
       describe 'with attributes that make the resource dirty' do
         before do
-          @key   = @model.properties[:name]
+          @key = @model.properties[:name]
           @value = nil
         end
 
-        it_should_behave_like 'A method that delegates to the superclass #set'
+        it_behaves_like 'A method that delegates to the superclass #set'
 
-        it 'should return a Dirty state' do
-          should eql(DataMapper::Resource::PersistenceState::Dirty.new(@resource))
+        it 'returns a Dirty state' do
+          is_expected.to eql(DataMapper::Resource::PersistenceState::Dirty.new(@resource))
         end
       end
 
@@ -77,10 +78,10 @@ describe DataMapper::Resource::PersistenceState::Clean do
           @value = 'Dan Kubb'
         end
 
-        it_should_behave_like 'A method that does not delegate to the superclass #set'
+        it_behaves_like 'A method that does not delegate to the superclass #set'
 
-        it 'should return a Clean state' do
-          should equal(@state)
+        it 'returns a Clean state' do
+          is_expected.to equal(@state)
         end
       end
     end

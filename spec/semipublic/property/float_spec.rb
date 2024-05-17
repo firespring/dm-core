@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Float do
   before :all do
@@ -9,73 +9,73 @@ describe DataMapper::Property::Float do
     @invalid_value = '1'
   end
 
-  it_should_behave_like 'A semipublic Property'
+  it_behaves_like 'A semipublic Property'
 
   describe '#typecast_to_primitive' do
     it 'returns same value if a float' do
       @value = 24.0
-      @property.typecast(@value).should equal(@value)
+      expect(@property.typecast(@value)).to equal(@value)
     end
 
     it 'returns float representation of a zero string integer' do
-      @property.typecast('0').should eql(0.0)
+      expect(@property.typecast('0')).to eql(0.0)
     end
 
     it 'returns float representation of a positive string integer' do
-      @property.typecast('24').should eql(24.0)
+      expect(@property.typecast('24')).to eql(24.0)
     end
 
     it 'returns float representation of a negative string integer' do
-      @property.typecast('-24').should eql(-24.0)
+      expect(@property.typecast('-24')).to eql(-24.0)
     end
 
     it 'returns float representation of a zero string float' do
-      @property.typecast('0.0').should eql(0.0)
+      expect(@property.typecast('0.0')).to eql(0.0)
     end
 
     it 'returns float representation of a positive string float' do
-      @property.typecast('24.35').should eql(24.35)
+      expect(@property.typecast('24.35')).to eql(24.35)
     end
 
     it 'returns float representation of a negative string float' do
-      @property.typecast('-24.35').should eql(-24.35)
+      expect(@property.typecast('-24.35')).to eql(-24.35)
     end
 
     it 'returns float representation of a zero string float, with no leading digits' do
-      @property.typecast('.0').should eql(0.0)
+      expect(@property.typecast('.0')).to eql(0.0)
     end
 
     it 'returns float representation of a positive string float, with no leading digits' do
-      @property.typecast('.41').should eql(0.41)
+      expect(@property.typecast('.41')).to eql(0.41)
     end
 
     it 'returns float representation of a zero integer' do
-      @property.typecast(0).should eql(0.0)
+      expect(@property.typecast(0)).to eql(0.0)
     end
 
     it 'returns float representation of a positive integer' do
-      @property.typecast(24).should eql(24.0)
+      expect(@property.typecast(24)).to eql(24.0)
     end
 
     it 'returns float representation of a negative integer' do
-      @property.typecast(-24).should eql(-24.0)
+      expect(@property.typecast(-24)).to eql(-24.0)
     end
 
     it 'returns float representation of a zero decimal' do
-      @property.typecast(BigDecimal('0.0')).should eql(0.0)
+      expect(@property.typecast(BigDecimal('0.0'))).to eql(0.0)
     end
 
     it 'returns float representation of a positive decimal' do
-      @property.typecast(BigDecimal('24.35')).should eql(24.35)
+      expect(@property.typecast(BigDecimal('24.35'))).to eql(24.35)
     end
 
     it 'returns float representation of a negative decimal' do
-      @property.typecast(BigDecimal('-24.35')).should eql(-24.35)
+      expect(@property.typecast(BigDecimal('-24.35'))).to eql(-24.35)
     end
 
     [ Object.new, true, '00.0', '0.', '-.0', 'string' ].each do |value|
       it "does not typecast non-numeric value #{value.inspect}" do
-        @property.typecast(value).should equal(value)
+        expect(@property.typecast(value)).to equal(value)
       end
     end
   end

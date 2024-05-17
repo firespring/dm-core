@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/subject_set'
-require 'unit/data_mapper/subject_set/shared/clear_spec'
+require_relative 'shared/clear_spec'
 
 describe 'DataMapper::SubjectSet#clear' do
   before :all do
@@ -23,12 +23,12 @@ describe 'DataMapper::SubjectSet#clear' do
   context 'when no entries are present' do
     let(:entries) { [] }
 
-    it_should_behave_like 'DataMapper::SubjectSet#clear when no entries are present'
+    it_behaves_like 'DataMapper::SubjectSet#clear when no entries are present'
   end
 
   context 'when entries are present' do
     let(:entries) { [ entry1, entry2 ] }
 
-    it_should_behave_like 'DataMapper::SubjectSet#clear when entries are present'
+    it_behaves_like 'DataMapper::SubjectSet#clear when entries are present'
   end
 end

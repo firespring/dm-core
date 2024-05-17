@@ -1,9 +1,9 @@
-require 'unit/data_mapper/ordered_set/shared/each_spec'
+require_relative '../../ordered_set/shared/each_spec'
 
-shared_examples_for 'DataMapper::SubjectSet' do
-  it_should_behave_like 'DataMapper::OrderedSet'
+shared_examples 'DataMapper::SubjectSet' do
+  it_behaves_like 'DataMapper::OrderedSet'
 end
 
-shared_examples_for 'DataMapper::SubjectSet#each' do
-  it_should_behave_like 'DataMapper::OrderedSet#each'
+shared_examples 'DataMapper::SubjectSet#each' do
+  it_behaves_like 'DataMapper::OrderedSet#each'
 end

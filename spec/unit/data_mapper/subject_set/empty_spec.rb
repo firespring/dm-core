@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/subject_set'
-require 'unit/data_mapper/subject_set/shared/empty_spec'
+require_relative 'shared/empty_spec'
 
 describe 'DataMapper::SubjectSet#empty?' do
   before :all do
@@ -19,13 +19,13 @@ describe 'DataMapper::SubjectSet#empty?' do
   context 'with no entries in it' do
     let(:set) { DataMapper::SubjectSet.new }
 
-    it_should_behave_like 'DataMapper::SubjectSet#empty? with no entries in it'
+    it_behaves_like 'DataMapper::SubjectSet#empty? with no entries in it'
   end
 
   context 'with entries in it' do
     let(:set)   { DataMapper::SubjectSet.new([ entry ]) }
     let(:entry) { Person.new('Alice')                   }
 
-    it_should_behave_like 'DataMapper::SubjectSet#empty? with entries in it'
+    it_behaves_like 'DataMapper::SubjectSet#empty? with entries in it'
   end
 end

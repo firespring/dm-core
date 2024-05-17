@@ -1,9 +1,9 @@
-share_examples_for 'A valid query condition' do
+shared_examples 'A valid query condition' do
   before :all do
-    raise "+@comp+ should be defined in before block" unless instance_variable_get(:@comp)
+    raise '+@comp+ should be defined in before block' unless instance_variable_get(:@comp)
   end
 
-  it 'should be valid' do
-    @comp.should be_valid
+  it 'is valid' do
+    expect(@comp).to be_valid
   end
 end

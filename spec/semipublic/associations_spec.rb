@@ -37,20 +37,20 @@ describe DataMapper::Associations do
         @relationship = Car.has(1, :engine)
       end
 
-      it 'should return a Relationship' do
-        @relationship.should be_a_kind_of(DataMapper::Associations::OneToOne::Relationship)
+      it 'returns a Relationship' do
+        expect(@relationship).to be_a_kind_of(DataMapper::Associations::OneToOne::Relationship)
       end
 
-      it 'should return a Relationship with the child model' do
-        @relationship.child_model.should == Engine
+      it 'returns a Relationship with the child model' do
+        expect(@relationship.child_model).to eq Engine
       end
 
-      it 'should return a Relationship with a min of 1' do
-        @relationship.min.should == 1
+      it 'returns a Relationship with a min of 1' do
+        expect(@relationship.min).to eq 1
       end
 
-      it 'should return a Relationship with a max of 1' do
-        @relationship.max.should == 1
+      it 'returns a Relationship with a max of 1' do
+        expect(@relationship.max).to eq 1
       end
     end
 
@@ -59,20 +59,20 @@ describe DataMapper::Associations do
         @relationship = Car.has(1..4, :doors)
       end
 
-      it 'should return a Relationship' do
-        @relationship.should be_a_kind_of(DataMapper::Associations::OneToMany::Relationship)
+      it 'returns a Relationship' do
+        expect(@relationship).to be_a_kind_of(DataMapper::Associations::OneToMany::Relationship)
       end
 
-      it 'should return a Relationship with the child model' do
-        @relationship.child_model.should == Door
+      it 'returns a Relationship with the child model' do
+        expect(@relationship.child_model).to eq Door
       end
 
-      it 'should return a Relationship with a min of 1' do
-        @relationship.min.should == 1
+      it 'returns a Relationship with a min of 1' do
+        expect(@relationship.min).to eq 1
       end
 
-      it 'should return a Relationship with a max of 4' do
-        @relationship.max.should == 4
+      it 'returns a Relationship with a max of 4' do
+        expect(@relationship.max).to eq 4
       end
     end
 
@@ -84,20 +84,20 @@ describe DataMapper::Associations do
         @relationship = Car.has(1..4, :windows, :through => :doors)
       end
 
-      it 'should return a Relationship' do
-        @relationship.should be_a_kind_of(DataMapper::Associations::ManyToMany::Relationship)
+      it 'returns a Relationship' do
+        expect(@relationship).to be_a_kind_of(DataMapper::Associations::ManyToMany::Relationship)
       end
 
-      it 'should return a Relationship with the child model' do
-        @relationship.child_model.should == Window
+      it 'returns a Relationship with the child model' do
+        expect(@relationship.child_model).to eq Window
       end
 
-      it 'should return a Relationship with a min of 1' do
-        @relationship.min.should == 1
+      it 'returns a Relationship with a min of 1' do
+        expect(@relationship.min).to eq 1
       end
 
-      it 'should return a Relationship with a max of 4' do
-        @relationship.max.should == 4
+      it 'returns a Relationship with a max of 4' do
+        expect(@relationship.max).to eq 4
       end
     end
 
@@ -106,20 +106,20 @@ describe DataMapper::Associations do
         @relationship = Car.has(n, :doors)
       end
 
-      it 'should return a Relationship' do
-        @relationship.should be_a_kind_of(DataMapper::Associations::OneToMany::Relationship)
+      it 'returns a Relationship' do
+        expect(@relationship).to be_a_kind_of(DataMapper::Associations::OneToMany::Relationship)
       end
 
-      it 'should return a Relationship with the child model' do
-        @relationship.child_model.should == Door
+      it 'returns a Relationship with the child model' do
+        expect(@relationship.child_model).to eq Door
       end
 
-      it 'should return a Relationship with a min of 0' do
-        @relationship.min.should == 0
+      it 'returns a Relationship with a min of 0' do
+        expect(@relationship.min).to eq 0
       end
 
-      it 'should return a Relationship with a max of n' do
-        @relationship.max.should == n
+      it 'returns a Relationship with a max of n' do
+        expect(@relationship.max).to eq n
       end
     end
 
@@ -131,20 +131,20 @@ describe DataMapper::Associations do
         @relationship = Car.has(n, :windows, :through => :doors)
       end
 
-      it 'should return a Relationship' do
-        @relationship.should be_a_kind_of(DataMapper::Associations::ManyToMany::Relationship)
+      it 'returns a Relationship' do
+        expect(@relationship).to be_a_kind_of(DataMapper::Associations::ManyToMany::Relationship)
       end
 
-      it 'should return a Relationship with the child model' do
-        @relationship.child_model.should == Window
+      it 'returns a Relationship with the child model' do
+        expect(@relationship.child_model).to eq Window
       end
 
-      it 'should return a Relationship with a min of 0' do
-        @relationship.min.should == 0
+      it 'returns a Relationship with a min of 0' do
+        expect(@relationship.min).to eq 0
       end
 
-      it 'should return a Relationship with a max of n' do
-        @relationship.max.should == n
+      it 'returns a Relationship with a max of n' do
+        expect(@relationship.max).to eq n
       end
     end
   end
@@ -154,24 +154,24 @@ describe DataMapper::Associations do
       @relationship = Engine.belongs_to(:car)
     end
 
-    it 'should return a Relationship' do
-      @relationship.should be_a_kind_of(DataMapper::Associations::ManyToOne::Relationship)
+    it 'returns a Relationship' do
+      expect(@relationship).to be_a_kind_of(DataMapper::Associations::ManyToOne::Relationship)
     end
 
-    it 'should return a Relationship with the parent model' do
-      @relationship.parent_model.should == Car
+    it 'returns a Relationship with the parent model' do
+      expect(@relationship.parent_model).to eq Car
     end
 
-    it 'should return a Relationship with a min of 1' do
-      @relationship.min.should == 1
+    it 'returns a Relationship with a min of 1' do
+      expect(@relationship.min).to eq 1
     end
 
-    it 'should return a Relationship with a max of 1' do
-      @relationship.max.should == 1
+    it 'returns a Relationship with a max of 1' do
+      expect(@relationship.max).to eq 1
     end
 
-    it 'should return a Relationship that is required' do
-      @relationship.required?.should be(true)
+    it 'returns a Relationship that is required' do
+      expect(@relationship.required?).to be(true)
     end
   end
 end

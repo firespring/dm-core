@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/subject_set'
-require 'unit/data_mapper/subject_set/shared/include_spec'
+require_relative 'shared/include_spec'
 
 describe 'DataMapper::SubjectSet#include?' do
   before :all do
@@ -21,12 +21,12 @@ describe 'DataMapper::SubjectSet#include?' do
   context 'when the entry is present' do
     let(:set) { DataMapper::SubjectSet.new([ entry ]) }
 
-    it_should_behave_like 'DataMapper::SubjectSet#include? when the entry is present'
+    it_behaves_like 'DataMapper::SubjectSet#include? when the entry is present'
   end
 
   context 'when the entry is not present' do
     let(:set) { DataMapper::SubjectSet.new }
 
-    it_should_behave_like 'DataMapper::SubjectSet#include? when the entry is not present'
+    it_behaves_like 'DataMapper::SubjectSet#include? when the entry is not present'
   end
 end

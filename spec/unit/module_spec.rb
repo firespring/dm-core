@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 require 'dm-core/support/ext/module'
 
 describe DataMapper::Ext::Module do
@@ -25,47 +25,46 @@ describe DataMapper::Ext::Module do
     class ::Bar; end
   end
 
-  it "should raise NameError for a missing constant" do
-    lambda { DataMapper::Ext::Module.find_const(Foo, 'Moo') }.should raise_error(NameError)
-    lambda { DataMapper::Ext::Module.find_const(Object, 'MissingConstant') }.should raise_error(NameError)
+  it 'raises NameError for a missing constant' do
+    expect { DataMapper::Ext::Module.find_const(Foo, 'Moo') }.to raise_error(NameError)
+    expect { DataMapper::Ext::Module.find_const(Object, 'MissingConstant') }.to raise_error(NameError)
   end
 
-  it "should be able to get a recursive constant" do
-    DataMapper::Ext::Module.find_const(Object, 'Foo::ModBar').should == Foo::ModBar
+  it 'is able to get a recursive constant' do
+    expect(DataMapper::Ext::Module.find_const(Object, 'Foo::ModBar')).to eq Foo::ModBar
   end
 
-  it "should ignore get Constants from the Kernel namespace correctly" do
-    DataMapper::Ext::Module.find_const(Object, '::Foo::ModBar').should == ::Foo::ModBar
+  it 'ignores get Constants from the Kernel namespace correctly' do
+    expect(DataMapper::Ext::Module.find_const(Object, '::Foo::ModBar')).to eq ::Foo::ModBar
   end
 
-  it "should find relative constants" do
-    DataMapper::Ext::Module.find_const(Foo, 'ModBar').should == Foo::ModBar
-    DataMapper::Ext::Module.find_const(Foo, 'Baz').should == Baz
+  it 'finds relative constants' do
+    expect(DataMapper::Ext::Module.find_const(Foo, 'ModBar')).to eq Foo::ModBar
+    expect(DataMapper::Ext::Module.find_const(Foo, 'Baz')).to eq Baz
   end
 
-  it "should find sibling constants" do
-    DataMapper::Ext::Module.find_const(Foo::ModBar, "Zed").should == Foo::Zed
+  it 'finds sibling constants' do
+    expect(DataMapper::Ext::Module.find_const(Foo::ModBar, 'Zed')).to eq Foo::Zed
   end
 
-  it "should find nested constants on nested constants" do
-    DataMapper::Ext::Module.find_const(Foo::ModBar, 'Noo::Too').should == Foo::ModBar::Noo::Too
+  it 'finds nested constants on nested constants' do
+    expect(DataMapper::Ext::Module.find_const(Foo::ModBar, 'Noo::Too')).to eq Foo::ModBar::Noo::Too
   end
 
-  it "should find constants outside of nested constants" do
-    DataMapper::Ext::Module.find_const(Foo::ModBar::Noo::Too, "Zed").should == Foo::Zed
+  it 'finds constants outside of nested constants' do
+    expect(DataMapper::Ext::Module.find_const(Foo::ModBar::Noo::Too, 'Zed')).to eq Foo::Zed
   end
 
-  it 'should be able to find past the second nested level' do
-    DataMapper::Ext::Module.find_const(Foo::ModBar::Noo, 'Too').should == Foo::ModBar::Noo::Too
-    DataMapper::Ext::Module.find_const(Foo::ModBar::Noo::Too, 'Boo').should == Foo::ModBar::Noo::Too::Boo
+  it 'is able to find past the second nested level' do
+    expect(DataMapper::Ext::Module.find_const(Foo::ModBar::Noo, 'Too')).to eq Foo::ModBar::Noo::Too
+    expect(DataMapper::Ext::Module.find_const(Foo::ModBar::Noo::Too, 'Boo')).to eq Foo::ModBar::Noo::Too::Boo
   end
 
-
-  it "should be able to deal with constants being added and removed" do
+  it 'is able to deal with constants being added and removed' do
     DataMapper::Ext::Module.find_const(Object, 'Bar') # First we load Bar with find_const
     Object.module_eval { remove_const('Bar') } # Now we delete it
     module ::Bar; end; # Now we redefine it
-    DataMapper::Ext::Module.find_const(Object, 'Bar').should == Bar
+    expect(DataMapper::Ext::Module.find_const(Object, 'Bar')).to eq Bar
   end
 
 end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Resource::PersistenceState do
   before :all do
@@ -26,7 +26,7 @@ describe DataMapper::Resource::PersistenceState do
   describe '.new' do
     subject { DataMapper::Resource::PersistenceState.new(@resource) }
 
-    it { should be_kind_of(DataMapper::Resource::PersistenceState) }
+    it { is_expected.to be_kind_of(DataMapper::Resource::PersistenceState) }
   end
 
   describe '#==' do
@@ -38,10 +38,10 @@ describe DataMapper::Resource::PersistenceState do
           @other = DataMapper::Resource::PersistenceState.new(@resource)
         end
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
 
-        it 'should be symmetric' do
-          should == (@other == @state)
+        it 'Is symmetric' do
+          is_expected.to eq(@other == @state)
         end
       end
 
@@ -50,10 +50,10 @@ describe DataMapper::Resource::PersistenceState do
           @other = DataMapper::Resource::PersistenceState.new(@model.new)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
 
-        it 'should be symmetric' do
-          should == (@other == @state)
+        it 'Is symmetric' do
+          is_expected.to eq(@other == @state)
         end
       end
 
@@ -62,12 +62,12 @@ describe DataMapper::Resource::PersistenceState do
           @other = DataMapper::Resource::PersistenceState::Clean.new(@resource)
         end
 
-        it 'should be true for a subclass' do
-          should be(true)
+        it 'Is true for a subclass' do
+          is_expected.to be(true)
         end
 
-        it 'should be symmetric' do
-          should == (@other == @state)
+        it 'Is symmetric' do
+          is_expected.to eq(@other == @state)
         end
       end
 
@@ -76,10 +76,10 @@ describe DataMapper::Resource::PersistenceState do
           @other = DataMapper::Resource::PersistenceState::Clean.new(@model.new)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
 
-        it 'should be symmetric' do
-          should == (@other == @state)
+        it 'Is symmetric' do
+          is_expected.to eq(@other == @state)
         end
       end
     end
@@ -89,8 +89,8 @@ describe DataMapper::Resource::PersistenceState do
     describe "##{method}" do
       subject { @state.send(method) }
 
-      it 'should raise an exception' do
-        method(:subject).should raise_error(NotImplementedError, "DataMapper::Resource::PersistenceState##{method} should be implemented")
+      it 'Raises an exception' do
+        expect { method(:subject) }.to raise_error(NotImplementedError, "DataMapper::Resource::PersistenceState##{method} should be implemented")
       end
     end
   end
@@ -104,10 +104,10 @@ describe DataMapper::Resource::PersistenceState do
           @other = DataMapper::Resource::PersistenceState.new(@resource)
         end
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
 
-        it 'should be symmetric' do
-          should == @other.eql?(@state)
+        it 'Is symmetric' do
+          is_expected.to eq @other.eql?(@state)
         end
       end
 
@@ -116,10 +116,10 @@ describe DataMapper::Resource::PersistenceState do
           @other = DataMapper::Resource::PersistenceState.new(@model.new)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
 
-        it 'should be symmetric' do
-          should == @other.eql?(@state)
+        it 'Is symmetric' do
+          is_expected.to eq @other.eql?(@state)
         end
       end
 
@@ -128,10 +128,10 @@ describe DataMapper::Resource::PersistenceState do
           @other = DataMapper::Resource::PersistenceState::Clean.new(@resource)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
 
-        it 'should be symmetric' do
-          should == @other.eql?(@state)
+        it 'Is symmetric' do
+          is_expected.to eq @other.eql?(@state)
         end
       end
 
@@ -140,10 +140,10 @@ describe DataMapper::Resource::PersistenceState do
           @other = DataMapper::Resource::PersistenceState::Clean.new(@model.new)
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
 
-        it 'should be symmetric' do
-          should == @other.eql?(@state)
+        it 'Is symmetric' do
+          is_expected.to eq @other.eql?(@state)
         end
       end
     end
@@ -157,8 +157,8 @@ describe DataMapper::Resource::PersistenceState do
         @key = @model.properties[:name]
       end
 
-      it 'should return the value' do
-        should == 'Dan Kubb'
+      it 'Returns the value' do
+        is_expected.to eq 'Dan Kubb'
       end
     end
 
@@ -171,8 +171,8 @@ describe DataMapper::Resource::PersistenceState do
           @key = @model.relationships[:parent]
         end
 
-        it 'should return the association' do
-          should == @resource
+        it 'Returns the association' do
+          is_expected.to eq @resource
         end
       end
     end
@@ -181,14 +181,14 @@ describe DataMapper::Resource::PersistenceState do
   describe '#hash' do
     subject { @state.hash }
 
-    it { should == @state.class.hash ^ @resource.hash }
+    it { is_expected.to eq @state.class.hash ^ @resource.hash }
   end
 
   describe '#resource' do
     subject { @state.resource }
 
-    it 'should return the resource' do
-      should equal(@resource)
+    it 'Returns the resource' do
+      is_expected.to equal(@resource)
     end
   end
 
@@ -201,12 +201,12 @@ describe DataMapper::Resource::PersistenceState do
         @value = 'John Doe'
       end
 
-      it 'should return a state object' do
-        should be_kind_of(DataMapper::Resource::PersistenceState)
+      it 'Returns a state object' do
+        is_expected.to be_kind_of(DataMapper::Resource::PersistenceState)
       end
 
-      it 'should change the object attributes' do
-        method(:subject).should change(@resource, :attributes).from(:name => 'Dan Kubb').to(:name => 'John Doe')
+      it 'Change the object attributes' do
+        expect { method(:subject) }.to change(@resource, :attributes).from(:name => 'Dan Kubb').to(:name => 'John Doe')
       end
     end
 
@@ -217,12 +217,12 @@ describe DataMapper::Resource::PersistenceState do
           @value = @resource
         end
 
-        it 'should return a state object' do
-          should be_kind_of(DataMapper::Resource::PersistenceState)
+        it 'Returns a state object' do
+          is_expected.to be_kind_of(DataMapper::Resource::PersistenceState)
         end
 
-        it 'should change the object relationship' do
-          method(:subject).should change(@resource, :parent).from(nil).to(@resource)
+        it 'Changes the object relationship' do
+          expect { method(:subject) }.to change(@resource, :parent).from(nil).to(@resource)
         end
       end
     end

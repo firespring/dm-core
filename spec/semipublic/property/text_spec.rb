@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../../spec_helper'
 
 describe DataMapper::Property::Text do
   before :all do
@@ -9,11 +9,11 @@ describe DataMapper::Property::Text do
     @invalid_value = 1
   end
 
-  it_should_behave_like 'A semipublic Property'
+  it_behaves_like 'A semipublic Property'
 
   describe '#load' do
     before :all do
-      @value = mock('value')
+      @value = double('value')
     end
 
     subject { @property.load(@value) }
@@ -22,10 +22,10 @@ describe DataMapper::Property::Text do
       @property = @type.new(@model, @name)
     end
 
-    it 'should delegate to #type.load' do
-      return_value = mock('return value')
-      @property.should_receive(:load).with(@value).and_return(return_value)
-      should == return_value
+    it 'delegates to #type.load' do
+      return_value = double('return value')
+      expect(@property).to receive(:load).with(@value).and_return(return_value)
+      is_expected.to eq return_value
     end
   end
 end

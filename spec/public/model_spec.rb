@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 
 # TODO: move these specs into shared specs for #copy
 describe DataMapper::Model do
@@ -32,7 +32,7 @@ describe DataMapper::Model do
       @other    = @article_model.create(:title => 'Other Article',                            :author => @author)
     end
 
-    it { @article_model.should respond_to(:copy) }
+    it { expect(@article_model).to respond_to(:copy) }
 
     describe '#copy' do
       with_alternate_adapter do
@@ -48,20 +48,20 @@ describe DataMapper::Model do
             @return = @resources = @article_model.copy(@repository.name, @adapter.name)
           end
 
-          it 'should return a Collection' do
-            @return.should be_a_kind_of(DataMapper::Collection)
+          it 'returns a Collection' do
+            expect(@return).to be_a_kind_of(DataMapper::Collection)
           end
 
-          it 'should return Resources' do
-            @return.each { |resource| resource.should be_a_kind_of(DataMapper::Resource) }
+          it 'returns Resources' do
+            @return.each { |resource| expect(resource).to be_a_kind_of(DataMapper::Resource) }
           end
 
-          it 'should have each Resource set to the expected Repository' do
-            @resources.each { |resource| resource.repository.name.should == @adapter.name }
+          it 'has each Resource set to the expected Repository' do
+            @resources.each { |resource| expect(resource.repository.name).to eq @adapter.name }
           end
 
-          it 'should create the Resources in the expected Repository' do
-            @article_model.all(:repository => DataMapper.repository(@adapter.name)).should == @resources
+          it 'creates the Resources in the expected Repository' do
+            expect(@article_model.all(repository: DataMapper.repository(@adapter.name))).to eq @resources
           end
         end
 
@@ -72,7 +72,7 @@ describe DataMapper::Model do
             @original.destroy
 
             # make sure the default repository is empty
-            @article_model.all(:repository => @repository).should be_empty
+            expect(@article_model.all(repository: @repository)).to be_empty
 
             # add an extra property to the alternate model
             DataMapper.repository(@adapter.name) do
@@ -93,25 +93,25 @@ describe DataMapper::Model do
             @return = @resources = @article_model.copy(@adapter.name, :default)
           end
 
-          it 'should return a Collection' do
-            @return.should be_a_kind_of(DataMapper::Collection)
+          it 'returns a Collection' do
+            expect(@return).to be_a_kind_of(DataMapper::Collection)
           end
 
-          it 'should return Resources' do
-            @return.each { |resource| resource.should be_a_kind_of(DataMapper::Resource) }
+          it 'returns Resources' do
+            @return.each { |resource| expect(resource).to be_a_kind_of(DataMapper::Resource) }
           end
 
-          it 'should have each Resource set to the expected Repository' do
-            @resources.each { |resource| resource.repository.name.should == :default }
+          it 'has each Resource set to the expected Repository' do
+            @resources.each { |resource| expect(resource.repository.name).to eq :default }
           end
 
-          it 'should return the expected resources' do
+          it 'returns the expected resources' do
             # match on id because resources from different repositories are different
-            @resources.map { |resource| resource.id }.should == [ @heff1.id ]
+            expect(@resources.map { |resource| resource.id }).to eq [@heff1.id]
           end
 
-          it 'should add the resources to the alternate repository' do
-            @article.model.get!(*@heff1.key).should_not be_nil
+          it 'adds the resources to the alternate repository' do
+            expect(@article.model.get!(*@heff1.key)).not_to be_nil
           end
         end
       end
@@ -177,34 +177,32 @@ describe DataMapper::Model do
       context 'with no arguments' do
         let(:args) { [] }
 
-        it { should be_instance_of(model) }
+        it { is_expected.to be_instance_of(model) }
 
-        its(:attributes) { should == { :title => 'Default Title' } }
+        its(:attributes) { is_expected.to eq({title: 'Default Title'}) }
       end
 
       context 'with an empty Hash' do
         let(:args) { [ {} ] }
 
-        it { should be_instance_of(model) }
-
-        its(:attributes) { should == { :title => 'Default Title' } }
+        it { is_expected.to be_instance_of(model) }
+        its(:attributes) { is_expected.to eq({title: 'Default Title'}) }
       end
 
       context 'with a non-empty Hash' do
         let(:attributes) { { :title => 'A Title' } }
         let(:args)       { [ attributes ]          }
 
-        it { should be_instance_of(model) }
+        it { is_expected.to be_instance_of(model) }
 
-        its(:attributes) { should == attributes }
+        its(:attributes) { is_expected.to eq attributes }
       end
 
       context 'with nil' do
-        let(:args) { [ nil ] }
+        let(:args) { [nil] }
 
-        it { should be_instance_of(model) }
-
-        its(:attributes) { should == { :title => 'Default Title' } }
+        it { is_expected.to be_instance_of(model) }
+        its(:attributes) { is_expected.to eq({title: 'Default Title'}) }
       end
     end
 
@@ -217,36 +215,34 @@ describe DataMapper::Model do
         context 'with no arguments' do
           let(:args) { [] }
 
-          it { should be_instance_of(model) }
+          it { is_expected.to be_instance_of(model) }
 
-          it { should be_saved }
+          it { is_expected.to be_saved }
         end
 
         context 'with an empty Hash' do
           let(:args) { [ {} ] }
 
-          it { should be_instance_of(model) }
 
-          it { should be_saved }
+          it { is_expected.to be_instance_of(model) }
+          it { is_expected.to be_saved }
         end
 
         context 'with a non-empty Hash' do
           let(:attributes) { { :title => 'A Title' } }
           let(:args)       { [ attributes ]          }
 
-          it { should be_instance_of(model) }
-
-          it { should be_saved }
-
-          its(:title) { should == attributes[:title] }
+          it { is_expected.to be_instance_of(model) }
+          it { is_expected.to be_saved }
+          its(:title) { is_expected.to eq attributes[:title] }
         end
 
         context 'with nil' do
           let(:args) { [ nil ] }
 
-          it { should be_instance_of(model) }
 
-          it { should be_saved }
+          it { is_expected.to be_instance_of(model) }
+          it { is_expected.to be_saved }
         end
       end
     end
@@ -257,8 +253,8 @@ describe DataMapper::Model do
 
         let(:model) { @article_model }
 
-        it 'should remove all resources' do
-          method(:subject).should change { model.any? }.from(true).to(false)
+        it 'removes all resources' do
+          expect(method(:subject)).to change { model.any? }.from(true).to(false)
         end
       end
     end
@@ -273,11 +269,11 @@ describe DataMapper::Model do
           let(:attributes) { { :title => 'Updated Title' } }
           let(:args)       { [ attributes ]                }
 
-          it { should be(true) }
+          it { is_expected.to be(true) }
 
-          it 'should persist the changes' do
+          it 'persists the changes' do
             subject
-            model.all(:fields => [ :title ]).map { |resource| resource.title }.uniq.should == [ attributes[:title] ]
+            expect(model.all(fields: [:title]).map { |resource| resource.title }.uniq).to eq [attributes[:title]]
           end
         end
 
@@ -285,11 +281,11 @@ describe DataMapper::Model do
           let(:attributes) { { :original => @other } }
           let(:args)       { [ attributes ]          }
 
-          it { should be(true) }
+          it { is_expected.to be(true) }
 
-          it 'should persist the changes' do
+          it 'persists the changes' do
             subject
-            model.all(:fields => [ :original_id ]).map { |resource| resource.original }.uniq.should == [ attributes[:original] ]
+            expect(model.all(fields: [:original_id]).map { |resource| resource.original }.uniq).to eq [attributes[:original]]
           end
         end
 
@@ -297,29 +293,29 @@ describe DataMapper::Model do
           let(:attributes) { { :title => nil } }
           let(:args)       { [ attributes ]    }
 
-          it 'should raise InvalidValueError' do
+          it 'raises InvalidValueError' do
             expect { subject }.to(raise_error(DataMapper::Property::InvalidValueError) do |error|
-              error.property.should == model.title
+              expect(error.property).to eq model.title
             end)
           end
         end
       end
     end
 
-    it_should_behave_like 'Finder Interface'
+    it_behaves_like 'Finder Interface'
 
-    it 'DataMapper::Model should respond to raise_on_save_failure' do
-      DataMapper::Model.should respond_to(:raise_on_save_failure)
+    it 'DataMapper::Model responds to raise_on_save_failure' do
+      expect(DataMapper::Model).to respond_to(:raise_on_save_failure)
     end
 
     describe '.raise_on_save_failure' do
       subject { DataMapper::Model.raise_on_save_failure }
 
-      it { should be(false) }
+      it { is_expected.to be(false) }
     end
 
-    it 'DataMapper::Model should respond to raise_on_save_failure=' do
-      DataMapper::Model.should respond_to(:raise_on_save_failure=)
+    it 'DataMapper::Model responds to raise_on_save_failure=' do
+      expect(DataMapper::Model).to respond_to(:raise_on_save_failure=)
     end
 
     describe '.raise_on_save_failure=' do
@@ -335,10 +331,10 @@ describe DataMapper::Model do
           @value = true
         end
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
 
-        it 'should set raise_on_save_failure' do
-          method(:subject).should change {
+        it 'sets raise_on_save_failure' do
+          expect(method(:subject)).to change {
             DataMapper::Model.raise_on_save_failure
           }.from(false).to(true)
         end
@@ -349,18 +345,18 @@ describe DataMapper::Model do
           @value = false
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
 
-        it 'should set raise_on_save_failure' do
-          method(:subject).should_not change {
+        it 'sets raise_on_save_failure' do
+          expect(method(:subject)).not_to change {
             DataMapper::Model.raise_on_save_failure
           }
         end
       end
     end
 
-    it 'A model should respond to raise_on_save_failure' do
-      @article_model.should respond_to(:raise_on_save_failure)
+    it 'A model responds to raise_on_save_failure' do
+      expect(@article_model).to respond_to(:raise_on_save_failure)
     end
 
     describe '#raise_on_save_failure' do
@@ -373,7 +369,7 @@ describe DataMapper::Model do
       subject { @article_model.raise_on_save_failure }
 
       describe 'when DataMapper::Model.raise_on_save_failure has not been set' do
-        it { should be(false) }
+        it { is_expected.to be(false) }
       end
 
       describe 'when DataMapper::Model.raise_on_save_failure has been set to true' do
@@ -381,7 +377,7 @@ describe DataMapper::Model do
           DataMapper::Model.raise_on_save_failure = true
         end
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
 
       describe 'when model.raise_on_save_failure has been set to true' do
@@ -389,12 +385,12 @@ describe DataMapper::Model do
           @article_model.raise_on_save_failure = true
         end
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
       end
     end
 
-    it 'A model should respond to raise_on_save_failure=' do
-      @article_model.should respond_to(:raise_on_save_failure=)
+    it 'A model responds to raise_on_save_failure=' do
+      expect(@article_model).to respond_to(:raise_on_save_failure=)
     end
 
     describe '#raise_on_save_failure=' do
@@ -410,10 +406,10 @@ describe DataMapper::Model do
           @value = true
         end
 
-        it { should be(true) }
+        it { is_expected.to be(true) }
 
-        it 'should set raise_on_save_failure' do
-          method(:subject).should change {
+        it 'sets raise_on_save_failure' do
+          expect(method(:subject)).to change {
             @article_model.raise_on_save_failure
           }.from(false).to(true)
         end
@@ -424,18 +420,18 @@ describe DataMapper::Model do
           @value = false
         end
 
-        it { should be(false) }
+        it { is_expected.to be(false) }
 
-        it 'should set raise_on_save_failure' do
-          method(:subject).should_not change {
+        it 'sets raise_on_save_failure' do
+          expect(method(:subject)).not_to change {
             @article_model.raise_on_save_failure
           }
         end
       end
     end
 
-    it 'A model should respond to allowed_writer_methods' do
-      @article_model.should respond_to(:allowed_writer_methods)
+    it 'A model responds to allowed_writer_methods' do
+      expect(@article_model).to respond_to(:allowed_writer_methods)
     end
 
     describe '#allowed_writer_methods' do
@@ -446,17 +442,15 @@ describe DataMapper::Model do
             id= title= content= subtitle= original_id= persisted_state= ].to_set
       end
 
-      it { should be_kind_of(Set) }
-
-      it { should be_all { |method| method.kind_of?(String) } }
-
-      it { should be_frozen }
+      it { is_expected.to be_kind_of(Set) }
+      it { is_expected.to be_all { |method| method.is_a?(String) } }
+      it { is_expected.to be_frozen }
 
       it 'is idempotent' do
-        should equal(instance_eval(&self.class.subject))
+        is_expected.to equal(instance_eval(&self.class.subject))
       end
 
-      it { should eql(expected_writer_methods) }
+      it { is_expected.to eql(expected_writer_methods) }
     end
   end
 end

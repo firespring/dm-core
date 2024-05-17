@@ -140,7 +140,7 @@ module DataMapper
         def query
           # TODO: consider making this a query_for method, so that ManyToMany::Relationship#query only
           #   returns the query supplied in the definition
-          @many_to_many_query ||= super.merge(links:).freeze
+          @many_to_many_query ||= super.merge(links: links).freeze
         end
 
         # Eager load the collection using the source as a base
@@ -288,7 +288,7 @@ module DataMapper
               inverse.name,
               inverse.child_model,
               inverse.parent_model,
-              inverse.options.merge(through:)
+              inverse.options.merge(through: through)
             )
           end
 
@@ -352,7 +352,7 @@ module DataMapper
 
           return false unless intermediaries.all(via => self).destroy!
 
-          return false unless model.all(repository:, conditions:).destroy!
+          return false unless model.all(repository: repository, conditions: conditions).destroy!
 
           each do |resource|
             resource.persistence_state = Resource::PersistenceState::Immutable.new(resource)

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require_relative '../spec_helper'
 require 'dm-core/support/ext/array'
 require 'dm-core/support/mash'
 
@@ -12,12 +12,12 @@ describe DataMapper::Ext::Array do
       @return = DataMapper::Ext::Array.to_mash(@array)
     end
 
-    it 'should return a Mash' do
-      @return.should be_kind_of(DataMapper::Mash)
+    it 'returns a Mash' do
+      expect(@return).to be_kind_of(DataMapper::Mash)
     end
 
-    it 'should return expected value' do
-      @return.should == { 'a' => [ 1 ], 'b' => [ 2 ], 'c' => [ 3 ] }
+    it 'returns expected value' do
+      expect(@return).to eq({'a' => [1], 'b' => [2], 'c' => [3]})
     end
   end
 end

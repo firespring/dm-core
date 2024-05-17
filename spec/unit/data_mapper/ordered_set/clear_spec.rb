@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/ordered_set'
-require 'unit/data_mapper/ordered_set/shared/clear_spec'
+require_relative 'shared/clear_spec'
 
 describe 'DataMapper::OrderedSet#clear' do
   subject { ordered_set.clear }
@@ -13,12 +13,12 @@ describe 'DataMapper::OrderedSet#clear' do
   context 'when no entries are present' do
     let(:entries) { [] }
 
-    it_should_behave_like 'DataMapper::OrderedSet#clear when no entries are present'
+    it_behaves_like 'DataMapper::OrderedSet#clear when no entries are present'
   end
 
   context 'when entries are present' do
     let(:entries) { [ entry1, entry2 ] }
 
-    it_should_behave_like 'DataMapper::OrderedSet#clear when entries are present'
+    it_behaves_like 'DataMapper::OrderedSet#clear when entries are present'
   end
 end

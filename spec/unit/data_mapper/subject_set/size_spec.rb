@@ -1,6 +1,6 @@
-require 'spec_helper'
+require_relative '../../../spec_helper'
 require 'dm-core/support/subject_set'
-require 'unit/data_mapper/subject_set/shared/size_spec'
+require_relative 'shared/size_spec'
 
 describe 'DataMapper::SubjectSet#size' do
   before :all do
@@ -22,14 +22,14 @@ describe 'DataMapper::SubjectSet#size' do
   context 'when no entry is present' do
     let(:set) { DataMapper::SubjectSet.new }
 
-    it_should_behave_like 'DataMapper::SubjectSet#size when no entry is present'
+    it_behaves_like 'DataMapper::SubjectSet#size when no entry is present'
   end
 
   context 'when 1 entry is present' do
     let(:set)     { DataMapper::SubjectSet.new(entries) }
     let(:entries) { [ entry1 ]                          }
 
-    it_should_behave_like 'DataMapper::SubjectSet#size when 1 entry is present'
+    it_behaves_like 'DataMapper::SubjectSet#size when 1 entry is present'
   end
 
   context 'when more than 1 entry is present' do
@@ -37,6 +37,6 @@ describe 'DataMapper::SubjectSet#size' do
     let(:entries)       { [ entry1, entry2 ]                  }
     let(:expected_size) { entries.size                        }
 
-    it_should_behave_like 'DataMapper::SubjectSet#size when more than 1 entry is present'
+    it_behaves_like 'DataMapper::SubjectSet#size when more than 1 entry is present'
   end
 end

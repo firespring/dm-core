@@ -1,4 +1,4 @@
-share_examples_for 'Finder Interface' do
+shared_examples 'Finder Interface' do
   before :all do
     %w[ @article_model @article @other @articles ].each do |ivar|
       raise "+#{ivar}+ should be defined in before block" unless instance_variable_defined?(ivar)
@@ -21,12 +21,12 @@ share_examples_for 'Finder Interface' do
     pending if @skip
   end
 
-  it 'should be Enumerable' do
-    @articles.should be_kind_of(Enumerable)
+  it 'is Enumerable' do
+    expect(@articles).to be_kind_of(Enumerable)
   end
 
   [ :[], :slice ].each do |method|
-    it { @articles.should respond_to(method) }
+    it { expect(@articles).to respond_to(method) }
 
     describe "##{method}" do
       before :all do
@@ -41,12 +41,12 @@ share_examples_for 'Finder Interface' do
           end
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return expected Resource' do
-          @return.should == @copy.entries.send(method, 0)
+        it 'returns expected Resource' do
+          expect(@return).to eq @copy.entries.send(method, 0)
         end
       end
 
@@ -55,16 +55,16 @@ share_examples_for 'Finder Interface' do
           @return = @resources = @articles.send(method, 5, 5)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return the expected Resource' do
-          @return.should == @copy.entries.send(method, 5, 5)
+        it 'returns the expected Resource' do
+          expect(@return).to eq @copy.entries.send(method, 5, 5)
         end
 
-        it 'should scope the Collection' do
-          @resources.reload.should == @copy.entries.send(method, 5, 5)
+        it 'scopes the Collection' do
+          expect(@resources.reload).to eq @copy.entries.send(method, 5, 5)
         end
       end
 
@@ -73,16 +73,16 @@ share_examples_for 'Finder Interface' do
           @return = @resources = @articles.send(method, 5..10)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return the expected Resources' do
-          @return.should == @copy.entries.send(method, 5..10)
+        it 'returns the expected Resources' do
+          expect(@return).to eq @copy.entries.send(method, 5..10)
         end
 
-        it 'should scope the Collection' do
-          @resources.reload.should == @copy.entries.send(method, 5..10)
+        it 'scopes the Collection' do
+          expect(@resources.reload).to eq @copy.entries.send(method, 5..10)
         end
       end
 
@@ -93,12 +93,12 @@ share_examples_for 'Finder Interface' do
           end
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should return expected Resource' do
-          @return.should == @copy.entries.send(method, -1)
+        it 'returns expected Resource' do
+          expect(@return).to eq @copy.entries.send(method, -1)
         end
       end
 
@@ -107,16 +107,16 @@ share_examples_for 'Finder Interface' do
           @return = @resources = @articles.send(method, -5, 5)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return the expected Resources' do
-          @return.should == @copy.entries.send(method, -5, 5)
+        it 'returns the expected Resources' do
+          expect(@return).to eq @copy.entries.send(method, -5, 5)
         end
 
-        it 'should scope the Collection' do
-          @resources.reload.should == @copy.entries.send(method, -5, 5)
+        it 'scopes the Collection' do
+          expect(@resources.reload).to eq @copy.entries.send(method, -5, 5)
         end
       end
 
@@ -125,16 +125,16 @@ share_examples_for 'Finder Interface' do
           @return = @resources = @articles.send(method, -5..-2)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return the expected Resources' do
-          @return.to_a.should == @copy.entries.send(method, -5..-2)
+        it 'returns the expected Resources' do
+          expect(@return.to_a).to eq @copy.entries.send(method, -5..-2)
         end
 
-        it 'should scope the Collection' do
-          @resources.reload.should == @copy.entries.send(method, -5..-2)
+        it 'scopes the Collection' do
+          expect(@resources.reload).to eq @copy.entries.send(method, -5..-2)
         end
       end
 
@@ -143,16 +143,16 @@ share_examples_for 'Finder Interface' do
           @return = @resources = @articles.send(method, 0...0)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return the expected value' do
-          @return.to_a.should == @copy.entries.send(method, 0...0)
+        it 'returns the expected value' do
+          expect(@return.to_a).to eq @copy.entries.send(method, 0...0)
         end
 
-        it 'should be empty' do
-          @return.should be_empty
+        it 'is empty' do
+          expect(@return).to be_empty
         end
       end
 
@@ -163,8 +163,8 @@ share_examples_for 'Finder Interface' do
           end
         end
 
-        it 'should return nil' do
-          @return.should be_nil
+        it 'returns nil' do
+          expect(@return).to be_nil
         end
       end
 
@@ -173,12 +173,12 @@ share_examples_for 'Finder Interface' do
           @return = @articles.send(method, 99, 1)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be empty' do
-          @return.should be_empty
+        it 'is empty' do
+          expect(@return).to be_empty
         end
       end
 
@@ -187,18 +187,18 @@ share_examples_for 'Finder Interface' do
           @return = @articles.send(method, 99..100)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be empty' do
-          @return.should be_empty
+        it 'is empty' do
+          expect(@return).to be_empty
         end
       end
     end
   end
 
-  it { @articles.should respond_to(:all) }
+  it { expect(@articles).to respond_to(:all) }
 
   describe '#all' do
     describe 'with no arguments' do
@@ -208,28 +208,28 @@ share_examples_for 'Finder Interface' do
         @return = @collection = @articles.all
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return a new instance' do
-        @return.should_not equal(@articles)
+      it 'returns a new instance' do
+        expect(@return).not_to equal(@articles)
       end
 
-      it 'should be expected Resources' do
-        @collection.should == @articles.entries
+      it 'is expected Resources' do
+        expect(@collection).to eq @articles.entries
       end
 
-      it 'should not have a Query the same as the original' do
-        @return.query.should_not equal(@articles.query)
+      it 'does not have a Query the same as the original' do
+        expect(@return.query).not_to equal(@articles.query)
       end
 
-      it 'should have a Query equal to the original' do
-        @return.query.should eql(@articles.query)
+      it 'has a Query equal to the original' do
+        expect(@return.query).to eql(@articles.query)
       end
 
-      it 'should scope the Collection' do
-        @collection.reload.should == @copy.entries
+      it 'scopes the Collection' do
+        expect(@collection.reload).to eq @copy.entries
       end
     end
 
@@ -241,24 +241,24 @@ share_examples_for 'Finder Interface' do
         @return = @articles.all(:content => [ 'New Article' ])
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return a new instance' do
-        @return.should_not equal(@articles)
+      it 'returns a new instance' do
+        expect(@return).not_to equal(@articles)
       end
 
-      it 'should be expected Resources' do
-        @return.should == [ @new ]
+      it 'is expected Resources' do
+        expect(@return).to eq [ @new ]
       end
 
-      it 'should have a different query than original Collection' do
-        @return.query.should_not equal(@articles.query)
+      it 'has a different query than original Collection' do
+        expect(@return.query).not_to equal(@articles.query)
       end
 
-      it 'should scope the Collection' do
-        @return.reload.should == @copy.entries.select { |resource| resource.content == 'New Article' }
+      it 'scopes the Collection' do
+        expect(@return.reload).to eq @copy.entries.select { |resource| resource.content == 'New Article' }
       end
     end
 
@@ -274,32 +274,32 @@ share_examples_for 'Finder Interface' do
         @return = @articles.all(:conditions => [ 'subtitle = ?', 'New Article' ])
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return a new instance' do
-        @return.should_not equal(@articles)
+      it 'returns a new instance' do
+        expect(@return).not_to equal(@articles)
       end
 
-      it 'should be expected Resources' do
-        @return.should == [ @new ]
+      it 'is expected Resources' do
+        expect(@return).to eq [ @new ]
       end
 
-      it 'should have a different query than original Collection' do
-        @return.query.should_not == @articles.query
+      it 'has a different query than original Collection' do
+        expect(@return.query).not_to eq @articles.query
       end
 
-      it 'should scope the Collection' do
-        @return.reload.should == @copy.entries.select { |resource| resource.subtitle == 'New Article' }.first(1)
+      it 'scopes the Collection' do
+        expect(@return.reload).to eq @copy.entries.select { |resource| resource.subtitle == 'New Article' }.first(1)
       end
     end
 
     describe 'with a query that is out of range' do
-      it 'should raise an exception' do
-        lambda {
+      it 'raises an exception' do
+        expect {
           @articles.all(:limit => 10).all(:offset => 10)
-        }.should raise_error(RangeError, 'offset 10 and limit 0 are outside allowed range')
+        }.to raise_error(RangeError, 'offset 10 and limit 0 are outside allowed range')
       end
     end
 
@@ -309,16 +309,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:original => @original.attributes)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'is expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -327,16 +327,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:original => @original)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'are expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -349,16 +349,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:original => @collection)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'is expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
 
       end
@@ -368,16 +368,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:original => [])
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be an empty Collection' do
-          @return.should be_empty
+        it 'is an empty Collection' do
+          expect(@return).to be_empty
         end
 
-        it 'should not have a valid query' do
-          @return.query.should_not be_valid
+        it 'does not have a valid query' do
+          expect(@return.query).not_to be_valid
         end
       end
 
@@ -386,32 +386,32 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:original => nil)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
         if respond_to?(:model?) && model?
-          it 'should be expected Resources' do
-            @return.should == [ @original, @other ]
+          it 'is expected Resources' do
+            expect(@return).to eq [ @original, @other ]
           end
         else
-          it 'should be an empty Collection' do
-            @return.should be_empty
+          it 'is an empty Collection' do
+            expect(@return).to be_empty
           end
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
 
-        it 'should be equivalent to negated collection query' do
-          pending_if 'Update RDBMS to match ruby behavior', @do_adapter && @articles.kind_of?(DataMapper::Model) do
-            # NOTE: the second query will not match any articles where original_id
-            # is nil, while the in-memory/yaml adapters will.  RDBMS will explicitly
-            # filter out NULL matches because we are matching on a non-NULL value,
-            # which is not consistent with how DM/Ruby matching behaves.
-            @return.should == @articles.all(:original.not => @article_model.all)
-          end
+        it 'is equivalent to negated collection query' do
+          pending 'Update RDBMS to match ruby behavior' if @do_adapter && @articles.kind_of?(DataMapper::Model)
+
+          # NOTE: the second query will not match any articles where original_id
+          # is nil, while the in-memory/yaml adapters will.  RDBMS will explicitly
+          # filter out NULL matches because we are matching on a non-NULL value,
+          # which is not consistent with how DM/Ruby matching behaves.
+          expect(@return).to eq @articles.all(:original.not => @article_model.all)
         end
       end
 
@@ -420,20 +420,20 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:original.not => nil)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'are expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
 
-        it 'should be equivalent to collection query' do
-          @return.should == @articles.all(:original => @article_model.all)
+        it 'is equivalent to collection query' do
+          expect(@return).to eq @articles.all(:original => @article_model.all)
         end
       end
     end
@@ -448,16 +448,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:previous => @new.attributes)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'are expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -466,16 +466,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:previous => @new)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'are expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -488,16 +488,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:previous => @collection)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'are expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -506,16 +506,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:previous => [])
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be an empty Collection' do
-          @return.should be_empty
+        it 'is an empty Collection' do
+          expect(@return).to be_empty
         end
 
-        it 'should not have a valid query' do
-          @return.query.should_not be_valid
+        it 'does not have a valid query' do
+          expect(@return.query).not_to be_valid
         end
       end
 
@@ -524,26 +524,26 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:previous => nil)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
         if respond_to?(:model?) && model?
-          it 'should be expected Resources' do
-            @return.should == [ @other, @new ]
+          it 'are expected Resources' do
+            expect(@return).to eq [ @other, @new ]
           end
         else
-          it 'should be expected Resources' do
-            @return.should == [ @new ]
+          it 'are expected Resources' do
+            expect(@return).to eq [ @new ]
           end
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
 
-        it 'should be equivalent to negated collection query' do
-          @return.should == @articles.all(:previous.not => @article_model.all(:original.not => nil))
+        it 'is equivalent to negated collection query' do
+          expect(@return).to eq @articles.all(:previous.not => @article_model.all(:original.not => nil))
         end
       end
 
@@ -552,26 +552,26 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:previous.not => nil)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
         if respond_to?(:model?) && model?
-          it 'should be expected Resources' do
-            @return.should == [ @original, @article ]
+          it 'are expected Resources' do
+            expect(@return).to eq [ @original, @article ]
           end
         else
-          it 'should be expected Resources' do
-            @return.should == [ @article ]
+          it 'are expected Resources' do
+            expect(@return).to eq [ @article ]
           end
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
 
-        it 'should be equivalent to collection query' do
-          @return.should == @articles.all(:previous => @article_model.all)
+        it 'is equivalent to collection query' do
+          expect(@return).to eq @articles.all(:previous => @article_model.all)
         end
       end
     end
@@ -586,16 +586,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:revisions => @new.attributes)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'are expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -604,16 +604,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:revisions => @new)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'are expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -626,16 +626,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:revisions => @collection)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          @return.should == [ @article ]
+        it 'are expected Resources' do
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -644,16 +644,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:revisions => [])
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be an empty Collection' do
-          @return.should be_empty
+        it 'is an empty Collection' do
+          expect(@return).to be_empty
         end
 
-        it 'should not have a valid query' do
-          @return.query.should_not be_valid
+        it 'does not have a valid query' do
+          expect(@return.query).not_to be_valid
         end
       end
 
@@ -662,26 +662,26 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:revisions => nil)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
         if respond_to?(:model?) && model?
-          it 'should be expected Resources' do
-            @return.should == [ @other, @new ]
+          it 'are expected Resources' do
+            expect(@return).to eq [ @other, @new ]
           end
         else
-          it 'should be expected Resources' do
-            @return.should == [ @new ]
+          it 'are expected Resources' do
+            expect(@return).to eq [ @new ]
           end
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
 
-        it 'should be equivalent to negated collection query' do
-          @return.should == @articles.all(:revisions.not => @article_model.all(:original.not => nil))
+        it 'is equivalent to negated collection query' do
+          expect(@return).to eq @articles.all(:revisions.not => @article_model.all(:original.not => nil))
         end
       end
 
@@ -690,26 +690,26 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:revisions.not => nil)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
         if respond_to?(:model?) && model?
-          it 'should be expected Resources' do
-            @return.should == [ @original, @article ]
+          it 'are expected Resources' do
+            expect(@return).to eq [ @original, @article ]
           end
         else
-          it 'should be expected Resources' do
-            @return.should == [ @article ]
+          it 'are expected Resources' do
+            expect(@return).to eq [ @article ]
           end
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
 
-        it 'should be equivalent to collection query' do
-          @return.should == @articles.all(:revisions => @article_model.all)
+        it 'is equivalent to collection query' do
+          expect(@return).to eq @articles.all(:revisions => @article_model.all)
         end
       end
     end
@@ -724,18 +724,18 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:publications => @publication.attributes)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          pending 'TODO' do
-            @return.should == [ @article ]
-          end
+        it 'are expected Resources' do
+          pending 'TODO'
+
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -744,18 +744,18 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:publications => @publication)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          pending 'TODO' do
-            @return.should == [ @article ]
-          end
+        it 'are expected Resources' do
+          pending 'TODO'
+
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -768,18 +768,18 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:publications => @collection)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          pending 'TODO' do
-            @return.should == [ @article ]
-          end
+        it 'are expected Resources' do
+          pending 'TODO'
+
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
       end
 
@@ -788,16 +788,16 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:publications => [])
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be an empty Collection' do
-          @return.should be_empty
+        it 'is an empty Collection' do
+          expect(@return).to be_empty
         end
 
-        it 'should not have a valid query' do
-          @return.query.should_not be_valid
+        it 'does not have a valid query' do
+          expect(@return.query).not_to be_valid
         end
       end
 
@@ -806,22 +806,22 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:publications => nil)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be empty' do
-          pending 'TODO' do
-            @return.should be_empty
-          end
+        it 'is empty' do
+          pending 'TODO'
+
+          expect(@return).to be_empty
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
 
-        it 'should be equivalent to negated collection query' do
-          @return.should == @articles.all(:publications.not => @publication_model.all)
+        it 'is equivalent to negated collection query' do
+          expect(@return).to eq @articles.all(:publications.not => @publication_model.all)
         end
       end
 
@@ -830,28 +830,28 @@ share_examples_for 'Finder Interface' do
           @return = @articles.all(:publications.not => nil)
         end
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should be expected Resources' do
-          pending 'TODO' do
-            @return.should == [ @article ]
-          end
+        it 'are expected Resources' do
+          pending 'TODO'
+
+          expect(@return).to eq [ @article ]
         end
 
-        it 'should have a valid query' do
-          @return.query.should be_valid
+        it 'has a valid query' do
+          expect(@return.query).to be_valid
         end
 
-        it 'should be equivalent to collection query' do
-          @return.should == @articles.all(:publications => @publication_model.all)
+        it 'is equivalent to collection query' do
+          expect(@return).to eq @articles.all(:publications => @publication_model.all)
         end
       end
     end
   end
 
-  it { @articles.should respond_to(:at) }
+  it { expect(@articles).to respond_to(:at) }
 
   describe '#at' do
     before :all do
@@ -866,12 +866,12 @@ share_examples_for 'Finder Interface' do
 
       should_not_be_a_kicker
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @resource.should == @copy.entries.at(0)
+      it 'returns expected Resource' do
+        expect(@resource).to eq @copy.entries.at(0)
       end
     end
 
@@ -882,17 +882,17 @@ share_examples_for 'Finder Interface' do
 
       should_not_be_a_kicker
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should return expected Resource' do
-        @resource.should == @copy.entries.at(-1)
+      it 'returns expected Resource' do
+        expect(@resource).to eq @copy.entries.at(-1)
       end
     end
   end
 
-  it { @articles.should respond_to(:each) }
+  it { expect(@articles).to respond_to(:each) }
 
   describe '#each' do
     context 'with a block' do
@@ -906,9 +906,9 @@ share_examples_for 'Finder Interface' do
         @copy.to_a
       end
 
-      it { should equal(@articles) }
+      it { is_expected.to equal(@articles) }
 
-      it { method(:subject).should change { yields.dup }.from([]).to(@copy.to_a) }
+      it { expect { method(:subject) }.to change { yields.dup }.from([]).to(@copy.to_a) }
     end
 
     context 'without a block' do
@@ -922,13 +922,13 @@ share_examples_for 'Finder Interface' do
         @copy.to_a
       end
 
-      it { should be_instance_of(to_enum.class) }
+      it { is_expected.to be_instance_of(to_enum.class) }
 
       it { expect { subject.each(&block) }.to change { yields.dup }.from([]).to(@copy.to_a) }
     end
   end
 
-  it { @articles.should respond_to(:fetch) }
+  it { expect(@articles).to respond_to(:fetch) }
 
   describe '#fetch' do
     subject { @articles.fetch(*args, &block) }
@@ -945,22 +945,22 @@ share_examples_for 'Finder Interface' do
 
       should_not_be_a_kicker
 
-      it { should be_kind_of(DataMapper::Resource) }
+      it { is_expected.to be_kind_of(DataMapper::Resource) }
 
-      it { should == @copy.entries.fetch(*args) }
+      it { is_expected.to eq @copy.entries.fetch(*args) }
     end
 
     context 'with an invalid index and no default' do
       let(:args) { [ 42 ] }
 
-      it { method(:subject).should raise_error(IndexError) }
+      it { expect { method(:subject) }.to raise_error(IndexError) }
     end
 
     context 'with an invalid index and a default' do
       let(:default) { mock('Default') }
       let(:args)    { [ 42, default ] }
 
-      it { should equal(default) }
+      it { is_expected.to equal(default) }
     end
 
     context 'with an invalid index and a block default' do
@@ -969,13 +969,13 @@ share_examples_for 'Finder Interface' do
       let(:block)   { lambda { |index| yields << index; default } }
       let(:args)    { [ 42 ]                                      }
 
-      it { should equal(default) }
+      it { is_expected.to equal(default) }
 
-      it { method(:subject).should change { yields.dup }.from([]).to([ 42 ]) }
+      it { expect { method(:subject) }.to change { yields.dup }.from([]).to([ 42 ]) }
     end
   end
 
-  it { @articles.should respond_to(:first) }
+  it { expect(@articles).to respond_to(:first) }
 
   describe '#first' do
     before :all do
@@ -990,12 +990,12 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.first
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be first Resource in the Collection' do
-        @resource.should == @copy.entries.first
+      it 'is first Resource in the Collection' do
+        expect(@resource).to eq @copy.entries.first
       end
     end
 
@@ -1004,12 +1004,12 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.first({})
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be first Resource in the Collection' do
-        @resource.should == @copy.entries.first
+      it 'is first Resource in the Collection' do
+        expect(@resource).to eq @copy.entries.first
       end
     end
 
@@ -1018,12 +1018,12 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.first(:content => 'Sample')
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should should be the first Resource in the Collection matching the query' do
-        @resource.should == @article
+      it 'is first Resource in the Collection matching the query' do
+        expect(@resource).to eq @article
       end
     end
 
@@ -1032,12 +1032,12 @@ share_examples_for 'Finder Interface' do
         @return = @resources = @articles.first(1)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should be the first N Resources in the Collection' do
-        @resources.should == @copy.entries.first(1)
+      it 'is the first N Resources in the Collection' do
+        expect(@resources).to eq @copy.entries.first(1)
       end
     end
 
@@ -1047,12 +1047,12 @@ share_examples_for 'Finder Interface' do
         @return = @articles.first
       end
 
-      it 'should still be an empty collection' do
-        @articles.should be_empty
+      it 'is still an empty collection' do
+        expect(@articles).to be_empty
       end
 
-      it 'should return nil' do
-        @return.should be_nil
+      it 'returns nil' do
+        expect(@return).to be_nil
       end
     end
 
@@ -1061,12 +1061,12 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.first(:offset => 1)
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be the second Resource in the Collection' do
-        @resource.should == @copy.entries[1]
+      it 'is the second Resource in the Collection' do
+        expect(@resource).to eq @copy.entries[1]
       end
     end
 
@@ -1075,17 +1075,17 @@ share_examples_for 'Finder Interface' do
         @return = @resources = @articles.first(1, :content => 'Sample')
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should be the first N Resources in the Collection matching the query' do
-        @resources.should == [ @article ]
+      it 'is the first N Resources in the Collection matching the query' do
+        expect(@resources).to eq [ @article ]
       end
     end
   end
 
-  it { @articles.should respond_to(:first_or_create) }
+  it { expect(@articles).to respond_to(:first_or_create) }
 
   describe '#first_or_create' do
     describe 'with conditions that find an existing Resource' do
@@ -1093,16 +1093,16 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.first_or_create(@article.attributes)
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be expected Resource' do
-        @resource.should == @article
+      it 'is expected Resource' do
+        expect(@resource).to eq @article
       end
 
-      it 'should be a saved Resource' do
-        @resource.should be_saved
+      it 'is a saved Resource' do
+        expect(@resource).to be_saved
       end
     end
 
@@ -1114,21 +1114,21 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.first_or_create(@conditions, @attributes)
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be expected Resource' do
-        DataMapper::Ext::Hash.only(@resource.attributes, *@conditions.keys).should == @conditions
+      it 'is expected Resource' do
+        expect(DataMapper::Ext::Hash.only(@resource.attributes, *@conditions.keys)).to eq @conditions
       end
 
-      it 'should be a saved Resource' do
-        @resource.should be_saved
+      it 'is a saved Resource' do
+        expect(@resource).to be_saved
       end
     end
   end
 
-  it { @articles.should respond_to(:first_or_new) }
+  it { expect(@articles).to respond_to(:first_or_new) }
 
   describe '#first_or_new' do
     describe 'with conditions that find an existing Resource' do
@@ -1136,16 +1136,16 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.first_or_new(@article.attributes)
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be expected Resource' do
-        @resource.should == @article
+      it 'is expected Resource' do
+        expect(@resource).to eq @article
       end
 
-      it 'should be a saved Resource' do
-        @resource.should be_saved
+      it 'is a saved Resource' do
+        expect(@resource).to be_saved
       end
     end
 
@@ -1157,22 +1157,22 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.first_or_new(@conditions, @attributes)
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be expected Resource' do
-        DataMapper::Ext::Hash.only(@resource.attributes, *@conditions.keys).should == @conditions
+      it 'is expected Resource' do
+        expect(DataMapper::Ext::Hash.only(@resource.attributes, *@conditions.keys)).to eq @conditions
       end
 
-      it 'should not be a saved Resource' do
-        @resource.should be_new
+      it 'is a saved Resource' do
+        expect(@resource).to be_new
       end
     end
   end
 
   [ :get, :get! ].each do |method|
-    it { @articles.should respond_to(method) }
+    it { expect(@articles).to respond_to(method) }
 
     describe "##{method}" do
       describe 'with a key to a Resource within the Collection' do
@@ -1182,12 +1182,12 @@ share_examples_for 'Finder Interface' do
           end
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should be matching Resource in the Collection' do
-          @resource.should == @article
+        it 'is matching Resource in the Collection' do
+          expect(@resource).to eq @article
         end
       end
 
@@ -1198,53 +1198,53 @@ share_examples_for 'Finder Interface' do
           end
         end
 
-        it 'should return a Resource' do
-          @return.should be_kind_of(DataMapper::Resource)
+        it 'returns a Resource' do
+          expect(@return).to be_kind_of(DataMapper::Resource)
         end
 
-        it 'should be matching Resource in the Collection' do
-          @resource.should == @article
+        it 'is matching Resource in the Collection' do
+          expect(@resource).to eq @article
         end
       end
 
       describe 'with a key to a Resource not within the Collection' do
         if method == :get
-          it 'should return nil' do
-            @articles.get(99).should be_nil
+          it 'returns nil' do
+            expect(@articles.get(99)).to be_nil
           end
         else
-          it 'should raise an exception' do
-            lambda {
+          it 'raises an exception' do
+            expect {
               @articles.get!(99)
-            }.should raise_error(DataMapper::ObjectNotFoundError, "Could not find #{@article_model} with key \[99\]")
+            }.to raise_error(DataMapper::ObjectNotFoundError, "Could not find #{@article_model} with key \[99\]")
           end
         end
       end
 
       describe 'with a key that is nil' do
         if method == :get
-          it 'should return nil' do
-            @articles.get(nil).should be_nil
+          it 'returns nil' do
+            expect(@articles.get(nil)).to be_nil
           end
         else
-          it 'should raise an exception' do
-            lambda {
+          it 'raises an exception' do
+            expect {
               @articles.get!(nil)
-            }.should raise_error(DataMapper::ObjectNotFoundError, "Could not find #{@article_model} with key [nil]")
+            }.to raise_error(DataMapper::ObjectNotFoundError, "Could not find #{@article_model} with key [nil]")
           end
         end
       end
 
       describe 'with a key that is an empty String' do
         if method == :get
-          it 'should return nil' do
-            @articles.get('').should be_nil
+          it 'returns nil' do
+            expect(@articles.get('')).to be_nil
           end
         else
-          it 'should raise an exception' do
-            lambda {
+          it 'raises an exception' do
+            expect {
               @articles.get!('')
-            }.should raise_error(DataMapper::ObjectNotFoundError, "Could not find #{@article_model} with key [\"\"]")
+            }.to raise_error(DataMapper::ObjectNotFoundError, "Could not find #{@article_model} with key [\"\"]")
           end
         end
       end
@@ -1252,14 +1252,14 @@ share_examples_for 'Finder Interface' do
       describe 'with a key that has incorrect number of arguments' do
         subject { @articles.send(method) }
 
-        it 'should raise an exception' do
-          method(:subject).should raise_error(ArgumentError, 'The number of arguments for the key is invalid, expected 1 but was 0')
+        it 'raises an exception' do
+          expect { method(:subject) }.to raise_error(ArgumentError, 'The number of arguments for the key is invalid, expected 1 but was 0')
         end
       end
     end
   end
 
-  it { @articles.should respond_to(:last) }
+  it { expect(@articles).to respond_to(:last) }
 
   describe '#last' do
     before :all do
@@ -1274,12 +1274,12 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.last
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be last Resource in the Collection' do
-        @resource.should == @copy.entries.last
+      it 'is last Resource in the Collection' do
+        expect(@resource).to eq @copy.entries.last
       end
     end
 
@@ -1288,22 +1288,22 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.last(:content => 'Sample')
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should should be the last Resource in the Collection matching the query' do
-        @resource.should == @article
+      it 'is the last Resource in the Collection matching the query' do
+        expect(@resource).to eq @article
       end
 
-      it 'should not update the original query order' do
+      it 'does not update the original query order' do
         collection     = @articles.all(:order => [ :title ])
         original_order = collection.query.order[0].dup
         last           = collection.last(:content => 'Sample')
 
-        last.should == @resource
+        expect(last).to eq @resource
 
-        collection.query.order[0].should == original_order
+        expect(collection.query.order[0]).to eq original_order
       end
     end
 
@@ -1312,12 +1312,12 @@ share_examples_for 'Finder Interface' do
         @return = @resources = @articles.last(1)
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should be the last N Resources in the Collection' do
-        @resources.should == @copy.entries.last(1)
+      it 'is the last N Resources in the Collection' do
+        expect(@resources).to eq @copy.entries.last(1)
       end
     end
 
@@ -1326,12 +1326,12 @@ share_examples_for 'Finder Interface' do
         @return = @resource = @articles.last(:offset => 1)
       end
 
-      it 'should return a Resource' do
-        @return.should be_kind_of(DataMapper::Resource)
+      it 'returns a Resource' do
+        expect(@return).to be_kind_of(DataMapper::Resource)
       end
 
-      it 'should be the second Resource in the Collection' do
-        @resource.should == @copy.entries[-2]
+      it 'is the second Resource in the Collection' do
+        expect(@resource).to eq @copy.entries[-2]
       end
     end
 
@@ -1340,17 +1340,17 @@ share_examples_for 'Finder Interface' do
         @return = @resources = @articles.last(1, :content => 'Sample')
       end
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should be the last N Resources in the Collection matching the query' do
-        @resources.should == [ @article ]
+      it 'is the last N Resources in the Collection matching the query' do
+        expect(@resources).to eq [ @article ]
       end
     end
   end
 
-  it { @articles.should respond_to(:reverse) }
+  it { expect(@articles).to respond_to(:reverse) }
 
   describe '#reverse' do
     before :all do
@@ -1361,20 +1361,20 @@ share_examples_for 'Finder Interface' do
       @return = @articles.reverse
     end
 
-    it 'should return a Collection' do
-      @return.should be_kind_of(DataMapper::Collection)
+    it 'returns a Collection' do
+      expect(@return).to be_kind_of(DataMapper::Collection)
     end
 
-    it 'should return a Collection with reversed entries' do
-      @return.should == @articles.entries.reverse
+    it 'returns a Collection with reversed entries' do
+      expect(@return).to eq @articles.entries.reverse
     end
 
-    it 'should return a Query that is the reverse of the original' do
-      @return.query.should == @query.reverse
+    it 'returns a Query that is the reverse of the original' do
+      expect(@return.query).to eq @query.reverse
     end
   end
 
-  it { @articles.should respond_to(:values_at) }
+  it { expect(@articles).to respond_to(:values_at) }
 
   describe '#values_at' do
     subject { @articles.values_at(*args) }
@@ -1389,9 +1389,9 @@ share_examples_for 'Finder Interface' do
 
       should_not_be_a_kicker
 
-      it { should be_kind_of(Array) }
+      it { is_expected.to be_kind_of(Array) }
 
-      it { should == @copy.entries.values_at(*args) }
+      it { is_expected.to eq @copy.entries.values_at(*args) }
     end
 
     describe 'with negative offset' do
@@ -1399,38 +1399,38 @@ share_examples_for 'Finder Interface' do
 
       should_not_be_a_kicker
 
-      it { should be_kind_of(Array) }
+      it { is_expected.to be_kind_of(Array) }
 
-      it { should == @copy.entries.values_at(*args) }
+      it { is_expected.to eq @copy.entries.values_at(*args) }
     end
   end
 
-  it 'should respond to a belongs_to relationship method with #method_missing' do
-    pending_if 'Model#method_missing should delegate to relationships', @articles.kind_of?(Class) do
-      @articles.should respond_to(:original)
-    end
+  it 'responds to a belongs_to relationship method with #method_missing' do
+    pending 'Model#method_missing should delegate to relationships' if @articles.kind_of?(Class)
+
+    expect(@articles).to respond_to(:original)
   end
 
-  it 'should respond to a has n relationship method with #method_missing' do
-    pending_if 'Model#method_missing should delegate to relationships', @articles.kind_of?(Class) do
-      @articles.should respond_to(:revisions)
-    end
+  it 'responds to a has n relationship method with #method_missing' do
+    pending 'Model#method_missing should delegate to relationships' if @articles.kind_of?(Class)
+
+    expect(@articles).to respond_to(:revisions)
   end
 
-  it 'should respond to a has 1 relationship method with #method_missing' do
-    pending_if 'Model#method_missing should delegate to relationships', @articles.kind_of?(Class) do
-      @articles.should respond_to(:previous)
-    end
+  it 'responds to a has 1 relationship method with #method_missing' do
+    pending 'Model#method_missing should delegate to relationships' if @articles.kind_of?(Class)
+
+    expect(@articles).to respond_to(:previous)
   end
 
   describe '#method_missing' do
     before do
-      pending 'Model#method_missing should delegate to relationships' if @articles.kind_of?(Class)
+      pending 'Model#method_missing delegates to relationships' if @articles.kind_of?(Class)
     end
 
     describe 'with a belongs_to relationship method' do
       before :all do
-        rescue_if 'Model#method_missing should delegate to relationships', @articles.kind_of?(Class) do
+        rescue_if 'Model#method_missing delegates to relationships', @articles.kind_of?(Class) do
           @articles.create(:content => 'Another Article', :original => @original)
 
           @return = @collection = @articles.originals
@@ -1439,16 +1439,16 @@ share_examples_for 'Finder Interface' do
 
       should_not_be_a_kicker
 
-      it 'should return a Collection' do
-        @return.should be_kind_of(DataMapper::Collection)
+      it 'returns a Collection' do
+        expect(@return).to be_kind_of(DataMapper::Collection)
       end
 
-      it 'should return expected Collection' do
-        @collection.should == [ @original ]
+      it 'returns expected Collection' do
+        expect(@collection).to eq [ @original ]
       end
 
-      it 'should set the association for each Resource' do
-        @articles.map { |resource| resource.original }.should == [ @original, @original ]
+      it 'sets the association for each Resource' do
+        expect(@articles.map { |resource| resource.original }).to eq [ @original, @original ]
       end
     end
 
@@ -1461,7 +1461,7 @@ share_examples_for 'Finder Interface' do
         @article.previous = @new
         @new.previous     = @other
 
-        @article.save.should be(true)
+        expect(@article.save).to be(true)
       end
 
       describe 'with no arguments' do
@@ -1471,17 +1471,17 @@ share_examples_for 'Finder Interface' do
 
         should_not_be_a_kicker
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return expected Collection' do
+        it 'returns expected Collection' do
           # association is sorted reverse by id
-          @return.should == [ @new, @other ]
+          expect(@return).to eq [ @new, @other ]
         end
 
-        it 'should set the association for each Resource' do
-          @articles.map { |resource| resource.previous }.should == [ @new, @other ]
+        it 'sets the association for each Resource' do
+          expect(@articles.map { |resource| resource.previous }).to eq [ @new, @other ]
         end
       end
 
@@ -1492,23 +1492,23 @@ share_examples_for 'Finder Interface' do
 
         should_not_be_a_kicker
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return expected Collection' do
+        it 'returns expected Collection' do
           # association is sorted reverse by id
-          @return.should == [ @new, @other ]
+          expect(@return).to eq [ @new, @other ]
         end
 
         { :id => true, :title => false, :content => false }.each do |attribute, expected|
-          it "should have query field #{attribute.inspect} #{'not' unless expected} loaded".squeeze(' ') do
-            @return.each { |resource| resource.attribute_loaded?(attribute).should == expected }
+          it "has query field #{attribute.inspect} #{'not' unless expected} loaded".squeeze(' ') do
+            @return.each { |resource| expect(resource.attribute_loaded?(attribute)).to eq expected }
           end
         end
 
-        it 'should set the association for each Resource' do
-          @articles.map { |resource| resource.previous }.should == [ @new, @other ]
+        it 'sets the association for each Resource' do
+          expect(@articles.map { |resource| resource.previous }).to eq [ @new, @other ]
         end
       end
     end
@@ -1523,7 +1523,7 @@ share_examples_for 'Finder Interface' do
         @article.revisions << @new
         @new.revisions     << @other
 
-        @article.save.should be(true)
+        expect(@article.save).to be(true)
       end
 
       describe 'with no arguments' do
@@ -1533,16 +1533,16 @@ share_examples_for 'Finder Interface' do
 
         should_not_be_a_kicker
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return expected Collection' do
-          @collection.should == [ @other, @new ]
+        it 'returns expected Collection' do
+          expect(@collection).to eq [ @other, @new ]
         end
 
-        it 'should set the association for each Resource' do
-          @articles.map { |resource| resource.revisions }.should == [ [ @new ], [ @other ] ]
+        it 'sets the association for each Resource' do
+          expect(@articles.map { |resource| resource.revisions }).to eq [ [ @new ], [ @other ] ]
         end
       end
 
@@ -1553,22 +1553,22 @@ share_examples_for 'Finder Interface' do
 
         should_not_be_a_kicker
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return expected Collection' do
-          @collection.should == [ @other, @new ]
+        it 'returns expected Collection' do
+          expect(@collection).to eq [ @other, @new ]
         end
 
         { :id => true, :title => false, :content => false }.each do |attribute, expected|
-          it "should have query field #{attribute.inspect} #{'not' unless expected} loaded".squeeze(' ') do
-            @collection.each { |resource| resource.attribute_loaded?(attribute).should == expected }
+          it "has query field #{attribute.inspect} #{'not' unless expected} loaded".squeeze(' ') do
+            @collection.each { |resource| expect(resource.attribute_loaded?(attribute)).to eq expected }
           end
         end
 
-        it 'should set the association for each Resource' do
-          @articles.map { |resource| resource.revisions }.should == [ [ @new ], [ @other ] ]
+        it 'sets the association for each Resource' do
+          expect(@articles.map { |resource| resource.revisions }).to eq [ [ @new ], [ @other ] ]
         end
       end
     end
@@ -1588,20 +1588,20 @@ share_examples_for 'Finder Interface' do
 
         should_not_be_a_kicker
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return expected Collection' do
-          pending_if @no_join do
-            @collection.should == [ @publication1, @publication2 ]
-          end
+        it 'returns expected Collection' do
+          pending if @no_join
+
+          expect(@collection).to eq [ @publication1, @publication2 ]
         end
 
-        it 'should set the association for each Resource' do
-          pending_if @no_join do
-            @articles.map { |resource| resource.publications }.should == [ [ @publication1 ], [ @publication2 ] ]
-          end
+        it 'sets the association for each Resource' do
+          pending if @no_join
+
+          expect(@articles.map { |resource| resource.publications }).to eq [ [ @publication1 ], [ @publication2 ] ]
         end
       end
 
@@ -1612,35 +1612,35 @@ share_examples_for 'Finder Interface' do
 
         should_not_be_a_kicker
 
-        it 'should return a Collection' do
-          @return.should be_kind_of(DataMapper::Collection)
+        it 'returns a Collection' do
+          expect(@return).to be_kind_of(DataMapper::Collection)
         end
 
-        it 'should return expected Collection' do
-          pending_if @no_join do
-            @collection.should == [ @publication1, @publication2 ]
-          end
+        it 'returns expected Collection' do
+          pending if @no_join
+
+          expect(@collection).to eq [ @publication1, @publication2 ]
         end
 
         { :id => true, :name => false }.each do |attribute, expected|
-          it "should have query field #{attribute.inspect} #{'not' unless expected} loaded".squeeze(' ') do
-            @collection.each { |resource| resource.attribute_loaded?(attribute).should == expected }
+          it "has query field #{attribute.inspect} #{'not' unless expected} loaded".squeeze(' ') do
+            @collection.each { |resource| expect(resource.attribute_loaded?(attribute)).to eq expected }
           end
         end
 
-        it 'should set the association for each Resource' do
-          pending_if @no_join do
-            @articles.map { |resource| resource.publications }.should == [ [ @publication1 ], [ @publication2 ] ]
-          end
+        it 'sets the association for each Resource' do
+          pending if @no_join
+
+          expect(@articles.map { |resource| resource.publications }).to eq [ [ @publication1 ], [ @publication2 ] ]
         end
       end
     end
 
     describe 'with an unknown method' do
-      it 'should raise an exception' do
-        lambda {
+      it 'raises an exception' do
+        expect {
           @articles.unknown
-        }.should raise_error(NoMethodError)
+        }.to raise_error(NoMethodError)
       end
     end
   end
