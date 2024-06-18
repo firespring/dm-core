@@ -22,6 +22,8 @@ platforms :mri_18 do
 end
 
 group :development do
+  gem 'pry'
+  gem 'pry-byebug'
   gem 'rake', '~> 13.1'
   gem 'rspec', '~> 3.13'
   gem 'rspec-its'
