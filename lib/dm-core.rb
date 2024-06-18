@@ -15,12 +15,6 @@ require 'dm-core/support/ext/hash'
 require 'dm-core/support/ext/object'
 require 'dm-core/support/ext/string'
 
-begin
-  require 'fastthread'
-rescue LoadError
-  # fastthread not installed
-end
-
 require 'dm-core/core_ext/pathname'
 require 'dm-core/support/ext/module'
 require 'dm-core/support/ext/array'
