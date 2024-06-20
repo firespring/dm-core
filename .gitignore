@@ -17,6 +17,9 @@ tmtags
 *.rbc
 .rbx
 
+## RubyMine
+.idea
+
 ## PROJECT::GENERAL
 *.gem
 coverage
