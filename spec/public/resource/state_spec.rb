@@ -28,7 +28,7 @@ describe 'DataMapper::Resource' do
         :bool_     => true,
         :float_    => 2.5,
         :integer_  => 10,
-        :decimal_  => BigDecimal.new("999.95"),
+        :decimal_  => BigDecimal("999.95"),
         :datetime_ => DateTime.parse('2010-10-11 12:13:14+0'),
         :date_     => Date.parse('2010-10-11 12:13:14+0'),
         :time_     => Time.parse('2010-10-11 12:13:14+0'),
