@@ -2,7 +2,7 @@ require 'English'
 require File.expand_path('lib/dm-core/version', __dir__)
 
 Gem::Specification.new do |gem|
-  gem.name        = 'dm-core'
+  gem.name        = 'sbf-dm-core'
   gem.version     = DataMapper::VERSION.dup
   gem.required_ruby_version = '>= 2.7.8'
   gem.authors     = ['Dan Kubb']
