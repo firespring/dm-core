@@ -2,11 +2,11 @@ require 'English'
 require File.expand_path('lib/dm-core/version', __dir__)
 
 Gem::Specification.new do |gem|
-  gem.name        = 'dm-core'
+  gem.name        = 'sbf-dm-core'
   gem.version     = DataMapper::VERSION.dup
   gem.required_ruby_version = '>= 2.7.8'
-  gem.authors     = ['Dan Kubb']
-  gem.email       = %w(dan.kubb@gmail.com)
+  gem.authors     = ['opensource_firespring']
+  gem.email       = ['opensource@firespring.com']
   gem.summary = 'DataMapper core library'
   gem.description = 'DataMapper core library where one row in the data-store should equal one object reference. ' \
                     'Pretty simple idea. Pretty profound impact.'
