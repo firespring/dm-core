@@ -585,7 +585,7 @@ module DataMapper
 
       # @api private
       private def kind_of_inverse?(other)
-        other.is_a?(inverse_class)
+        other.kind_of?(inverse_class)
       end
 
       # @api private
