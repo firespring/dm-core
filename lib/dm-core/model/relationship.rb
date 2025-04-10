@@ -349,11 +349,6 @@ module DataMapper
         RUBY
       end
 
-      # @api public
-      private def respond_to_missing?(method, include_private)
-        relationships(repository_name)[method] || super
-      end
-
       private def method_missing(method, *args, &block)
         if (relationship = relationships(repository_name)[method])
           return Query::Path.new([relationship])
