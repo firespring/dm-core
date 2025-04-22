@@ -11,6 +11,8 @@ module DataMapper
 
       # @api semipublic
       def load(value)
+        return if value.nil?
+
         typecast(instance_of?(Object) ? unmarshal(value) : value)
       end
 
