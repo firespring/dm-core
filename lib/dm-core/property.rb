@@ -673,10 +673,12 @@ module DataMapper
 
     # @api semipublic
     def typecast(value)
-      if (value.nil? || value_loaded?(value)) && !respond_to?(:typecast_to_primitive, true)
+      if value.nil? || value_loaded?(value)
         value
       elsif respond_to?(:typecast_to_primitive, true)
         typecast_to_primitive(value)
+      else
+        value
       end
     end
 
